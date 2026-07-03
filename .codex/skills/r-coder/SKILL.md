@@ -20,8 +20,12 @@ If the task is ambiguous about the target file, resolve that first.
 
 Before editing:
 
-1. Read `.claude/rules/r-code-conventions.md`. Treat it as the project standard.
-2. Read `.claude/skills/research-data-workflow/SKILL.md` for workflow expectations.
+1. Read the R conventions from one of these locations, in order:
+   - `./.claude/rules/r-code-conventions.md`
+   - `~/.claude/rules/r-code-conventions.md`
+2. Read the research workflow skill from one of these locations, in order:
+   - `./.claude/skills/research-data-workflow/SKILL.md`
+   - `~/.claude/skills/research-data-workflow/SKILL.md`
 3. Scan nearby scripts in `scripts/` to match the existing tone and structure.
 
 ## Working style

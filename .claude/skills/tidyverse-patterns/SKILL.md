@@ -7,8 +7,6 @@ description: Modern tidyverse patterns for R including pipes, joins, grouping, p
 
 *Best practices for modern tidyverse development with dplyr 1.1+ and R 4.3+*
 
-> **Project override:** `.claude/rules/r-code-conventions.md` is authoritative. Where this skill conflicts with that file, the conventions file wins.
-
 ## Core Principles
 
 1. **Use modern tidyverse patterns** - Prioritize dplyr 1.1+ features, native pipe, and current APIs
@@ -58,18 +56,37 @@ transactions |>
 
 ## Join Quality Control
 
-- **Use `multiple` and `unmatched` to make match expectations explicit**
+- **Declare cardinality with `relationship` to validate join assumptions**
+- **Use `unmatched = "error"` to catch unexpected non-matches**
 - **Use `na_matches = "never"` to prevent silent NA joins**
+- **Use `tidylog::` prefix interactively to verify join results**
 
 ```r
-# Assert 1:1 match — errors if violated
-inner_join(x, y, by = join_by(id), multiple = "error", unmatched = "error")
+# Validate 1:1 relationship — errors if violated
+inner_join(x, y, by = join_by(id),
+  relationship = "one-to-one")
+
+# Validate many-to-one (left has duplicates, right does not)
+left_join(transactions, companies, by = join_by(company == id),
+  relationship = "many-to-one")
 
 # Ensure all rows from left match something in right
-inner_join(x, y, by = join_by(id), unmatched = "error")
+inner_join(x, y, by = join_by(id),
+  unmatched = "error")
 
 # Prevent NA values from matching each other silently
-left_join(x, y, by = join_by(id), na_matches = "never")
+left_join(x, y, by = join_by(id),
+  na_matches = "never")
+
+# Combine for strict joins
+inner_join(x, y, by = join_by(id),
+  relationship = "one-to-one",
+  unmatched = "error",
+  na_matches = "never")
+
+# Interactive verification with tidylog
+# tidylog prints a summary of rows matched/dropped
+tidylog::inner_join(x, y, by = join_by(id))
 ```
 
 ## Data Masking and Tidy Selection
@@ -107,15 +124,9 @@ data |>
 - **Use `reframe()` for multi-row summaries**
 
 ```r
-# Good - Per-operation grouping
+# Good - Per-operation grouping (always returns ungrouped)
 data |>
   summarise(mean_value = mean(value), .by = category)
-
-# Also acceptable - persistent grouping (both patterns are fine)
-data |>
-  group_by(category) |>
-  summarise(mean_value = mean(value)) |>
-  ungroup()
 
 # Good - Multiple grouping variables
 data |>
@@ -135,6 +146,75 @@ data |>
 # Good - reframe() for multi-row results
 data |>
   reframe(quantiles = quantile(x, c(0.25, 0.5, 0.75)), .by = group)
+
+# Avoid - Old persistent grouping pattern
+data |>
+  group_by(category) |>
+  summarise(mean_value = mean(value)) |>
+  ungroup()
+```
+
+## NA-Safe Row Filtering
+
+- **Use `filter_out()` instead of negating conditions** — negation (`!condition`) silently drops NAs
+- **Use `when_any()` and `when_all()` for multi-column OR/AND filters (dplyr 1.2+)**
+
+```r
+# Problem: negation silently drops rows where condition is NA
+filter(data, !(value < 0))       # drops rows where value is NA — silent!
+
+# Good - filter_out() passes NAs through safely
+filter_out(data, value < 0)      # rows where value is NA are kept
+
+# Good - when_any() for OR across columns (dplyr 1.2+)
+filter(data, when_any(x, y, z, \(col) col > 0))  # any column > 0
+
+# Good - when_all() for AND across columns
+filter(data, when_all(x, y, z, \(col) !is.na(col)))  # no NAs in any
+
+# Avoid - verbose base patterns
+filter(data, !(value < 0) | is.na(value))   # workaround, not idiomatic
+```
+
+## Recoding and Conditional Updates
+
+- **Use `replace_when()` for in-place conditional updates** — avoids `case_when()` with `.default = x`
+- **Use `case_when()` with `.unmatched = "error"` when all cases should be handled**
+
+```r
+# Good - replace_when() for in-place updates (type-stable, NAs unaffected)
+mutate(data, status = replace_when(status,
+  value < 0  ~ "negative",
+  value == 0 ~ "zero"
+))
+
+# Avoid - case_when() requires restating the variable in .default
+mutate(data, status = case_when(
+  value < 0  ~ "negative",
+  value == 0 ~ "zero",
+  .default   = status    # repetitive
+))
+
+# Good - case_when() with strict exhaustiveness check
+mutate(data, grade = case_when(
+  score >= 90 ~ "A",
+  score >= 80 ~ "B",
+  score >= 70 ~ "C",
+  .unmatched  = "error"  # error if any row falls through
+))
+```
+
+## Serialization
+
+- **Use `qs2` for fast serialization** — successor to `qs`, not backwards-compatible
+
+```r
+# Good - qs2 (use .qs2 extension)
+qs2::qs_save(object, "data/results.qs2")
+object <- qs2::qs_read("data/results.qs2")
+
+# Avoid - older qs package
+qs::qsave(object, "data/results.qs")   # outdated
 ```
 
 ## Modern purrr Patterns

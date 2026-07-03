@@ -36,7 +36,7 @@ result = data %>% filter(year >= 2010) %>% mutate(log_gdp = log(gdp))
 ## 2. Packages
 
 - `library()` at the top of the script — never `require()`, never mid-script.
-- Avoid `pkg::fn()` inline when the package is already loaded and there is no ambiguity. **Exception — required:** use `pkg::fn()` whenever two loaded packages export a function with the same name (e.g., `dplyr::select` when `MASS` is also loaded). When in doubt, qualify. A silent wrong-dispatch bug is worse than a redundant prefix.
+- Never use `pkg::fn()` inline when the package is already loaded via `library()`. Exception: disambiguating genuine name conflicts (e.g., `dplyr::select` when `MASS` is also loaded).
 
 ---
 
@@ -151,30 +151,7 @@ Common substitutions:
 
 ---
 
-## 5. Survey Data
-
-- Always use `srvyr` for survey-weighted operations — never base `survey` package functions directly.
-- Declare the survey design once with `as_survey_design()` or `as_survey_rep()` and store it as a named object; do not re-declare it inline.
-- All weighted summaries (`survey_mean()`, `survey_total()`, `survey_ratio()`, etc.) must go through the `srvyr` tidy interface — pipe into `summarise()` as with any other `dplyr` workflow.
-- Set `vartype = "ci"` or `vartype = "se"` explicitly on every estimate call — never rely on the default.
-- Never drop survey weights or design variables mid-pipeline; treat the design object as immutable after declaration.
-
-```r
-# correct
-endi_design <- endi_clean |>
-  as_survey_design(ids = upm, strata = estrato, weights = fexp)
-
-esti <- endi_design |>
-  filter(age_group == "under5") |>
-  summarise(prev = survey_mean(stunted, vartype = "ci", na.rm = TRUE))
-
-# wrong — base survey package, no srvyr
-svymean(~stunted, design = endi_design_svyobj)
-```
-
----
-
-## 6. Modelling
+## 5. Modelling
 
 - `feols()` (from `fixest`) for all panel and fixed-effects regressions.
 - `lm()` / `glm()` for cross-sectional work. Exception: `lm()` with `factor()` dummies is also acceptable for panel models when the downstream inference uses `fwildclusterboot`, which does not accept `feols()` objects.
@@ -188,7 +165,7 @@ fit <- feols(y ~ x | firm + year, data = df, cluster = ~firm)
 
 ---
 
-## 7. Output
+## 6. Output
 
 - `ggsave()` must always specify `width` and `height` explicitly.
 - `saveRDS()` for all key objects (model fits, summary tables, processed datasets) so downstream scripts and slides can load them without re-running.
@@ -196,7 +173,7 @@ fit <- feols(y ~ x | firm + year, data = df, cluster = ~firm)
 
 ---
 
-## 8. Paths
+## 7. Paths
 
 - All paths relative to the project root — this is an R project, so `setwd()` is unnecessary and should never appear.
 - Build paths with `file.path()` — no string pasting, no hardcoded absolute paths.
@@ -215,7 +192,7 @@ ggsave("C:/Users/daniel/project/outputs/fig1.png", width = 8, height = 5)
 
 ---
 
-## 9. Comments
+## 8. Comments
 
 - Write comments to clarify intent when helpful — but avoid noisy comments that restate what the code already says clearly.
 - Prefer explaining **why** over **what** when a comment is warranted.
@@ -223,7 +200,7 @@ ggsave("C:/Users/daniel/project/outputs/fig1.png", width = 8, height = 5)
 
 ---
 
-## 10. Numerical Discipline
+## 9. Numerical Discipline
 
 - **No float equality.** Never `==` on doubles. Use `all.equal()` or `abs(x - y) < tol`.
 - **CDF clamping.** Probabilities passed to `qnorm()`, `pbinom()`, etc. must be clamped: `eps <- 1e-12; pmin(1 - eps, pmax(eps, p))`. Exact 0 or 1 produce `-Inf`/`Inf`.
@@ -231,7 +208,7 @@ ggsave("C:/Users/daniel/project/outputs/fig1.png", width = 8, height = 5)
 
 ---
 
-## 11. Console Output
+## 10. Console Output
 
 - At most one `message()` per major section.
 - Never `cat()`, `print()`, or `sprintf()` for status output.
@@ -239,10 +216,12 @@ ggsave("C:/Users/daniel/project/outputs/fig1.png", width = 8, height = 5)
 
 ---
 
-## 12. Known Pitfalls
+## 11. Known Pitfalls
 
 *Add project-specific bugs and gotchas here as they are discovered.*
 
-- **Hardcoding variable codes without verification.** Before writing bin definitions, verify the actual codes by reading label attributes or the codebook from the source file. Asserting codes from memory is a bug risk. Flag any categorical bin or filter that lacks a comment citing the verified source as a **Medium** issue.
+- **ENEMDU SAV label conflicts across survey years.** When stacking SAV files with `bind_rows()`, INEC changes value-label strings across years (leading spaces, capitalisation, accents) even though the numeric codes are identical. Fix: define canonical labels in a named list and apply them per file via `attr(df[[v]], "labels") <- ...` before binding. Do **not** call `zap_labels()` to suppress the warnings — that hides the inconsistency instead of resolving it. Flag any `zap_labels()` call inside a SAV-loading loop as a **High** issue.
+
+- **Hardcoding variable codes without verification.** Before writing bin definitions (e.g. `p10a %in% c(6L, 7L)` for secondary education), verify the actual codes by reading label attributes from every source file. Asserting codes from a single file or from memory is a bug risk. Flag any categorical bin or filter that lacks a comment citing the verified source as a **Medium** issue.
 
 - **Robustness specs belong in the same script as the main analysis.** Do not create a new script solely for a controlled or alternative specification of an existing model. Add it as a clearly numbered section in the same script, with separate output file names. Flag a new script whose only purpose is a robustness variant of an existing script as a **Medium** structural issue.

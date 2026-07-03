@@ -40,9 +40,9 @@ Produce a thorough, actionable code review report. You do NOT edit files — you
 
 ### 3. PACKAGES
 - [ ] All packages loaded at top via `library()` — never `require()`, never mid-script
-- [ ] Avoid `pkg::fn()` when no ambiguity; required when two loaded packages share a name — when in doubt, qualify
+- [ ] No `pkg::fn()` inline when the package is already loaded (exception: documented name conflict)
 
-**Flag:** `require()`, mid-script `library()`, missing `pkg::fn()` where a name conflict exists.
+**Flag:** `require()`, mid-script `library()`, gratuitous `::` usage.
 
 ### 4. REPRODUCIBILITY & PATHS
 - [ ] All paths relative to project root — no `setwd()`, no hardcoded absolute paths
@@ -65,7 +65,7 @@ Produce a thorough, actionable code review report. You do NOT edit files — you
 - [ ] `walk()` / `walk2()` used for side-effect operations (file writes, plots) — not `map()` with discarded results
 - [ ] `stringr` functions used over base R string equivalents (`str_detect` not `grepl`, `str_replace_all` not `gsub`, `str_to_lower` not `tolower`, etc.)
 
-**Flag:** Base R manipulation where dplyr applies, positional indexing, non-snake_case names, character-vector join syntax, `map_dfr()`/`map_dfc()`, base R string functions, `map()` used for side effects.
+**Flag:** Base R manipulation where dplyr applies, positional indexing, non-snake_case names, `group_by() |> ungroup()` pattern, character-vector join syntax, `map_dfr()`/`map_dfc()`, base R string functions, `map()` used for side effects.
 
 ### 5b. OVERENGINEERING
 - [ ] No custom functions unless absolutely necessary. A function is justified only when the alternative is exact, verbatim repetition of 10+ lines called 3+ times.
@@ -75,15 +75,6 @@ Produce a thorough, actionable code review report. You do NOT edit files — you
 - [ ] Code reads linearly from top to bottom without jumping to function definitions.
 
 **Flag:** Custom functions with < 10-line bodies, custom functions called only once or twice, wrapper functions that only rename arguments, factory functions, any code that could be inlined without meaningful loss of clarity.
-
-### 5c. SURVEY DATA
-- [ ] `srvyr` used for all weighted operations — no base `survey` functions (`svymean()`, `svytotal()`, etc.)
-- [ ] Survey design declared once with `as_survey_design()` or `as_survey_rep()` and stored as a named object
-- [ ] All estimates use `survey_mean()`, `survey_total()`, etc. inside `summarise()`
-- [ ] `vartype = "ci"` or `vartype = "se"` set explicitly on every estimate call
-- [ ] Weights and design variables not dropped mid-pipeline
-
-**Flag:** Any direct `survey::` function call, re-declaring the design inline, missing `vartype`, implicit default `vartype`.
 
 ### 6. MODELLING
 - [ ] `feols()` used for panel/FE regressions. Exception: `lm()` with `factor()` dummies is acceptable when downstream inference uses `fwildclusterboot` (which does not accept `feols()` objects) — do not flag this as an error.
@@ -188,7 +179,6 @@ Save report to `quality_reports/[script_name]_r_review.md`:
 | Tidyverse Style — Grouping & Joins | Yes/No | N |
 | Tidyverse Style — purrr & Strings | Yes/No | N |
 | Overengineering | Yes/No | N |
-| Survey Data | Yes/No | N |
 | Modelling | Yes/No | N |
 | Figures | Yes/No | N |
 | RDS Pattern | Yes/No | N |
@@ -204,4 +194,4 @@ Save report to `quality_reports/[script_name]_r_review.md`:
 2. **Be specific.** Include line numbers and exact code snippets.
 3. **Be actionable.** Every issue must have a concrete proposed fix.
 4. **Prioritize correctness.** Domain bugs > style issues.
-5. **Check Known Pitfalls.** See `.claude/rules/r-code-conventions.md` section 12 for project-specific bugs.
+5. **Check Known Pitfalls.** See `.claude/rules/r-code-conventions.md` section 11 for project-specific bugs.

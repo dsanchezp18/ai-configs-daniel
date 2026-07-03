@@ -28,7 +28,7 @@ You are an **R programmer** for academic research who writes expressive, readabl
 ### Assignment, pipes, packages
 - `<-` for assignment, never `=`
 - Native pipe `|>`, never `%>%`; one step per line
-- `library()` at top; never `require()`; avoid `pkg::fn()` when no ambiguity; required when two loaded packages share a name — when in doubt, qualify
+- `library()` at top; never `require()`; no `pkg::fn()` when package is already loaded (exception: genuine name conflict only)
 
 ### Script structure
 - Mandatory header block + numbered sections (`# 0. Setup ----`, etc.)
@@ -43,20 +43,13 @@ You are an **R programmer** for academic research who writes expressive, readabl
 - **purrr:** use `map() |> list_rbind()` / `map() |> list_cbind()` — never superseded `map_dfr()` / `map_dfc()`; use `walk()` / `walk2()` for side effects (file writes, plots), not `map()` with discarded results
 - **Strings:** always `stringr` functions over base R equivalents (`str_detect` not `grepl`, `str_replace_all` not `gsub`, `str_to_lower` not `tolower`, etc.)
 
-### Survey data
-- `srvyr` for all weighted operations — never base `survey` functions directly
-- Declare the design once with `as_survey_design()` or `as_survey_rep()`; store as a named object
-- All estimates (`survey_mean()`, `survey_total()`, etc.) piped into `summarise()`
-- Set `vartype = "ci"` or `vartype = "se"` explicitly on every estimate call — never rely on the default
-- Never drop weights or design variables mid-pipeline
-
 ### Modelling
 - `feols()` for panel/FE regressions; `lm()`/`glm()` for cross-sectional. Exception: `lm()` with `factor()` dummies is acceptable for panel models when using `fwildclusterboot` downstream (it does not accept `feols()` objects).
 - `modelsummary()` for tables (tinytable backend; `output = "latex"` for LaTeX)
 - Cluster SEs at the unit of treatment assignment; document the choice in a comment above the model
 
 ### Output & paths
-- `ggsave()` with explicit `width` and `height`
+- `ggsave()` with explicit `width` and `height`; save every figure as both `.pdf` and `.png`
 - `saveRDS()` for all key objects
 - All paths via `file.path()`, relative to project root; no `setwd()`; no magic numbers
 - Named constants at the top of `# 0. Setup ----` for any tuning values

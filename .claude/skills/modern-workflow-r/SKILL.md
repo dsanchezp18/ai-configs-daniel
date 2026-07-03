@@ -12,8 +12,6 @@ description: >
 
 *Current best practices for R development, emphasizing modern tidyverse patterns, performance, and style. Last updated: August 2025*
 
-> **Project override:** `.claude/rules/r-code-conventions.md` is authoritative. Where this skill conflicts with that file, the conventions file wins.
-
 ## Core Principles
 
 1. **Use modern tidyverse patterns** — Prioritize dplyr 1.1+ features, native pipe, and current APIs
@@ -300,9 +298,9 @@ map(1:100, in_parallel(fast_func))       # 100μs -> 50ms (500x slower!)
 
 #### Data Backend Selection
 ```r
-# dplyr:  preferred throughout — readability and tidyverse consistency
-# base R: no dependencies, simple operations, teaching contexts
-# Note: data.table is not used in this project
+# data.table: very large datasets (>1GB), maximum performance critical
+# dplyr:      readability priority, moderate data (<100MB), complex joins
+# base R:     no dependencies, simple operations, teaching contexts
 ```
 
 ### Performance Anti-Patterns

@@ -1,6 +1,6 @@
 ---
 name: r-build-and-review
-description: Orchestrate a two-step R workflow in this repo: write a script with r-coder, then audit it with r-reviewer. Use when the user wants a new R script created and reviewed, especially when subagents are available.
+description: "Orchestrate a two-step R workflow in this repo: write a script with r-coder, then audit it with r-reviewer. Use when the user wants a new R script created and reviewed, especially when subagents are available."
 ---
 
 # R Build And Review
@@ -57,3 +57,4 @@ Summarize:
 - Review report: `quality_reports/[script_name]_r_review.md`
 - Issue counts by severity
 - Status: `Ready for use` or `Needs revision before use`
+

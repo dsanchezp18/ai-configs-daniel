@@ -12,7 +12,9 @@ Use this skill for code review of R scripts in this repository.
 Before reviewing:
 
 1. Read the target script or scripts end to end.
-2. Read `.claude/rules/r-code-conventions.md` and use it as the review standard.
+2. Read the R conventions from one of these locations, in order, and use them as the review standard:
+   - `./.claude/rules/r-code-conventions.md`
+   - `~/.claude/rules/r-code-conventions.md`
 
 ## Review priorities
 

@@ -7,8 +7,6 @@ description: R style guide covering naming conventions, spacing, layout, and fun
 
 *Consistent naming, spacing, structure, and function design for R code*
 
-> **Project override:** `.claude/rules/r-code-conventions.md` is authoritative. In particular: custom functions are a last resort — only justified when the alternative is 10+ lines repeated 3+ times. The function design patterns below are reference material, not a mandate to write functions.
-
 ## Function Writing Best Practices
 
 ### Structure and Style
