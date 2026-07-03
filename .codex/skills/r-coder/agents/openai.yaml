@@ -1,0 +1,4 @@
+interface:
+  display_name: "R Coder"
+  short_description: "Write one R script in the repo's house style"
+  default_prompt: "Write or revise one R script in this repository. Follow `.claude/rules/r-code-conventions.md`, use `.claude/skills/research-data-workflow/SKILL.md` for workflow context, and match the style of neighboring scripts in `scripts/`."

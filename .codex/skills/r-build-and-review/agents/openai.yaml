@@ -1,0 +1,4 @@
+interface:
+  display_name: "R Build + Review"
+  short_description: "Write an R script, then run an R-focused review pass"
+  default_prompt: "Coordinate a two-step workflow in this repository: first write the target R script using the repo's conventions, then run a separate R-focused review and save the report to `quality_reports/[script_name]_r_review.md`."

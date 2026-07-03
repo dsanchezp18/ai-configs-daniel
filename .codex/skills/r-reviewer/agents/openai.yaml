@@ -1,0 +1,4 @@
+interface:
+  display_name: "R Reviewer"
+  short_description: "Audit R scripts for correctness and reproducibility"
+  default_prompt: "Review one or more R scripts in this repository against `.claude/rules/r-code-conventions.md`. Save the report to `quality_reports/[script_name]_r_review.md` and prioritize correctness, reproducibility, and downstream breakage."
