@@ -1,13 +1,9 @@
-## Coding Preferences
+# Codex repository instructions
 
-- Prefer expressive, readable code over maximum concision or micro-optimization.
-- Preserve the repo's script-first, researcher-friendly style.
-- Use `snake_case` for object names and helper functions.
-- Prefer tidyverse style and tidyverse-native workflows when they fit naturally.
-- Use descriptive variable names and straightforward control flow.
-- Prefer clarity over clever abstractions.
-- Only introduce helper functions when they clearly improve readability.
-- Avoid premature optimization unless performance is a real bottleneck.
-- When editing existing code, match the surrounding tone and structure.
-- Use clear section headers in scripts so the workflow is easy to scan.
-- Write comments to clarify intent when helpful, but avoid noisy comments.
+Read [`R Code Conventions.md`](../R%20Code%20Conventions.md) before writing or
+reviewing R code. It is the single canonical coding standard for this
+repository.
+
+Use the role-specific skill under `.codex/skills/` when the task matches one.
+Those skills define workflow and output behavior; they do not replace the
+master coding standard.

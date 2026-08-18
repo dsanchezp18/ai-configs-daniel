@@ -1,169 +1,44 @@
-# Copilot Instructions for Alberta GDP Inventory Estimation Project
+# Copilot project context
 
-You are an expert economic statistics coder specializing in national accounts methodology (Statistics Canada, Eurostat, OECD standards). You work with R on economic estimation projects.
+The canonical coding standard is [`R Code Conventions.md`](../R%20Code%20Conventions.md).
+Read it before writing or reviewing R code. This file supplies project context
+and routing; it is not a second coding standard.
 
-## Project Context
+## Project context
 
-This is an **inventory estimation project** for Alberta's GDP accounts. You estimate quarterly and annual inventory changes across four commodity categories:
-- Livestock (cattle, hogs, poultry)
-- Large Crops (wheat, canola, barley)
-- Non-Farm (wholesale, retail, manufacturing)
-- Potatoes
+This repository supports Alberta GDP inventory estimation using Statistics
+Canada's provincial GDP methodology. The active economic categories are:
 
-The methodology follows **Statistics Canada's provincial GDP estimation approach**, using:
-- Fisher indices (current and constant dollars)
-- Chained-volume GDP contributions
-- Quarterly to annual aggregation
-- Historical averaging for missing values
+- livestock: cattle, hogs, and poultry;
+- large crops: wheat, canola, and barley;
+- non-farm: wholesale, retail, and manufacturing; and
+- potatoes.
 
-## R Coding Style
+The work uses Fisher indices, chained-volume GDP contributions,
+quarterly-to-annual aggregation, and historical averages for approved missing
+values. Inventory changes are summed across quarters; index values follow the
+approved weighted-average or end-of-period rule.
 
-### Preferred: Tidyverse & Expressive Code
+Use project configuration variables such as `ESTIMATION_YEAR`, `BASE_YEAR`,
+`INPUT_DIR`, `PROCESSED_DIR`, and `FISHER_OUTPUT_DIR`. Do not hardcode years,
+machine paths, or input filenames.
 
-Write **readable, expressive code** that clearly shows the economic logic:
+## AI routing
 
-```r
-#  GOOD - Clear economic intent
-livestock_estimates <- tbl_2121_clean |>
-  filter(province == "Alberta", quarter == 4) |>
-  group_by(commodity, year) |>
-  summarize(
-    ending_inventory = mean(ending_inventory, na.rm = TRUE),
-    value_per_head = mean(value_per_head, na.rm = TRUE),
-    physical_change = ending_inventory - lag(ending_inventory)
-  )
+- Claude rules: `.claude/rules/`
+- Claude agents: `.claude/agents/`
+- Claude skills: `.claude/skills/`
+- Codex instructions: `.codex/instructions.md`
+- Codex skills and metadata: `.codex/skills/`
+- Copilot routing: `.github/instructions/ai-skills-routing.instructions.md`
 
-#  AVOID - Overly abstracted
-calc_est <- function(df, grp, vars) { ... }  # Too generic
-```
+Role mapping:
 
-**Use tidyverse verbs** that match economic operations:
-- `filter()` for subsetting by geography/time
-- `group_by()` + `summarize()` for aggregation
-- `mutate()` for calculating indices/ratios
-- `pivot_longer()` / `pivot_wider()` for reshaping data
-- `left_join()` / `inner_join()` for linking datasets
+- `r-coder`: implement or substantially revise one R script;
+- `r-reviewer`: review R scripts and produce a quality report;
+- `r-build-and-review`: coordinate writing and reviewing an R script; and
+- `research-data-workflow`: handle reproducible project structure and data
+  lifecycle work.
 
-### Avoid Software Engineering Patterns
-
-**DON'T write:**
-- Custom classes/S3 methods
-- Factory functions or builders
-- Complex abstraction layers
-- Over-engineered utilities
-
-**REASON:** Economic code needs transparency. Reviewers (economists, not programmers) must trace the calculation logic.
-
-**DO suggest best practices like:**
-- Using `source("code/0_config.R")` for shared parameters
-- Consistent naming conventions (snake_case)
-- Vectorized operations over loops when performance matters
-- Clear variable names that match economic concepts
-
-### Avoid User-Written Functions
-
-**Prefer built-in functions** from:
-- Base R: `mean()`, `sum()`, `lag()`, `diff()`
-- dplyr: `filter()`, `mutate()`, `summarize()`
-- tidyr: `pivot_*()`, `complete()`
-- lubridate: `year()`, `quarter()`
-
-**EXCEPTION:** When the same multi-step calculation repeats across 4+ commodities, suggest a helper function BUT keep it simple and document the economic logic.
-
-## Parameterization & Future-Proofing
-
-### Always Use Configuration Variables
-
-**DON'T hardcode:**
-```r
-#  BAD
-df <- read_csv("data/input/fisher_ab.curr_2012-2022.csv")
-estimates_2023 <- calculate_inventory(df, year = 2023)
-```
-
-**DO parameterize:**
-```r
-#  GOOD
-source("code/0_config.R")  # Loads ESTIMATION_YEAR, INPUT_DIR, etc.
-
-df <- read_input_csv("fisher_ab.curr_2012-2022.csv")
-estimates <- calculate_inventory(df, year = ESTIMATION_YEAR)
-```
-
-### Configuration Available
-
-When suggesting code, reference these from `0_config.R`:
-- `ESTIMATION_YEAR` - Current estimation year (e.g., 2023)
-- `BASE_YEAR` - Base year for chained values (e.g., 2017)
-- `INPUT_DIR`, `PROCESSED_DIR`, `FISHER_OUTPUT_DIR`
-- `read_input_csv()` / `read_processed_csv()` / `write_processed_csv()`
-
-## Economic Statistics Best Practices
-
-### Handling Missing Values
-
-For **Q4 estimates**, use 5-year historical averages:
-```r
-q4_estimate <- df |>
-  filter(
-    commodity == target_commodity,
-    year %in% (ESTIMATION_YEAR - 5):(ESTIMATION_YEAR - 1),
-    quarter == 4
-  ) |>
-  summarize(avg_change = mean(inventory_change, na.rm = TRUE))
-```
-
-### Aggregation Rules
-
-**Quarterly  Annual:**
-- Inventory changes: **SUM** of quarterly changes
-- Index values: **Annual weighted average** or end-of-period
-
-## Project-Specific Guidelines
-
-### Native Pipe Operator
-
-**Always use `|>` (native pipe), never `%>%`**
-
-### Column Naming
-
-Use **snake_case** matching Statistics Canada conventions:
-- `ending_inventory`, `value_per_head`, `fisher_c`, `fisher_p`
-
-## Key Reminders
-
--  **Tidyverse style** - expressive, readable pipelines
--  **Parameterize** - use `ESTIMATION_YEAR`, config variables
--  **Native pipe** `|>` not `%>%`
--  **Economic clarity** over abstraction
--  **Built-in functions** over custom functions
--  **No hardcoding** - make code work for any year
--  **No over-engineering** - economists need to read this
-
-## AI Skills and Agent Routing
-
-Use the repository's AI definitions directly when relevant.
-
-### Claude definitions
-- Skills: `.claude/skills/`
-- Agents: `.claude/agents/`
-- Rules: `.claude/rules/r-code-conventions.md`
-
-### Codex definitions
-- Skills: `.codex/skills/`
-- Agent metadata: `.codex/skills/*/agents/openai.yaml`
-
-### Role mapping
-- **r-coder**: implement or substantially revise one R script
-- **r-reviewer**: review R scripts and produce a quality report
-- **r-build-and-review**: orchestrate write-then-review workflow
-- **research-data-workflow**: reproducible research project structure
-- **modern-workflow-r / tidyverse-patterns / r-style-guide**: coding and style references
-
-When a user request matches one of these roles, follow that role's instructions first, then apply the project rules in this file.
-
----
-
-*Project: Alberta GDP Inventory Estimation*  
-*Language: R (tidyverse)*  
-*Domain: Economic National Accounts*
+When a request matches a role, follow the role-specific workflow after reading
+the root master standard.

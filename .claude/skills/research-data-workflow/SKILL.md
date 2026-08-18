@@ -209,6 +209,8 @@ library(tidyverse)
 # 3. Analysis ----
 
 # 4. Export ----
+
+sessionInfo()
 ```
 
 **Language equivalents for the header block:**

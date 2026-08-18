@@ -65,42 +65,43 @@ do "$code/analysis/03_figures.do"
 # Last updated: [YYYY-MM-DD]
 # ==============================================================================
 
-# Install/load package manager
-if (!require("here")) install.packages("here")
-library(here)
+# Load packages before running the production script
+# Install dependencies separately from the production run.
+library(purrr)
 
-# Root is set automatically by here::here() based on .Rproj or .here file
-# All paths are relative to project root
+# Run this script from the project root.
+# All paths are relative to the project root.
 
 # Derived paths
-path_raw    <- here("data", "raw")
-path_inter  <- here("data", "intermediate")
-path_final  <- here("data", "final")
-path_graphs <- here("outputs", "graphs")
-path_tables <- here("outputs", "tables")
-path_docs   <- here("documentation")
+path_raw    <- file.path("data", "raw")
+path_inter  <- file.path("data", "intermediate")
+path_final  <- file.path("data", "final")
+path_graphs <- file.path("outputs", "graphs")
+path_tables <- file.path("outputs", "tables")
+path_docs   <- file.path("documentation")
 
 # --------------------------------------------------------------------------
 # Run scripts in order
 # --------------------------------------------------------------------------
 
 # Cleaning
-source(here("code", "cleaning", "01_clean_hh.R"))
-source(here("code", "cleaning", "02_clean_survey.R"))
-source(here("code", "cleaning", "03_merge_final.R"))
+source(file.path("code", "cleaning", "01_clean_hh.R"))
+source(file.path("code", "cleaning", "02_clean_survey.R"))
+source(file.path("code", "cleaning", "03_merge_final.R"))
 
 # Analysis
-source(here("code", "analysis", "01_descriptives.R"))
-source(here("code", "analysis", "02_regressions.R"))
-source(here("code", "analysis", "03_figures.R"))
+source(file.path("code", "analysis", "01_descriptives.R"))
+source(file.path("code", "analysis", "02_regressions.R"))
+source(file.path("code", "analysis", "03_figures.R"))
 
 # ==============================================================================
 # End of master
 # ==============================================================================
+sessionInfo()
 ```
 
-> Note: Always use `here::here()` for paths in R. Never use `setwd()` in scripts — it breaks
-> portability across machines.
+> Note: Run the master script from the project root and use `file.path()` for
+> relative paths. Never use `setwd()` in scripts because it breaks portability.
 
 ---
 

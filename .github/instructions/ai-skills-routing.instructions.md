@@ -2,31 +2,27 @@
 applyTo: "**"
 ---
 
-# Copilot AI Skills and Agents
+# Copilot AI routing
 
-Use this routing when responding in this repository.
-
-## Source of truth by AI folder
+Read the root [`R Code Conventions.md`](../../R%20Code%20Conventions.md) first
+for all coding standards. Keep the following folders separate by tool:
 
 - Claude skills: `.claude/skills/*/SKILL.md`
 - Claude agents: `.claude/agents/*.md`
-- Claude coding rules: `.claude/rules/r-code-conventions.md`
+- Claude rule loader: `.claude/rules/r-code-conventions.md`
 - Codex skills: `.codex/skills/*/SKILL.md`
 - Codex agent metadata: `.codex/skills/*/agents/openai.yaml`
 
-Do not mix locations. Keep Claude references in `.claude/*` and Codex references in `.codex/*`.
+Use:
 
-## Invocation routing
-
-- Use **r-coder** behavior for writing or substantially revising one R script.
-- Use **r-reviewer** behavior for audit/review tasks and report generation.
-- Use **r-build-and-review** behavior for two-step write-then-review orchestration.
-- Use **research-data-workflow** for folder structure, reproducibility, and data lifecycle setup.
-- Use **modern-workflow-r**, **tidyverse-patterns**, and **r-style-guide** as implementation and style standards for R code.
-
-## Conflict resolution
+- `r-coder` for writing or substantially revising one R script;
+- `r-reviewer` for audit and review reports;
+- `r-build-and-review` for write-then-review orchestration; and
+- `research-data-workflow` for folder structure, reproducibility, and data
+  lifecycle setup.
 
 If instructions conflict, prefer:
-1. `.claude/rules/r-code-conventions.md`
-2. The role-specific skill/agent file
-3. `.github/copilot-instructions.md`
+
+1. `R Code Conventions.md`;
+2. the role-specific skill or agent; and
+3. general project context in `.github/copilot-instructions.md`.
