@@ -140,6 +140,28 @@ Use **snake_case** matching Statistics Canada conventions:
 -  **No hardcoding** - make code work for any year
 -  **No over-engineering** - economists need to read this
 
+## AI Skills and Agent Routing
+
+Use the repository's AI definitions directly when relevant.
+
+### Claude definitions
+- Skills: `.claude/skills/`
+- Agents: `.claude/agents/`
+- Rules: `.claude/rules/r-code-conventions.md`
+
+### Codex definitions
+- Skills: `.codex/skills/`
+- Agent metadata: `.codex/skills/*/agents/openai.yaml`
+
+### Role mapping
+- **r-coder**: implement or substantially revise one R script
+- **r-reviewer**: review R scripts and produce a quality report
+- **r-build-and-review**: orchestrate write-then-review workflow
+- **research-data-workflow**: reproducible research project structure
+- **modern-workflow-r / tidyverse-patterns / r-style-guide**: coding and style references
+
+When a user request matches one of these roles, follow that role's instructions first, then apply the project rules in this file.
+
 ---
 
 *Project: Alberta GDP Inventory Estimation*  
