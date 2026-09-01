@@ -307,7 +307,7 @@ This root file is the only normative coding standard. The other files have
 specialized roles:
 
 - `.claude/agents/` defines Claude role behavior.
-- `.claude/skills/` provides specialized workflow and advanced R references.
+- `.claude/skills/` provides specialized workflow skills.
 - `.codex/skills/` defines Codex role behavior and UI metadata.
 - `.github/` provides project context and Copilot routing.
 
@@ -316,9 +316,7 @@ Role selection:
 - `r-coder`: implement or substantially revise one R script;
 - `r-reviewer`: audit R scripts and produce a quality report;
 - `r-build-and-review`: write, then review, an R script;
-- `research-data-workflow`: set up or audit reproducible project structure;
-- `modern-workflow-r`, `tidyverse-patterns`, and `r-style-guide`: consult for
-  advanced implementation details after applying this master standard.
+- `research-data-workflow`: set up or audit reproducible project structure.
 
 If instructions conflict, use this file first, then the role-specific file,
 then general project context.
