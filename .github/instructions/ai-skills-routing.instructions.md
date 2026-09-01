@@ -21,6 +21,15 @@ Use:
 - `research-data-workflow` for folder structure, reproducibility, and data
   lifecycle setup.
 
+## Keeping tool formats in sync
+
+The R role definitions exist twice: as Claude agents under `.claude/agents/`
+and as Codex skills under `.codex/skills/`. The two copies paraphrase the
+same behavior; they are not generated from one source. When you edit one
+copy of a role, make the matching substantive edit to the other copy in the
+same commit, and check `git diff main -- .claude/agents .codex/skills`
+before committing so the pair does not drift.
+
 If instructions conflict, prefer:
 
 1. `R Code Conventions.md`;

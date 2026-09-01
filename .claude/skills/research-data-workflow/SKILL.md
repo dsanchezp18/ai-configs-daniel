@@ -239,6 +239,8 @@ Python:
 
 **Section markers** (`# 0. Setup ----`, `# 1. Load Data ----`, etc.) must be present in every
 script. Add or rename sections to fit the task, but never omit the header block or the `# 0. Setup` section.
+The section names above are illustrative. The canonical skeleton, and the rule that names may be
+adapted, is in `R Code Conventions.md` at the repository root.
 
 ---
 
