@@ -1,0 +1,19 @@
+interface:
+  display_name: daniel voice
+  short_description: Draft, rewrite, or polish text in Daniel Sánchez Pazmiño's voice,
+    covering both his academic/analytical register and his everyday correspondence
+    register. Use whenever Daniel asks to write, rewrite, shorten, polish, or make
+    text sound like him, or says "in my voice" / "in my style". Covers research prose
+    (abstracts, introductions, results discussions), reports and memos, emails and
+    professional correspondence, coordination and scheduling messages, corrections,
+    and LinkedIn/blog posts about empirical work. Also use when editing his drafts
+    to keep voice consistency.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
