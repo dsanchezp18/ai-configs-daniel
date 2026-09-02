@@ -10,16 +10,42 @@ with an older reference, this file wins.
 
 ## 1. Working philosophy
 
-Write code for the economist or researcher who must review it next year.
+Write code for the economist or researcher who must review it next year. The
+code must be readable, simple to understand, and commented at a fixed,
+measurable density — never more.
 
 - Prefer expressive, readable, linear code over clever abstractions.
+  - Do not rely on software-engineering concepts. The code is a
+    research/statistical pipeline, not a software product.
 - Show the domain calculation directly in the script.
-- Use names that expose the subject-matter meaning: `current_value`,
-  `unit_price`, and `estimation_year` are better than `x`, `tmp`, or `df2`.
+- Use names that expose subject-matter meaning: `current_value`,
+  `unit_price`, `estimation_year` are better than `x`, `tmp`, `df2`.
+  - Object and column names: 1-4 words, snake_case. A name needing a 5th
+    word is a sign the object is doing two things — split it instead of
+    lengthening the name.
 - Keep each transformation small enough to inspect and validate by itself.
-- Match the surrounding structure when editing an existing script.
 - Optimize only after measuring a real performance bottleneck.
 - Comments explain why a rule exists; they do not restate obvious code.
+  - Target one comment per 5-10 lines of code. Never one comment per line. A
+    block under 5 lines needs at most one comment, only if a non-obvious
+    reason exists.
+
+**Existing vs. new code.** This file's conventions govern all new scripts
+without exception. When editing an existing script that predates these
+conventions (older pipe style, undated section names, different comment
+density), convert the *entire file* to the current convention in the same
+edit — do not leave a file half-migrated, and do not preserve the old style
+"to match surrounding code." Matching surrounding structure (see below)
+applies to domain logic and script flow, not to formatting rules this file
+already specifies. If only a small, targeted fix is being made to a large
+legacy script and a full-file conversion is out of scope for that change, say
+so explicitly rather than silently mixing styles.
+
+- Match the surrounding *domain logic and script flow* when editing an
+  existing script (e.g. don't reorder the read-transform-write sequence
+  without reason). This does not extend to formatting choices this file
+  governs (pipe operator, indentation, section naming, comment density) —
+  those always follow this file, per the rule above.
 
 The normal script reads from top to bottom:
 
@@ -38,7 +64,7 @@ Every active standalone R script begins with this header:
 ```r
 # ============================================================
 # Descriptive title
-# Author: Office of Statistics and Information
+# Author: Daniel Sanchez
 # Purpose: What this script does
 # Inputs:  Files or objects read
 # Outputs: Files or objects written
@@ -60,13 +86,12 @@ task, but never omit `# 0. Setup ----`.
 
 Additional structure rules:
 
-- Use two spaces for indentation and keep lines under 80 characters when
-  practical.
-- Use `set.seed(42)` at the top when the script is stochastic.
-- For deterministic scripts, include `# set.seed(42)` as the reproducibility
-  marker.
-- End standalone scripts with `sessionInfo()` as the final line.
+- Use `set.seed(42)` at the top when the script is stochastic; do not use it
+  if everything is deterministic.
 - Keep setup, package loading, configuration, and constants at the top.
+- Use commentary to express to a human reader what is happening.
+- See section 1 for comment density; do not exceed it in section headers
+  either.
 
 ## 3. Packages
 
@@ -88,21 +113,48 @@ library(tidyr)
 - Do not build package-checking wrappers around every script. A clear
   `library()` failure is enough.
 
-## 4. Assignment, names, and paths
+## 4. Assignment, names, paths, and formatting
 
 - Use `<-` for assignment; use `=` only for named function arguments.
 - Use native pipe `|>`; never use `%>%`.
 - Put one pipe operation on each line.
 - Use `snake_case` for files, objects, columns, and functions.
-- Use nouns for data objects and verbs for functions.
-- Use descriptive domain names rather than generic temporary names.
-- Build paths with `file.path()` from the repository or component root.
+- Use nouns for data objects.
+- Use descriptive domain names rather than generic temporary names (see
+  section 1 for the 1-4 word limit).
+
+**Indentation and formatting — enforced by `styler` and `lintr`.** Run
+`Rscript scripts/style_project.R` (or `source("scripts/style_project.R")`) on
+the whole project before a script is considered complete. This applies the
+project's pinned `styler` configuration (`tidyverse_style`, `indent_by = 2`,
+`scope = "tokens"` so intentional line breaks and comments are left alone),
+respecting `.stylerignore`. Concretely, this will:
+
+- indent multi-line function calls with each named argument on its own line,
+  2 spaces from the call's opening `(`;
+- indent piped chains 2 spaces per `|>` step;
+- indent function bodies 2 spaces from `function`, with the closing `}`
+  aligned to the start of the assignment line.
+
+Line length (80 characters) is enforced separately by `lintr`'s
+`line_length_linter`, not by `styler`. Run `lintr::lint(file)` against the
+repo's `.lintr` config afterward and resolve every flagged issue before
+treating the script as done. Do not hand-format around what these tools
+produce — their output wins over manual preference.
+
+- Prefer a plain string for fixed project-relative paths, e.g.
+  `"data/raw/input.csv"`; do not wrap a fixed path in `file.path()` just to
+  construct it.
+- Use `file.path()` only when a path genuinely needs to be built dynamically
+  from variable components.
 - Never use `setwd()`.
-- Never hardcode a drive letter, username, M-drive path, or other machine path.
+- Never hardcode a drive letter, username, M-drive path, or other machine
+  path. Use paths relative to the R project or terminal root.
 - Put years, expected counts, tolerances, and other tuning values in named
   configuration values.
 - Create a destination with `dir.create(..., recursive = TRUE,
-  showWarnings = FALSE)` before writing to a folder that may not exist.
+  showWarnings = FALSE)` before writing to a folder that may not exist. Skip
+  this if the folder is known to exist.
 
 ## 5. Tidyverse data work
 
@@ -149,11 +201,11 @@ estimates <- values |>
 - Use `map(x, f) |> list_rbind()` instead of `map_dfr()`.
 - Use `map(x, f) |> list_cbind()` instead of `map_dfc()`.
 - Use `walk()` and `walk2()` for side effects such as writing files or plots.
-- Prefer type-stable `map_dbl()`, `map_chr()`, and `map_lgl()` where appropriate.
-- Prefer `stringr` over base string functions:
-  `str_detect()` over `grepl()`, `str_replace_all()` over `gsub()`,
-  `str_sub()` over `substr()`, `str_length()` over `nchar()`, and
-  `str_to_lower()` over `tolower()`.
+- Prefer type-stable `map_dbl()`, `map_chr()`, and `map_lgl()` where
+  appropriate.
+- Prefer `stringr` over base string functions: `str_detect()` over `grepl()`,
+  `str_replace_all()` over `gsub()`, `str_sub()` over `substr()`,
+  `str_length()` over `nchar()`, and `str_to_lower()` over `tolower()`.
 
 ## 6. Loops and conditions
 
@@ -175,26 +227,96 @@ Stop early rather than building deeply nested control flow.
 
 ## 7. Functions and abstraction
 
-Linear code is the default. Do not create a helper merely to shorten a script.
+Linear code is the default. Most repeated research code should stay inline as
+plain duplication, not become a function.
 
-A custom function is justified only when it:
+**When to write a helper.** Write a function only when a block of code,
+varying only in 1-3 parameters (e.g. a dependent variable name, a control
+string), is repeated **6 or more times**. The repeat count is the trigger by
+itself — line count and complexity do not matter; a single repeated one-line
+`feols()` call qualifies exactly as much as a repeated five-line block.
 
-- represents one named domain or file-reading operation;
-- repeats a substantial operation at least three times;
-- has clear inputs and one predictable return type; and
-- makes the calculation easier to follow.
+Once a helper is triggered, it should also:
 
-Inline one-use helpers, wrappers around one package function, generic
+- represent one named domain or file-reading operation;
+- have clear inputs and one predictable return type; and
+- make the calculation easier to follow, not harder.
+
+These three describe what a *good* helper looks like. They are not additional
+gates: do not withhold a helper that clears the 6-repeat trigger just because
+one of these three feels marginal.
+
+**Indentation for functions** follows the general rule in section 4.
+
+```r
+# Wrong: hand-duplicated 6+ times, only the DV changes
+model_a <- feols(ln1_patents_A ~ treated, fixef = fx, data = df, cluster = cl)
+model_b <- feols(ln1_patents_B ~ treated, fixef = fx, data = df, cluster = cl)
+model_c <- feols(ln1_patents_C ~ treated, fixef = fx, data = df, cluster = cl)
+# ... 5 more, differing only in the DV
+
+# Right: one helper, driven by the varying parameter
+run_patent_model <- function(dv) {
+  feols(
+    as.formula(paste(dv, "~ treated")),
+    fixef = fx,
+    data = df,
+    cluster = cl
+  )
+}
+
+patent_dvs <- c("ln1_patents_A", "ln1_patents_B", "ln1_patents_C")
+
+patent_models <-
+  patent_dvs |>
+  map(run_patent_model) |>
+  set_names(patent_dvs)
+```
+
+```r
+# Wrong: abstracting something used only once or twice
+compute_growth_rate <- function(x) (x - lag(x)) / lag(x)
+
+df <- df |> mutate(growth = compute_growth_rate(value))
+
+# Right: a two-off calculation stays inline
+df <-
+  df |>
+  mutate(growth = (value - lag(value)) / lag(value))
+```
+
+**Write these inline instead of as a function:** a helper used only once, and
+a thin wrapper that does nothing but call one package function. Duplicate the
+code directly at each call site instead.
+
+**Never write these at all, regardless of repeat count:** generic
 configuration frameworks, factories, builders, custom classes, and needless
-abstraction layers. Keep side effects such as file writes at the top level or
-use `walk()`.
+abstraction layers. These are software-engineering patterns, not research
+code — the 6-repeat trigger above does not create an exception for them, and
+there is no threshold at which they become acceptable in this codebase.
+
+**Where a justified helper lives.**
+
+- Default: define it at the top of the script that uses it, in the setup
+  section, immediately after package loading, as a normal top-level
+  assignment.
+- If the same operation recurs across more than one script, move it to
+  `code/functions/<verb>_<description>.R` and `source()` it from setup in
+  every script that needs it. Never duplicate the same helper's body across
+  multiple scripts once it's been promoted to `code/functions/`.
+
+**Side effects:** keep file writes and plot saves at the top level, or pass
+them through `walk()`/`walk2()`. A function or lambda passed as the first
+argument to `walk()` is not a "custom function" under this rule — it is the
+mechanism this convention requires for side effects, not an exception to
+avoid.
 
 ## 8. Modelling and figures
 
 - Use `feols()` from `fixest` for panel and fixed-effects regressions.
 - Use `lm()` or `glm()` for cross-sectional work.
-- `lm()` with `factor()` dummies is acceptable for panel models when downstream
-  inference uses `fwildclusterboot`.
+- `lm()` with `factor()` dummies is acceptable for panel models when
+  downstream inference uses `fwildclusterboot`.
 - Use `modelsummary()` for regression tables; use `output = "latex"` for
   LaTeX documents.
 - Cluster standard errors at the unit of treatment assignment and document
@@ -202,28 +324,91 @@ use `walk()`.
 - Use `ggplot2` for figures.
 - Use a consistent non-default palette and a custom theme with
   `base_size >= 14`.
-- Use sentence-case axis labels with units where applicable and put legends at
-  the bottom.
+- Use sentence-case axis labels with units where applicable and put legends
+  at the bottom.
 - `ggsave()` must specify `width` and `height` explicitly.
 - Deliverable figures should be saved as both `.png` and `.pdf` unless the
   task specifies another format. Use `bg = "transparent"` for Beamer figures.
 
-## 9. Outputs and reproducibility
+## 9. Excel output
+
+Use `openxlsx2` for reading and writing `.xlsx` files. Do not use `openxlsx`,
+`xlsx`, or `writexl` in new code — `openxlsx2` is the only supported package
+for spreadsheet output, so that a single API and object model is used across
+the codebase.
+
+- Build workbooks with the tidyverse-style, piped `openxlsx2` interface
+  (`wb_workbook()` and the `wb_add_*()` family), one operation per line, same
+  as any other pipe chain in section 4:
+
+```r
+wb <-
+  wb_workbook() |>
+  wb_add_worksheet(sheet = "Summary") |>
+  wb_add_data(sheet = "Summary", x = summary_table) |>
+  wb_add_data_table(sheet = "Summary", x = summary_table, table_name = "summary_tbl") |>
+  wb_freeze_pane(sheet = "Summary", first_row = TRUE)
+
+wb_save(wb, "outputs/tables/summary.xlsx")
+```
+
+- Name each worksheet after its content in `snake_case` or short Title Case
+  (`"Summary"`, `"Monthly DD Results"`), never `"Sheet1"`.
+- Write one logical table per worksheet. Do not stack multiple unrelated
+  tables on one sheet.
+- Use `wb_add_data_table()` (not plain `wb_add_data()`) whenever the output
+  is meant to be filtered or sorted by the reader — it registers a proper
+  Excel table object, not just a data range.
+- Apply number formats explicitly with `wb_add_numfmt()` for currency,
+  percentage, or date columns; do not leave numeric formatting to Excel's
+  auto-detection.
+- Follow section 4's path rules: save to a plain relative path under
+  `outputs/tables/`, creating the directory first if it may not exist.
+
+**Charts.** Use `mschart` to build native, editable Excel chart objects, then
+insert them into the `openxlsx2` workbook. Do not save a `ggplot2` figure as
+an image and paste it into Excel when the deliverable is meant to be
+interactive or editable in Excel — build the chart natively instead.
+
+```r
+chart <-
+  ms_barchart(data = summary_table, x = "province", y = "estimate") |>
+  chart_settings(dir = "horizontal", grouping = "clustered") |>
+  chart_labels(title = "Estimated effect by province", ylab = "Estimate")
+
+wb <-
+  wb_workbook() |>
+  wb_add_worksheet(sheet = "Chart") |>
+  wb_add_mschart(sheet = "Chart", graph = chart, dims = "B2:J20")
+
+wb_save(wb, "outputs/tables/chart_output.xlsx")
+```
+
+- Use the same non-default palette specified for `ggplot2` in section 8 when
+  setting chart series colors in `mschart`, so Excel deliverables and
+  `ggplot2` figures stay visually consistent.
+- State chart titles and axis labels in sentence case with units, matching
+  section 8.
+- Only fall back to a static image (`ggplot2` + `wb_add_image()`) when the
+  deliverable explicitly does not need to be edited or re-sorted in Excel by
+  the recipient — state that reasoning in a comment above the call.
+
+## 10. Outputs and reproducibility
 
 - Use `saveRDS()` for key models, summary tables, and processed data used by
   downstream scripts.
-- Treat a missing `saveRDS()` for a downstream-referenced object as a critical
-  reproducibility problem.
+- Treat a missing `saveRDS()` for a downstream-referenced object as a
+  critical reproducibility problem.
 - Write important processed data and final results in documented formats.
 - Keep a simple run record with selected source filenames, selected year,
   method, and output location.
-- Do not add hashes, checksums, manual approval fields, or input locks unless a
-  separate project requirement explicitly calls for them.
+- Do not add hashes, checksums, manual approval fields, or input locks unless
+  a separate project requirement explicitly calls for them.
 - A style-only rewrite must reproduce accepted numerical outputs.
 - An estimation change is complete only after actual values reconcile with a
   known total, benchmark, or accepted comparison.
 
-## 10. Missing values and numerical discipline
+## 11. Missing values and numerical discipline
 
 - State `na.rm` explicitly for every empirical `sum()`, `mean()`, `sd()`, and
   `var()` call.
@@ -235,10 +420,12 @@ use `walk()`.
   explicit tolerance.
 - Clamp probabilities passed to `qnorm()`, `pbinom()`, and similar functions:
   `eps <- 1e-12; pmin(1 - eps, pmax(eps, p))`.
-- Check transformation links and domain constraints before extending a series.
+- Check transformation links and domain constraints before extending a
+  series.
 
-## 11. Comments, errors, and console output
+## 12. Comments, errors, and console output
 
+- Comments must be used throughout, at the density set in section 1.
 - Comments explain why a non-obvious rule exists.
 - Do not keep commented-out dead code, except the deterministic
   `# set.seed(42)` marker.
@@ -247,7 +434,7 @@ use `walk()`.
 - Do not print progress for every file, row, or iteration.
 - Error messages should name the failing file, field, year, or series.
 
-## 12. Reproducible research workflow
+## 13. Reproducible research workflow
 
 All analytical steps must be in code. Every reported number must be traceable
 to a script.
@@ -259,7 +446,7 @@ project-root/
 ├── README.md
 ├── MASTER.R
 ├── data/{raw,intermediate,final}/
-├── code/{cleaning,analysis}/
+├── code/{cleaning,analysis,functions}/
 ├── outputs/graphs/
 ├── documentation/
 └── .gitignore
@@ -269,6 +456,25 @@ project-root/
 - Raw, intermediate, and final data remain separate.
 - Code and data structures mirror each other where practical.
 - Number scripts with `NN_verb_description.R` when execution order matters.
+
+**Naming data-cleaning scripts specifically.** Every script in
+`code/cleaning/` follows `NN_clean_<dataset>.R`, where `<dataset>` names the
+specific source or component being cleaned — not a generic label like `data`
+or `main`. One cleaning script handles one dataset's cleaning stage only; a
+script that cleans and merges two datasets is a scope violation and should be
+split.
+
+Examples: `01_clean_patents_main.R`, `02_clean_statcan_monthly.R`,
+`03_clean_interested_parties.R`.
+
+If a dataset requires more than one cleaning stage (e.g. extraction, then
+column cleaning, then deduplication), separate them by verb rather than
+merging into one script: `01_extract_patents_main.R`,
+`02_clean_patents_main.R`, `03_dedupe_patents_main.R`. Use `extract_` for
+pulling raw source files into a loadable format, `clean_` for column typing,
+renaming, and filtering, and `dedupe_`/`reshape_`/`merge_` for the
+corresponding later stages, each as its own numbered script.
+
 - Use README files to document folder purpose, contents, naming, and
   dependencies.
 - The master script is the single reproducible entry point.
@@ -277,31 +483,51 @@ project-root/
 - Do not commit raw or sensitive data, credentials, large generated outputs,
   or temporary files.
 
-## 13. Review standard
+## 14. Review standard
 
-Review active R code in this order:
+This section is the checklist `r-reviewer` runs against. Review active R code
+in this order, checking each category against the specific rules in the
+sections named:
 
-1. correctness of transformations, joins, modelling, and outputs;
-2. reproducibility and path discipline;
-3. input and result validation;
-4. downstream artifacts and saved objects;
-5. code structure and tidyverse conventions; and
-6. style and polish.
+1. **Correctness** — transformations, joins, modelling, and outputs match the
+   documented method (sections 5, 8, 9, 11).
+2. **Reproducibility and path discipline** — no `setwd()`, no hardcoded
+   machine paths, `saveRDS()` present for every downstream-referenced object,
+   project structure and script naming match section 13 (sections 4, 10, 13).
+3. **Input and result validation** — `na.rm` stated explicitly, finiteness
+   checked, period counts checked before annualizing, floating-point
+   comparisons avoid `==` (section 11).
+4. **Downstream artifacts and saved objects** — `.rds`, `.xlsx`, `.png`/`.pdf`
+   outputs exist, are named descriptively, and match what the script's header
+   documents as its Outputs (sections 2, 8, 9, 10).
+5. **Code structure and tidyverse conventions** — verbs match operations,
+   joins use `join_by()` with `multiple`/`unmatched`, no `for`/`while`/`apply`
+   on data, function use follows the 6-repeat rule in section 7, not a
+   subjective judgment call (sections 5, 6, 7).
+6. **Style and polish** — run `lintr::lint_dir("scripts")` against `.lintr`
+   and treat every result as a formal finding at the severity `lintr`
+   assigns; run `scripts/style_project.R` and treat any file it changes as
+   evidence the submitted version wasn't `styler`-clean. Comment density and
+   naming length (section 1) remain manual checks — `lintr` does not enforce
+   these (sections 1, 4).
+
+A finding that cites a rule outside these sections is out of scope for this
+review — flag it separately as a suggestion, not as a standard violation.
 
 Formal findings include the file and line number, category, severity
 (Critical, High, Medium, or Low), current code, proposed fix, and rationale.
 Reviewers do not edit source files. Save formal reports to
 `quality_reports/[script_name]_r_review.md`.
 
-## 14. Known pitfalls
+## 15. Known pitfalls
 
-- Put robustness specifications in the same analysis script as the main model,
-  with separate output names, rather than creating a script that only repeats
-  the existing model.
+- Put robustness specifications in the same analysis script as the main
+  model, with separate output names, rather than creating a script that only
+  repeats the existing model.
 - Validate joins, period coverage, and numerical finiteness before trusting a
   successful process exit status.
 
-## 15. AI routing
+## 16. AI routing
 
 This root file is the only normative coding standard. The other files have
 specialized roles:
