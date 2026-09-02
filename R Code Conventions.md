@@ -551,6 +551,10 @@ avoid.
   specifically, use `flextable` instead — `kableExtra` and
   `modelsummary`'s LaTeX output do not render into Word correctly, while
   `flextable` is built for exactly that target.
+- Use `gt` for a summary or descriptive table rendered as HTML (a Quarto
+  HTML document, an interactive report) — it is the tidyverse-native
+  table-building grammar for that target, the same role `modelsummary`
+  plays for LaTeX and `flextable` plays for Word.
 - Cluster standard errors at the unit of treatment assignment and document
   that choice directly above the model call.
 - Keep coefficient/variable display labels in one named vector per model
@@ -652,6 +656,31 @@ house_wrap_width <- function(text_size_pt, reference_width, reference_size_pt) {
   task specifies another format (a chart meant only for web/social
   publishing, not a paper, is one such case — `.png` alone is fine there).
   Use `bg = "transparent"` for Beamer figures.
+
+### Spatial data and maps
+
+Use `sf` for reading, manipulating, and joining spatial data
+(shapefiles, GeoJSON) — it represents geometries as a list-column on an
+otherwise ordinary tibble, so the rest of section 5's tidyverse verbs
+(`filter()`, `mutate()`, `left_join()`) work on an `sf` object directly.
+
+- Read with `st_read()`, not a format-specific base function.
+- Reproject explicitly with `st_transform(crs = ...)` before comparing or
+  combining geometries from different sources — never assume two spatial
+  datasets share a coordinate reference system.
+- Simplify complex geometries for a web/report-sized map with
+  `st_simplify(preserveTopology = TRUE, dTolerance = ...)` before
+  plotting; an untouched high-resolution shapefile makes both the
+  render and the saved file unnecessarily large.
+- Plot with `ggplot2`'s `geom_sf()`, using the same `theme_project()`
+  base as any other figure (drop gridlines and axis text with
+  `theme(axis.text = element_blank(), panel.grid = element_blank())`
+  inside the map-specific call, since lat/long tick marks are rarely
+  meaningful on a choropleth or reference map).
+- Join non-spatial data onto a spatial object with `left_join()` by a
+  shared administrative code (province/canton ID), following the same
+  crosswalk pattern as section 5 when the two sources spell that code or
+  name differently.
 
 ## 11. Excel output
 
