@@ -890,7 +890,81 @@ Formal findings include the file and line number, category, severity
 Reviewers do not edit source files. Save formal reports to
 `quality_reports/[script_name]_r_review.md`.
 
-## 17. Known pitfalls
+## 17. Reports and literate documents
+
+This section covers documents that mix prose with executed R (or Julia)
+code and render to PDF/HTML — papers, assignments, and reports — as
+distinct from the standalone `.R` scripts covered elsewhere in this file.
+
+**Format choice.** Use Quarto (`.qmd`) for any new document. Use R Markdown
+(`.Rmd`) only when extending an existing pre-Quarto project — do not start
+new work in `.Rmd`. Use Sweave/knitr (`.Rnw`) only when the project is
+already built on it (e.g. an existing LaTeX thesis template with an
+established `.Rnw` structure) — never start a new document in `.Rnw`;
+Quarto has superseded it for new work.
+
+**YAML header.** Set these fields explicitly rather than relying on
+defaults:
+
+```yaml
+---
+title: "Descriptive title"
+subtitle: "Optional subtitle"
+author: "Daniel Sanchez"
+date: "2024-04-24"
+format: pdf # switch to html if a LaTeX distribution isn't available
+execute:
+  echo: false
+  warning: false
+  message: false
+fig-align: center
+fig-cap-location: top
+tbl-cap-location: top
+number-sections: true
+fontsize: 12pt
+bibliography: references.bib
+---
+```
+
+- `echo: false`/`warning: false`/`message: false` (under `execute:` for the
+  Quarto engine, or `knitr: opts_chunk:` for the knitr engine — a document
+  with R chunks can use either; check which one the project already uses
+  before adding the other) are the default for a reader-facing document —
+  the reader sees results, not code or console noise. Set `echo: true`
+  only for a document whose point is to show the code itself (a teaching
+  document, a code review artifact).
+- Leave a one-line comment next to `format: pdf` noting the `html`
+  fallback if a LaTeX distribution isn't available — this is a real
+  recurring friction point, and a future reader (including a
+  reproduction) shouldn't have to rediscover it.
+
+**LaTeX preamble.** For one or two packages, use `header-includes:` inline
+in the YAML. Once the preamble grows beyond that (table packages, custom
+column types, landscape pages), move it to a separate `header.tex` and
+reference it with `include-in-header: header.tex` under `format: pdf:` —
+keep the YAML block itself short and readable:
+
+```yaml
+format:
+  pdf:
+    include-in-header: header.tex
+```
+
+**Chunk labels.** Use Quarto's pipe-comment chunk options
+(`#| label: setup`, `#| echo: false`), not legacy brace-style
+(`{r setup, echo=FALSE}`), for any new `.qmd` document.
+
+**Citations.** Use Pandoc/Quarto citation syntax (`@citekey`) against a
+`.bib` file declared in `bibliography:`. Never hardcode a formatted
+reference inline in the prose — the whole point of the `.bib` file is that
+every citation and the reference list stay in sync automatically.
+
+**Output filename.** Set `output-file:` explicitly when the rendered
+filename needs to differ from the source filename (e.g. a required
+submission naming convention) rather than renaming the rendered file by
+hand after each render.
+
+## 18. Known pitfalls
 
 - Put robustness specifications in the same analysis script as the main
   model, with separate output names, rather than creating a script that only
@@ -903,7 +977,7 @@ Reviewers do not edit source files. Save formal reports to
   patch on the corrupted string. A patch masks the symptom on one known
   value and will miss every other accented value the same file corrupts.
 
-## 18. AI routing
+## 19. AI routing
 
 This root file is the only normative coding standard. The other files have
 specialized roles:
