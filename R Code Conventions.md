@@ -482,17 +482,28 @@ Do not use `for`, `while`, `repeat`, or the `apply` family for data processing
 in active production code. Use vectorized operations, `map()`, `walk()`, or a
 grouped pipeline.
 
-Do not use row-by-row `if` or `else` logic for data transformations. Prefer:
+Do not use scalar `if` or `else` logic for data transformations. In particular,
+do not use a base `if`/`else` branch to classify, recode, filter, or calculate
+values row by row. Prefer vectorized or declarative operations:
 
 - `if_else()` for a two-way vector choice;
 - `case_when()` for several conditions;
 - `coalesce()` for fallback values; and
 - joins or lookup tables for mappings.
 
-Scalar `if` blocks are allowed for short, clear guards, such as checking a
-required file or column, stopping after a failed validation, handling an
-optional top-level section, or handling one unavoidable file-format branch.
-Stop early rather than building deeply nested control flow.
+Use `if_else()` rather than base `ifelse()` in new code so that the output type
+and missing-value behavior are explicit. Use `dplyr::if_else()` with a length-
+one condition only when the choice is genuinely scalar but still belongs in a
+vectorized calculation; otherwise use a named configuration value or a lookup
+table.
+
+Bare `if`/`else` blocks are allowed only as explicit, top-level control-flow
+exceptions: checking a required file or column, stopping after a failed
+validation, handling an optional top-level output, or handling one unavoidable
+file-format branch. Put a short comment immediately above the exception that
+states why a vectorized or declarative alternative does not apply. Reviewers
+must flag an undocumented scalar `if`/`else`, any row-level `if`/`else`, and
+deeply nested control flow. Stop early rather than building nested branches.
 
 ## 9. Functions and abstraction
 
@@ -952,9 +963,11 @@ sections named:
    outputs exist, are named descriptively, and match what the script's header
    documents as its Outputs (sections 2, 10, 11, 12).
 5. **Code structure and tidyverse conventions** — verbs match operations,
-   joins use `join_by()` with `multiple`/`unmatched`, no `for`/`while`/`apply`
-   on data, function use follows the 6-repeat rule in section 9, not a
-   subjective judgment call (sections 5, 8, 9). `.lintr`'s
+   joins use `join_by()` with `multiple`/`unmatched`, no row-level scalar
+   `if`/`else`, no `for`/`while`/`apply` on data, and any scalar control-flow
+   exception is short and explicitly justified. Function use follows the
+   6-repeat rule in section 9, not a subjective judgment call (sections 5, 8,
+   9). `.lintr`'s
    `for_loop_index_linter()` only flags the classic `for (i in
    seq_along(x))`-style loop-index pattern; it does not catch every
    `for`/`while`/`repeat`/`apply` use banned in section 8, so this check
