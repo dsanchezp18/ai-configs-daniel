@@ -604,6 +604,32 @@ group_palette <- c("Treatment" = "#0D3692", "Control" = "#E60F2D")
 - Format count/currency axes with `scales::comma()` (or `scales::dollar()`/
   `scales::percent()` as appropriate) rather than leaving raw numeric
   labels.
+- For a Spanish-language deliverable, use locale-appropriate number
+  formatting instead of `scales`' English-locale defaults — period as the
+  thousands separator, comma as the decimal mark:
+
+```r
+label_number_intl <- function(...) {
+  scales::label_number(big.mark = ".", decimal.mark = ",", ...)
+}
+```
+
+  Define this once (alongside `theme_project()`, or in the same
+  `code/functions/` file) and reuse it everywhere a Spanish-language axis
+  or inline number is formatted; don't leave `scales::comma()`'s
+  English-locale formatting on a Spanish-language figure.
+- Wrap long titles, subtitles, and captions with `stringr::str_wrap()`
+  using a width proportional to that element's font size, not the same
+  fixed width for every element — a caption at 6.5pt fits far more
+  characters per line than a title at 12.5pt before wrapping looks
+  inconsistent:
+
+```r
+house_wrap_width <- function(text_size_pt, reference_width, reference_size_pt) {
+  round(reference_width * reference_size_pt / text_size_pt)
+}
+```
+
 - Add a `caption` in `labs()` naming the data source for any figure meant
   to leave the codebase as a deliverable.
 - Mark a reference date or threshold (e.g. a treatment start) with
@@ -614,9 +640,13 @@ group_palette <- c("Treatment" = "#0D3692", "Control" = "#E60F2D")
   separately and combining outside R.
 - `ggsave()` must specify `width`, `height`, and `units` explicitly
   (`units = "cm"` is the convention used elsewhere in this codebase); add
-  `dpi` explicitly for raster output.
+  `dpi` explicitly for raster output, and use `device = ragg::agg_png` for
+  `.png` output — it renders text and anti-aliasing more accurately than
+  the base R PNG device, at no cost to the rest of the call.
 - Deliverable figures should be saved as both `.png` and `.pdf` unless the
-  task specifies another format. Use `bg = "transparent"` for Beamer figures.
+  task specifies another format (a chart meant only for web/social
+  publishing, not a paper, is one such case — `.png` alone is fine there).
+  Use `bg = "transparent"` for Beamer figures.
 
 ## 11. Excel output
 
