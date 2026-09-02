@@ -363,12 +363,63 @@ avoid.
   LaTeX documents.
 - Cluster standard errors at the unit of treatment assignment and document
   that choice directly above the model call.
-- Use `ggplot2` for figures.
-- Use a consistent non-default palette and a custom theme with
-  `base_size >= 14`.
-- Use sentence-case axis labels with units where applicable and put legends
-  at the bottom.
-- `ggsave()` must specify `width` and `height` explicitly.
+- Use `ggplot2` for figures, built on a single named theme object defined
+  once — in the script's setup section, or in
+  `code/functions/theme_project.R` and `source()`d if reused across
+  scripts, per section 8's promotion rule — rather than repeating a
+  `theme()` block per figure:
+
+```r
+theme_project <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      text = element_text(family = "serif"),
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.line.x = element_line(colour = "black"),
+      plot.background = element_rect(fill = "white", colour = "white"),
+      panel.border = element_rect(colour = "black", fill = NA, linewidth = 1),
+      panel.grid.major = element_line(linetype = "dashed"),
+      panel.grid.minor = element_line(linetype = "dashed"),
+      plot.caption = element_text(hjust = 0),
+      legend.position = "bottom"
+    )
+}
+```
+
+- `base_size` defaults to 14. Drop it to 10-12 only for a figure embedded
+  densely inside a paper's own figure environment, and say why in a
+  comment above the call.
+- Use `family = "serif"` by default, matching LaTeX/Beamer output. A
+  project with a different house font overrides it once inside
+  `theme_project()`, never per figure.
+- Use a consistent non-default categorical palette, declared once as a
+  named vector and reused across every figure in the project that shares
+  that grouping, e.g.:
+
+```r
+group_palette <- c("Treatment" = "#0D3692", "Control" = "#E60F2D")
+```
+
+  This palette is illustrative, not mandatory — pick colors that fit the
+  project, but declare them once and reuse them; never pick colors ad hoc
+  per figure.
+- Use sentence-case axis labels with units where applicable; keep legends
+  at the bottom (`theme_project()`'s default) unless a project-specific
+  layout genuinely needs an inset legend.
+- Format count/currency axes with `scales::comma()` (or `scales::dollar()`/
+  `scales::percent()` as appropriate) rather than leaving raw numeric
+  labels.
+- Add a `caption` in `labs()` naming the data source for any figure meant
+  to leave the codebase as a deliverable.
+- Mark a reference date or threshold (e.g. a treatment start) with
+  `geom_vline(linetype = "dashed")`, not a plain solid line, so it reads as
+  a marker rather than data.
+- Use `patchwork` (`p1 + p2 + plot_annotation(...)`) to combine related
+  figures into one multi-panel deliverable, rather than saving them
+  separately and combining outside R.
+- `ggsave()` must specify `width`, `height`, and `units` explicitly
+  (`units = "cm"` is the convention used elsewhere in this codebase); add
+  `dpi` explicitly for raster output.
 - Deliverable figures should be saved as both `.png` and `.pdf` unless the
   task specifies another format. Use `bg = "transparent"` for Beamer figures.
 
