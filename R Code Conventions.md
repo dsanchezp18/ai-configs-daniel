@@ -249,6 +249,51 @@ for what the analysis needs, and say so in a comment above the call.
   section (section 1's step 3). A missing wave or an unexpected count is a
   validation failure, not a silent proceed.
 
+### Labels
+
+Survey data read with `haven` (`read_dta()`, `read_sav()`, `read_sas()`)
+carries variable and value labels as attributes, not as ordinary factor
+levels. Handle them explicitly rather than letting `mutate()` calls treat a
+labelled numeric column as if it were plain numeric.
+
+- **Inspect** labels before transforming a labelled column, so a recode is
+  based on what the codes actually mean, not a guess:
+
+```r
+df$region_code |> haven::print_labels()
+```
+
+- **Convert to factor** with `haven::as_factor()` — always namespaced with
+  `haven::`, even when `haven` is loaded, because `forcats` also exports an
+  `as_factor()` with different behavior and the two are easy to shadow by
+  accident:
+
+```r
+df <- df |>
+  mutate(region_code = haven::as_factor(region_code))
+```
+
+  Confirm this is the intended outcome before using it broadly — it turns
+  the column into a plain R factor, which drops the original numeric codes
+  and any labels not attached to a used level.
+
+- **Strip labels** with `haven::zap_labels()` when a column needs to go
+  back to plain numeric (e.g. before a calculation that a labelled class
+  would interfere with):
+
+```r
+df <- df |>
+  mutate(income_reported = haven::zap_labels(income_reported))
+```
+
+- Both conversions belong in a `mutate()` call, consistent with section 5 —
+  do not reach for `$<-` assignment or a base-R loop over columns to apply
+  them.
+- Plain **inspection** (`print_labels()`) is not a transformation and does
+  not belong in a `mutate()` call — run it directly on the column
+  (`df$region_code |> haven::print_labels()`), not as part of a pipeline
+  that produces a new data frame.
+
 ## 7. Large data management
 
 Base tidyverse code (`dplyr` on an in-memory `data.frame`/`tibble`) is the
