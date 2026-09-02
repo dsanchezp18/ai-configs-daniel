@@ -496,20 +496,33 @@ sections named:
    project structure and script naming match section 13 (sections 4, 10, 13).
 3. **Input and result validation** — `na.rm` stated explicitly, finiteness
    checked, period counts checked before annualizing, floating-point
-   comparisons avoid `==` (section 11).
+   comparisons avoid `==` (section 11). There is no built-in `lintr` rule that
+   detects a missing `na.rm`; this stays a manual check every time.
 4. **Downstream artifacts and saved objects** — `.rds`, `.xlsx`, `.png`/`.pdf`
    outputs exist, are named descriptively, and match what the script's header
    documents as its Outputs (sections 2, 8, 9, 10).
 5. **Code structure and tidyverse conventions** — verbs match operations,
    joins use `join_by()` with `multiple`/`unmatched`, no `for`/`while`/`apply`
    on data, function use follows the 6-repeat rule in section 7, not a
-   subjective judgment call (sections 5, 6, 7).
+   subjective judgment call (sections 5, 6, 7). `.lintr`'s
+   `for_loop_index_linter()` only flags the classic `for (i in
+   seq_along(x))`-style loop-index pattern; it does not catch every
+   `for`/`while`/`repeat`/`apply` use banned in section 6, so this check
+   still requires reading the code, not just a clean `lintr` run.
 6. **Style and polish** — run `lintr::lint_dir("scripts")` against `.lintr`
    and treat every result as a formal finding at the severity `lintr`
    assigns; run `scripts/style_project.R` and treat any file it changes as
    evidence the submitted version wasn't `styler`-clean. Comment density and
    naming length (section 1) remain manual checks — `lintr` does not enforce
    these (sections 1, 4).
+
+**Automation gaps.** `.lintr` and `styler` cover most of sections 4 and 6,
+but two rules have no automated check and must be verified by reading the
+code, not inferred from a clean `lintr`/`styler` run: `for_loop_index_linter()`
+catches only loop-index patterns, not every `for`/`while`/`repeat` use banned
+in section 6; and there is no built-in linter that flags a missing `na.rm` in
+section 11's `sum()`/`mean()`/`sd()`/`var()` calls. A clean automated pass on
+these two points is not evidence of compliance.
 
 A finding that cites a rule outside these sections is out of scope for this
 review — flag it separately as a suggestion, not as a standard violation.
