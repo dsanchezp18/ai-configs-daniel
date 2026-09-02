@@ -207,7 +207,49 @@ estimates <- values |>
   `str_replace_all()` over `gsub()`, `str_sub()` over `substr()`,
   `str_length()` over `nchar()`, and `str_to_lower()` over `tolower()`.
 
-## 6. Loops and conditions
+## 6. Survey data management
+
+Default to `srvyr` for any survey-weighted analysis: it wraps the base
+`survey` package in tidyverse-style, pipeable verbs (`as_survey_design()`,
+`survey_mean()`, `group_by()` on a survey object) so survey code reads like
+any other pipeline under section 5. Drop to base `survey` functions
+(`svyglm()`, `svrepdesign()`, and similar) only when `srvyr` has no wrapper
+for what the analysis needs, and say so in a comment above the call.
+
+- Declare the survey design once, immediately after reading the cleaned
+  data, with `as_survey_design()` (or `as_survey_rep()` for replicate
+  weights). State `weights`, `strata`, and `ids` (cluster/PSU) explicitly —
+  never build a design object on defaults that silently drop stratification
+  or clustering.
+- Never compute an unweighted `mean()`, `sum()`, `sd()`, or proportion on
+  survey microdata as if it were population-representative. If an
+  unweighted figure is genuinely needed (raw sample size, a QA check), name
+  it as unweighted in the object and any output label
+  (`n_respondents_unweighted`), never with a name that reads as a population
+  estimate.
+- Use `survey_mean()`, `survey_total()`, `survey_ratio()`, and
+  `survey_quantile()`; each returns the estimate and its standard error
+  together — keep both in the output, do not discard the SE column.
+- Use `group_by()` (or `.by`, per section 5) on the `tbl_svy` object for
+  subgroup estimates. Do not filter to a subgroup first and rebuild the
+  design from scratch unless that subgroup genuinely needs a different
+  design specification.
+- Document the sampling design (strata/cluster/weight variable names and
+  their source) in the script header's Purpose field or in a codebook under
+  `documentation/codebooks/`, not only inline in code.
+- Keep direct identifiers (names, addresses, contact info, exact geocodes)
+  out of `data/intermediate/` and `data/final/`. Strip or hash them in the
+  raw-to-intermediate cleaning step and document the transformation.
+- Treat don't-know, refused, and skip/not-applicable codes as distinct
+  categorical values during cleaning, not as ordinary `NA`. Recode them to
+  explicit labelled `NA` levels (or a `haven::labelled` factor) only at the
+  point analysis requires it, and document the recode.
+- Check unweighted and weighted respondent counts against the expected
+  sample size from the codebook as part of the script's input-checking
+  section (section 1's step 3). A missing wave or an unexpected count is a
+  validation failure, not a silent proceed.
+
+## 7. Loops and conditions
 
 Do not use `for`, `while`, `repeat`, or the `apply` family for data processing
 in active production code. Use vectorized operations, `map()`, `walk()`, or a
@@ -225,7 +267,7 @@ required file or column, stopping after a failed validation, handling an
 optional top-level section, or handling one unavoidable file-format branch.
 Stop early rather than building deeply nested control flow.
 
-## 7. Functions and abstraction
+## 8. Functions and abstraction
 
 Linear code is the default. Most repeated research code should stay inline as
 plain duplication, not become a function.
@@ -311,7 +353,7 @@ argument to `walk()` is not a "custom function" under this rule — it is the
 mechanism this convention requires for side effects, not an exception to
 avoid.
 
-## 8. Modelling and figures
+## 9. Modelling and figures
 
 - Use `feols()` from `fixest` for panel and fixed-effects regressions.
 - Use `lm()` or `glm()` for cross-sectional work.
@@ -330,7 +372,7 @@ avoid.
 - Deliverable figures should be saved as both `.png` and `.pdf` unless the
   task specifies another format. Use `bg = "transparent"` for Beamer figures.
 
-## 9. Excel output
+## 10. Excel output
 
 Use `openxlsx2` for reading and writing `.xlsx` files. Do not use `openxlsx`,
 `xlsx`, or `writexl` in new code — `openxlsx2` is the only supported package
@@ -384,16 +426,16 @@ wb <-
 wb_save(wb, "outputs/tables/chart_output.xlsx")
 ```
 
-- Use the same non-default palette specified for `ggplot2` in section 8 when
+- Use the same non-default palette specified for `ggplot2` in section 9 when
   setting chart series colors in `mschart`, so Excel deliverables and
   `ggplot2` figures stay visually consistent.
 - State chart titles and axis labels in sentence case with units, matching
-  section 8.
+  section 9.
 - Only fall back to a static image (`ggplot2` + `wb_add_image()`) when the
   deliverable explicitly does not need to be edited or re-sorted in Excel by
   the recipient — state that reasoning in a comment above the call.
 
-## 10. Outputs and reproducibility
+## 11. Outputs and reproducibility
 
 - Use `saveRDS()` for key models, summary tables, and processed data used by
   downstream scripts.
@@ -408,7 +450,7 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 - An estimation change is complete only after actual values reconcile with a
   known total, benchmark, or accepted comparison.
 
-## 11. Missing values and numerical discipline
+## 12. Missing values and numerical discipline
 
 - State `na.rm` explicitly for every empirical `sum()`, `mean()`, `sd()`, and
   `var()` call.
@@ -423,7 +465,7 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 - Check transformation links and domain constraints before extending a
   series.
 
-## 12. Comments, errors, and console output
+## 13. Comments, errors, and console output
 
 - Comments must be used throughout, at the density set in section 1.
 - Comments explain why a non-obvious rule exists.
@@ -434,7 +476,7 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 - Do not print progress for every file, row, or iteration.
 - Error messages should name the failing file, field, year, or series.
 
-## 13. Reproducible research workflow
+## 14. Reproducible research workflow
 
 All analytical steps must be in code. Every reported number must be traceable
 to a script.
@@ -483,31 +525,34 @@ corresponding later stages, each as its own numbered script.
 - Do not commit raw or sensitive data, credentials, large generated outputs,
   or temporary files.
 
-## 14. Review standard
+## 15. Review standard
 
 This section is the checklist `r-reviewer` runs against. Review active R code
 in this order, checking each category against the specific rules in the
 sections named:
 
 1. **Correctness** — transformations, joins, modelling, and outputs match the
-   documented method (sections 5, 8, 9, 11).
+   documented method; survey estimates use a correctly specified
+   `srvyr`/`survey` design (weights, strata, ids) and report standard errors,
+   not unweighted figures mislabelled as population estimates (sections 5,
+   6, 9, 10, 12).
 2. **Reproducibility and path discipline** — no `setwd()`, no hardcoded
    machine paths, `saveRDS()` present for every downstream-referenced object,
-   project structure and script naming match section 13 (sections 4, 10, 13).
+   project structure and script naming match section 14 (sections 4, 11, 14).
 3. **Input and result validation** — `na.rm` stated explicitly, finiteness
    checked, period counts checked before annualizing, floating-point
-   comparisons avoid `==` (section 11). There is no built-in `lintr` rule that
+   comparisons avoid `==` (section 12). There is no built-in `lintr` rule that
    detects a missing `na.rm`; this stays a manual check every time.
 4. **Downstream artifacts and saved objects** — `.rds`, `.xlsx`, `.png`/`.pdf`
    outputs exist, are named descriptively, and match what the script's header
-   documents as its Outputs (sections 2, 8, 9, 10).
+   documents as its Outputs (sections 2, 9, 10, 11).
 5. **Code structure and tidyverse conventions** — verbs match operations,
    joins use `join_by()` with `multiple`/`unmatched`, no `for`/`while`/`apply`
-   on data, function use follows the 6-repeat rule in section 7, not a
-   subjective judgment call (sections 5, 6, 7). `.lintr`'s
+   on data, function use follows the 6-repeat rule in section 8, not a
+   subjective judgment call (sections 5, 7, 8). `.lintr`'s
    `for_loop_index_linter()` only flags the classic `for (i in
    seq_along(x))`-style loop-index pattern; it does not catch every
-   `for`/`while`/`repeat`/`apply` use banned in section 6, so this check
+   `for`/`while`/`repeat`/`apply` use banned in section 7, so this check
    still requires reading the code, not just a clean `lintr` run.
 6. **Style and polish** — run `lintr::lint_dir("scripts")` against `.lintr`
    and treat every result as a formal finding at the severity `lintr`
@@ -516,12 +561,12 @@ sections named:
    naming length (section 1) remain manual checks — `lintr` does not enforce
    these (sections 1, 4).
 
-**Automation gaps.** `.lintr` and `styler` cover most of sections 4 and 6,
+**Automation gaps.** `.lintr` and `styler` cover most of sections 4 and 7,
 but two rules have no automated check and must be verified by reading the
 code, not inferred from a clean `lintr`/`styler` run: `for_loop_index_linter()`
 catches only loop-index patterns, not every `for`/`while`/`repeat` use banned
-in section 6; and there is no built-in linter that flags a missing `na.rm` in
-section 11's `sum()`/`mean()`/`sd()`/`var()` calls. A clean automated pass on
+in section 7; and there is no built-in linter that flags a missing `na.rm` in
+section 12's `sum()`/`mean()`/`sd()`/`var()` calls. A clean automated pass on
 these two points is not evidence of compliance.
 
 A finding that cites a rule outside these sections is out of scope for this
@@ -532,7 +577,7 @@ Formal findings include the file and line number, category, severity
 Reviewers do not edit source files. Save formal reports to
 `quality_reports/[script_name]_r_review.md`.
 
-## 15. Known pitfalls
+## 16. Known pitfalls
 
 - Put robustness specifications in the same analysis script as the main
   model, with separate output names, rather than creating a script that only
@@ -540,7 +585,7 @@ Reviewers do not edit source files. Save formal reports to
 - Validate joins, period coverage, and numerical finiteness before trusting a
   successful process exit status.
 
-## 16. AI routing
+## 17. AI routing
 
 This root file is the only normative coding standard. The other files have
 specialized roles:
