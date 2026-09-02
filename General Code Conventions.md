@@ -484,19 +484,29 @@ estimates = values.join(
   (eager) for anything beyond a quick, small script — the lazy API lets
   Polars push filters/column selection down to the scan and only
   `.collect()` at the point a materialized `DataFrame` is actually needed.
+- When a large or messy CSV has inconsistent types across rows (a numeric
+  column that turns text partway through the file, for instance), set
+  `infer_schema_length` explicitly to a large value
+  (`pl.scan_csv(path, infer_schema_length=100_000_000)`) rather than
+  leaving Polars' default sample-based inference to guess from the first
+  rows and fail later when it hits a row that doesn't match.
 - Never use a Python-level `for` loop over rows for something a `polars`
   expression can express directly; there is no `.iterrows()` equivalent to
   reach for by habit the way there is in `pandas`.
 - Use method-chaining with parentheses for multi-step transformations, one
   operation per line, the same visual style as an R pipe chain.
 
-**When `pandas` is still the right call.** Use `pandas` only when a
-specific downstream library genuinely requires it (some older
-`scikit-learn`/`statsmodels`/plotting-library entry points still expect a
-`pandas.DataFrame`, not a `polars.DataFrame`) — convert at the boundary
-with `.to_pandas()` right before the call that needs it, and say so in a
-comment, rather than writing the whole script in `pandas` because one
-downstream call needs it.
+**Where `pandas` fits.** A typical script does the heavy lifting — reading,
+filtering, grouping, aggregating — in `polars`, then converts once with
+`.collect().to_pandas()` and finishes the rest (joins via `pd.merge()`,
+date handling, `.pivot()`/reshaping, `matplotlib` plotting) in `pandas`,
+because that half of the ecosystem is still more mature there. That
+two-phase shape — `polars` for the ETL, `pandas` for what comes after — is
+the normal pattern here, not an exception needing justification each time.
+Convert once, after the `polars` work is done (`.collect().to_pandas()`),
+not scattered `.to_pandas()`/`.to_polars()` calls back and forth through
+the script. Writing the entire script in `pandas` because the tail end
+needs it is still the thing to avoid — the ETL stage stays `polars`.
 
 ### 5. Survey data management
 
@@ -663,10 +673,11 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
    `.pdf` outputs exist, are named descriptively, and match what the
    script's header documents as its Outputs (sections 8, 9).
 5. **Code structure and idioms** — `polars` expressions used instead of a
-   Python-level row loop, `pandas` used only at a documented interop
-   boundary (never as the default), joins use explicit `validate=`,
-   function use follows the 6-repeat rule, not a subjective judgment call
-   (sections 4, 6, 7).
+   Python-level row loop, the ETL stage stays `polars` with at most one
+   `.collect().to_pandas()` conversion rather than the whole script
+   written in `pandas` or scattered back-and-forth conversions, joins use
+   explicit `validate=`, function use follows the 6-repeat rule, not a
+   subjective judgment call (sections 4, 6, 7).
 6. **Style and polish** — run `ruff format --check .` and `ruff check .`
    and treat every result as a formal finding at the severity `ruff`
    assigns; run `mypy` and resolve every reported type error. Comment
