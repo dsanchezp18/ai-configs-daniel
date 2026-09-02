@@ -848,11 +848,28 @@ trigger as `R Code Conventions.md` section 8.
 - Use `RegressionTables.jl` for regression tables.
 - Cluster standard errors at the unit of treatment assignment and document
   that choice directly above the model call.
-- Use `Plots.jl` or `Makie.jl` (pick one per project, do not mix) for
-  figures, with a consistent non-default theme set once in Setup.
+- Default to `TidierPlots.jl` (also from
+  [TidierOrg](https://github.com/TidierOrg)) for figures, not `Plots.jl` or
+  `Makie.jl`. It is a ggplot2-equivalent grammar-of-graphics interface
+  (`ggplot()`, `geom_col()`, `geom_boxplot()`, `@aes()`, `labs()`,
+  `scale_colour_manual()`), so a Julia figure reads like its R equivalent
+  under `R Code Conventions.md` section 10 — the same "reads like R"
+  principle already applied to data work in section 4:
+
+```julia
+ggplot(summary_df) +
+    geom_col(@aes(x = category, y = value, colour = group), position = "dodge") +
+    labs(x = "Category", y = "Value") +
+    scale_colour_manual(values = ["#F8766D", "#00BFC4"])
+```
+
+- Drop to base `Plots.jl`/`Makie.jl` only when `TidierPlots.jl` genuinely
+  has no equivalent for a needed geometry or interactivity feature, and
+  say so in a comment above the call — don't mix `TidierPlots.jl` and
+  `Plots.jl`/`Makie.jl` within one project otherwise.
 - Use sentence-case axis labels with units where applicable; put legends
   at the bottom.
-- Saving a figure must specify explicit size (`size=(width, height)`).
+- Saving a figure must specify explicit size.
 - Deliverable figures should be saved as both `.png` and `.pdf` unless the
   task specifies another format.
 
