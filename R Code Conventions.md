@@ -29,6 +29,9 @@ measurable density — never more.
   - Target one comment per 5-10 lines of code. Never one comment per line. A
     block under 5 lines needs at most one comment, only if a non-obvious
     reason exists.
+- After every full-line comment or contiguous comment block, leave exactly one
+  blank line before the next code or comment block. Inline trailing comments
+  remain on the line with their statement.
 
 **Existing vs. new code.** This file's conventions govern all new scripts
 without exception. When editing an existing script that predates these
@@ -176,6 +179,35 @@ Use tidyverse verbs whose names match the operation:
 - `complete()` for expected combinations; and
 - `map()` or `walk()` for repeated file operations.
 
+### Reshaping and rectangling
+
+- Use `pivot_longer()` to move information stored in column names into rows,
+  and `pivot_wider()` to move row values into column names. Do not use the
+  superseded `gather()` or `spread()` interfaces in new code.
+- Name the new key and value columns explicitly with `names_to` and
+  `values_to`. When column names encode more than one variable, use
+  `names_sep` or `names_pattern`; use the special `.value` sentinel when
+  part of each source name identifies the output value column.
+- Before `pivot_wider()`, verify that the intended identifier columns and
+  `names_from` columns uniquely identify each value. Use `values_fn` only
+  when aggregation is substantively intended, never to conceal duplicate
+  keys.
+- Use `separate_wider_delim()`, `separate_wider_position()`, or
+  `separate_wider_regex()` to split one character column. The older
+  `separate()` interface is superseded. Use `unite()` when several columns
+  genuinely represent one variable.
+- Use `complete()` to turn expected but absent combinations into explicit
+  rows. State `fill` explicitly when a structural zero is justified; do not
+  replace an unknown value with zero by default.
+- Use `nest()` only when a list-column is useful for grouped modelling or a
+  nested source. Flatten list-columns with `unnest()`, `unnest_longer()`, or
+  `unnest_wider()` according to whether elements should become data-frame
+  rows, vector elements, or columns; use `hoist()` when only selected nested
+  components are needed.
+- Use `dplyr` for row and column transformations, `purrr` for list-column
+  operations, `stringr` for encoded names or values, and `broom` for model
+  or test output. Do not switch packages merely to perform one reshape.
+
 ### Grouping and selection
 
 - `.by` is preferred when it makes grouping local and clear.
@@ -224,10 +256,20 @@ province_codes <- tibble(
 )
 
 scvs <- scvs_raw |>
-  left_join(province_codes, by = c("province" = "province_no_tilde"))
+  left_join(
+    province_codes,
+    by = join_by(province == province_no_tilde),
+    relationship = "many-to-one",
+    unmatched = "error"
+  )
 
 thefts <- thefts_raw |>
-  left_join(province_codes, by = c("province" = "province"))
+  left_join(
+    province_codes,
+    by = join_by(province),
+    relationship = "many-to-one",
+    unmatched = "error"
+  )
 ```
 
 - Keep the crosswalk itself in one place (top of the script, or promoted to
@@ -779,6 +821,9 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 
 - Comments must be used throughout, at the density set in section 1.
 - Comments explain why a non-obvious rule exists.
+- Leave exactly one blank line after every full-line comment or contiguous
+  comment block before the next code or comment block. Inline trailing
+  comments remain on the line with their statement.
 - Do not keep commented-out dead code, except the deterministic
   `# set.seed(42)` marker.
 - Use `message()` at most once per major stage when useful.
@@ -1031,8 +1076,8 @@ specialized roles:
 
 - `.claude/agents/` defines Claude role behavior.
 - `.claude/skills/` provides specialized workflow skills.
-- `.codex/skills/` defines Codex role behavior and UI metadata.
-- `.github/` provides project context and Copilot routing.
+- `.agents/skills/` defines Codex role behavior and UI metadata.
+- `.github/` provides cross-tool and Copilot routing.
 
 Role selection:
 

@@ -14,6 +14,10 @@ enough to inspect on its own. See `R Code Conventions.md` section 1 for the
 full statement of that philosophy; it applies to every language below
 without being restated per section.
 
+For every language, leave exactly one blank line after each full-line comment
+or contiguous comment block before the next code or comment block. Inline
+trailing comments remain on the line with their statement.
+
 Operational agent and skill files may add role-specific behavior, but they
 must not contradict this file or `R Code Conventions.md`, or copy their
 normative rules.
@@ -217,7 +221,7 @@ scalar `if` for guards; do not build deeply nested branching for what
 Linear, repeated do-file code is the default. Write a `program define` only
 when a block of code, varying only in 1-3 parameters, is repeated **6 or
 more times** — the same repeat-count trigger as `R Code Conventions.md`
-section 8, so a Stata program earns its abstraction on the same terms an R
+section 9, so a Stata program earns its abstraction on the same terms an R
 helper does.
 
 - Below the 6-repeat threshold, prefer a `foreach`/`forvalues` loop over the
@@ -568,7 +572,7 @@ Linear code is the default; most repeated research code should stay inline
 as plain duplication, not become a function. Write a function only when a
 block of code, varying only in 1-3 parameters, is repeated **6 or more
 times** — the same repeat-count trigger as `R Code Conventions.md` section
-8.
+9.
 
 - A justified function should represent one named domain or file-reading
   operation, have type-annotated inputs, and one predictable return type.
@@ -895,7 +899,7 @@ having many small, typed methods), but the same discipline applies as in R:
 most repeated research code should stay inline as plain duplication until
 it clears the bar. Write a function only when a block of code, varying only
 in 1-3 parameters, is repeated **6 or more times** — the same repeat-count
-trigger as `R Code Conventions.md` section 8.
+trigger as `R Code Conventions.md` section 9.
 
 - A justified function should represent one named domain or file-reading
   operation, have type-annotated arguments where it clarifies intent
