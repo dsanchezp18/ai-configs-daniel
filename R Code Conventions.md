@@ -671,6 +671,34 @@ project-root/
 - Code and data structures mirror each other where practical.
 - Number scripts with `NN_verb_description.R` when execution order matters.
 
+### Programmatic data acquisition
+
+Prefer downloading data with an R package or API client over manually
+downloading a file through a browser and dropping it into `data/raw/`. A
+programmatic download is itself part of the reproducible pipeline; a manual
+one is not — it can't be re-run, re-dated, or verified by another analyst,
+and it hides the actual source (table ID, query parameters, vintage) that
+produced the raw file.
+
+- For Statistics Canada tables, use `cansim` (`get_cansim()`) rather than
+  manually exporting a CSV from the StatCan website.
+- For census data, use `cancensus` (`get_census()`) against the
+  CensusMapper API rather than manually downloading census profile files.
+- For any other data source with an API or R package (other StatCan/ISED
+  data portals, CMHC, PUMF-hosting portals, etc.), prefer that
+  package/API path the same way. Only fall back to a manual download when
+  no programmatic path genuinely exists, and say so explicitly in the
+  script header's Purpose field or a codebook note — a manual download
+  should always be a stated exception, never the unstated default.
+- A programmatic download is its own numbered step in `code/cleaning/`
+  (e.g. `00_download_<source>.R`), following the naming rule below — not
+  something run ad hoc outside the pipeline.
+- Cache the downloaded extract to `data/raw/` immediately after fetching
+  (`saveRDS()` or an equivalent write right after the API call), so
+  re-running the pipeline doesn't require hitting the API again. Treat
+  that cached file as the immutable raw data from that point on, per the
+  rule above.
+
 **Naming data-cleaning scripts specifically.** Every script in
 `code/cleaning/` follows `NN_clean_<dataset>.R`, where `<dataset>` names the
 specific source or component being cleaned — not a generic label like `data`
