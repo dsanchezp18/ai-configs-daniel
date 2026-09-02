@@ -323,6 +323,42 @@ rationale. Reviewers do not edit source files. Save formal reports to
 - Stata's missing-value sort-to-infinity trap in `if`/`sort` logic that
   doesn't explicitly exclude `.`
 
+### Interop with Python (`pystata`)
+
+Use `pystata` (bundled with Stata 17+) when a script genuinely needs to
+call Stata from a Python/Jupyter session — e.g. driving Stata estimation
+from a Python-orchestrated pipeline, or working in a notebook that mixes
+Python data handling with Stata-only commands/packages. Configure it once
+at the top of the Python script, then run Stata commands as strings:
+
+```python
+import stata_setup
+
+stata_setup.config(r"C:\Program Files\Stata18", "mp")
+
+from pystata import stata
+
+stata.run("sysuse auto, clear")
+stata.run("""
+sum
+reg mpg weight
+""")
+```
+
+- `stata_setup.config()` takes the Stata installation path and edition
+  (`"mp"`, `"se"`, `"be"`) — never hardcode a specific user's install path
+  in a committed script; read it from an environment variable or a
+  project config value instead, per the path rules in the Python section
+  above.
+- In a Jupyter notebook, the `stata_setup`/`pystata` import is still
+  required once at the top, after which the `%stata`/`%%stata` IPython
+  magics run Stata commands directly in a cell without wrapping them in
+  `stata.run()`.
+- This is an interop tool for mixed-language notebooks and pipelines, not
+  a reason to write new analysis logic in Stata-via-Python instead of
+  plain Stata (do-files) or plain Python (per this file's Python section)
+  — use it only when the task genuinely needs both in the same process.
+
 ---
 
 ## Python
