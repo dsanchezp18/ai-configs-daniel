@@ -548,6 +548,16 @@ avoid.
   LaTeX documents.
 - Cluster standard errors at the unit of treatment assignment and document
   that choice directly above the model call.
+- Keep coefficient/variable display labels in one named vector per model
+  family (e.g. `coefficients_baseline_models <- c("min_temperature" =
+  "Min. temperature (°C)", ...)`), defined once — in the script's setup
+  section, or in its own file (`coefficient_names.R`) and `source()`d if
+  the same model family's tables are built across more than one script —
+  and pass that same vector as `coef_map` to every `modelsummary()` call
+  for that family. Do not write display labels inline per table call; a
+  paper with several tables sharing variables needs those variables
+  labelled identically everywhere, and a shared vector is what guarantees
+  that instead of relying on copy-pasted strings staying in sync.
 - Use `ggplot2` for figures, built on a single named theme object defined
   once — in the script's setup section, or in
   `code/functions/theme_project.R` and `source()`d if reused across
@@ -762,6 +772,15 @@ produced the raw file.
   re-running the pipeline doesn't require hitting the API again. Treat
   that cached file as the immutable raw data from that point on, per the
   rule above.
+- Set `options(timeout = <seconds>)` before a large `download.file()` call
+  (a NOAA raster, a shapefile archive, anything beyond a small API
+  response) — R's default 60-second timeout kills a large download
+  partway through, and a partial file is easy to mistake for a complete
+  one downstream.
+- For a zipped download (a shapefile archive, a multi-file dataset),
+  `download.file()` into the zip, `unzip(..., exdir = ...)` to extract it,
+  then `file.remove()` the zip immediately. Keep only the extracted files
+  in `data/raw/`; don't leave the archive itself as clutter.
 
 **Naming data-cleaning scripts specifically.** Every script in
 `code/cleaning/` follows `NN_clean_<dataset>.R`, where `<dataset>` names the
