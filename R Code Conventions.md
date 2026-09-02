@@ -204,6 +204,43 @@ estimates <- values |>
 - Use `na_matches = "never"` when missing keys must not match each other.
 - Check keys before joining or aggregating.
 
+### Crosswalks for inconsistent categorical keys
+
+When merging administrative data from multiple external sources (different
+government agencies, different survey waves), the same category is often
+spelled differently in each source — accents present or missing, different
+capitalization, inconsistent abbreviations. Do not patch each source's
+spelling individually with a one-off `case_when()` scattered through the
+script. Instead, build one canonical crosswalk table with a separate column
+for each spelling variant actually observed in the wild, and join each
+source against whichever alias column matches it:
+
+```r
+province_codes <- tibble(
+  province_code = c("01", "02", "03"),
+  province = c("AZUAY", "BOLÍVAR", "CAÑAR"),
+  province_no_tilde = c("AZUAY", "BOLIVAR", "CAÑAR"),
+  province_title_case = c("Azuay", "Bolívar", "Cañar")
+)
+
+scvs <- scvs_raw |>
+  left_join(province_codes, by = c("province" = "province_no_tilde"))
+
+thefts <- thefts_raw |>
+  left_join(province_codes, by = c("province" = "province"))
+```
+
+- Keep the crosswalk itself in one place (top of the script, or promoted to
+  `code/functions/` / a small reference dataset under
+  `documentation/codebooks/` if reused across scripts), not rebuilt per
+  source.
+- Name each alias column for what it actually contains
+  (`province_no_tilde`, `province_title_case`), not `province2`/`province3`.
+- After joining, check for unmatched rows (`anti_join()` against the
+  crosswalk, or the join's `unmatched = "warn"`/`"error"`) rather than
+  silently carrying forward `NA` codes from a spelling the crosswalk
+  doesn't yet cover.
+
 ### purrr and strings
 
 - Use `map(x, f) |> list_rbind()` instead of `map_dfr()`.
@@ -811,6 +848,11 @@ Reviewers do not edit source files. Save formal reports to
   repeats the existing model.
 - Validate joins, period coverage, and numerical finiteness before trusting a
   successful process exit status.
+- Fix character-encoding mismatches (e.g. a mis-encoded accented letter
+  like `Ñ` reading as `\xd1` or similar) at the read step with the correct
+  `fileEncoding`/`locale()` argument, not with a downstream `case_when()`
+  patch on the corrupted string. A patch masks the symptom on one known
+  value and will miss every other accented value the same file corrupts.
 
 ## 18. AI routing
 
