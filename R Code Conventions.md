@@ -215,6 +215,25 @@ estimates <- values |>
   `str_replace_all()` over `gsub()`, `str_sub()` over `substr()`,
   `str_length()` over `nchar()`, and `str_to_lower()` over `tolower()`.
 
+### Dates
+
+Prefer `lubridate` over base R `Date`/`POSIXct` arithmetic and string
+parsing:
+
+- Use `ymd()`/`mdy()`/`dmy()` (matching the source format) to parse dates,
+  not `as.Date(x, format = "...")`.
+- Use `floor_date()`/`ceiling_date()`/`round_date()` for period aggregation
+  (rounding to month, quarter, or year), not manual `format()` + `paste()`
+  reconstruction of a period label.
+- Use `year()`, `quarter()`, `month()`, and `wday()` accessor functions for
+  date components, not `format(x, "%Y")`-style string parsing.
+- Use `interval()` divided by `months()`/`years()` (or `%/%` on the
+  interval) to count whole periods between two dates, not manual
+  date-difference arithmetic.
+- Use `%m+%`/`%m-%` for calendar-aware month/year arithmetic when a
+  month-end edge case matters (e.g. Jan 31 plus one month), not plain
+  `+ months(1)`, which can silently roll over into the wrong month.
+
 ## 6. Survey data management
 
 Default to `srvyr` for any survey-weighted analysis: it wraps the base
