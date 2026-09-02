@@ -16,10 +16,8 @@ for all coding standards. Keep the following folders separate by tool:
 Use:
 
 - `r-coder` for writing or substantially revising one R script;
-- `r-reviewer` for audit and review reports;
-- `r-build-and-review` for write-then-review orchestration; and
-- `research-data-workflow` for folder structure, reproducibility, and data
-  lifecycle setup.
+- `r-reviewer` for audit and review reports; and
+- `r-build-and-review` for write-then-review orchestration.
 
 ## Keeping tool formats in sync
 

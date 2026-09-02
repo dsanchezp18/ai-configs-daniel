@@ -35,10 +35,8 @@ machine paths, or input filenames.
 Role mapping:
 
 - `r-coder`: implement or substantially revise one R script;
-- `r-reviewer`: review R scripts and produce a quality report;
-- `r-build-and-review`: coordinate writing and reviewing an R script; and
-- `research-data-workflow`: handle reproducible project structure and data
-  lifecycle work.
+- `r-reviewer`: review R scripts and produce a quality report; and
+- `r-build-and-review`: coordinate writing and reviewing an R script.
 
 When a request matches a role, follow the role-specific workflow after reading
 the root master standard.

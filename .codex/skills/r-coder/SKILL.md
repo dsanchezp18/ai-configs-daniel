@@ -13,8 +13,7 @@ change to an existing R script.
 Before editing:
 
 1. Read `R Code Conventions.md` in the repository root.
-2. Read `.claude/skills/research-data-workflow/SKILL.md` for workflow context.
-3. Scan nearby scripts to match the existing tone and structure.
+2. Scan nearby scripts to match the existing tone and structure.
 
 ## Working style
 

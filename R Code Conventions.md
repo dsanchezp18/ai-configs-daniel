@@ -553,9 +553,8 @@ specialized roles:
 Role selection:
 
 - `r-coder`: implement or substantially revise one R script;
-- `r-reviewer`: audit R scripts and produce a quality report;
-- `r-build-and-review`: write, then review, an R script;
-- `research-data-workflow`: set up or audit reproducible project structure.
+- `r-reviewer`: audit R scripts and produce a quality report; and
+- `r-build-and-review`: write, then review, an R script.
 
 If instructions conflict, use this file first, then the role-specific file,
 then general project context.
