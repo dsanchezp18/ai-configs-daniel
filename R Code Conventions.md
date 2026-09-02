@@ -822,12 +822,25 @@ produced the raw file.
   manually exporting a CSV from the StatCan website.
 - For census data, use `cancensus` (`get_census()`) against the
   CensusMapper API rather than manually downloading census profile files.
+- For international macro/economic series (CPI, GDP, trade), prefer
+  `imfr` (IMF International Financial Statistics) for monthly series
+  where available, `WDI` (World Bank) when an annual, broadly
+  cross-country series is enough, or `rdbnomics` when the specific series
+  is easier to find through its multi-provider search than through a
+  single-source package.
 - For any other data source with an API or R package (other StatCan/ISED
   data portals, CMHC, PUMF-hosting portals, etc.), prefer that
   package/API path the same way. Only fall back to a manual download when
   no programmatic path genuinely exists, and say so explicitly in the
   script header's Purpose field or a codebook note — a manual download
   should always be a stated exception, never the unstated default.
+- Ecuadorian government sources (INEC, BCE, SRI, SUT, and similar) are a
+  real, common case where no polished R/API package exists yet — INEC in
+  particular has no public API. A `download.file()`/`read_csv()` script
+  against the portal's stable URL is the legitimate default there, not a
+  fallback to feel bad about; the rule above still applies to it (own
+  numbered download step, cached immediately, never a manual browser
+  download standing in for that script).
 - A programmatic download is its own numbered step in `code/cleaning/`
   (e.g. `00_download_<source>.R`), following the naming rule below — not
   something run ad hoc outside the pipeline.

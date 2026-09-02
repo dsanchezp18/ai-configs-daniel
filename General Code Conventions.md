@@ -119,6 +119,18 @@ transformation:
   `rowmean()`, `rowtotal()`, etc.) instead of a manual loop plus `merge`.
 - `reshape long`/`reshape wide` for reshaping.
 - `collapse` for one row per group.
+- `recode varname (old = new)` for a small numeric recode, and
+  `replace newvar = "..." if inlist(var, ...)` for a text-based recode
+  into a new categorical variable — never a manual `if`/`else if` chain
+  over each raw value.
+- `tab var, generate(prefix)` to mass-create dummy variables from a
+  categorical or string variable, rather than writing one
+  `generate var_x = (var == "x")` line per category.
+- For grouped summary statistics: `bysort group: summarize var` for a
+  quick look, `tabstat var [aweight = weight_var], statistics(mean
+  median) by(group)` for a weighted grouped mean/median, and
+  `collapse (median) var, by(group)` when the grouped result itself needs
+  to become a dataset (not just displayed).
 
 **Merges.** State expected match behavior explicitly, the same way R states
 `multiple`/`unmatched` in a join:
@@ -172,6 +184,15 @@ R's `srvyr`).
   `count`) against the expected sample size from the codebook as part of
   input checking. A missing wave or an unexpected count is a validation
   failure, not a silent proceed.
+
+**Labels.** Inspect a labelled variable's value labels with `labelbook
+varname` before recoding it — the same "know what the codes mean before
+you touch them" rule as `R Code Conventions.md` section 6's Labels
+subsection. Use `decode varname, generate(new_string_var)` to turn a
+labelled numeric variable into a plain string variable when the label
+text itself, not the underlying code, is what a later step needs (a
+merge key against a source that stores names, a display column in an
+export).
 
 ### 6. Loops and conditionals
 
