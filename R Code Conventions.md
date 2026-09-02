@@ -544,12 +544,13 @@ avoid.
 - Use `lm()` or `glm()` for cross-sectional work.
 - `lm()` with `factor()` dummies is acceptable for panel models when
   downstream inference uses `fwildclusterboot`.
-- Use `modelsummary()` for regression tables; use `output = "latex"` for
-  LaTeX documents, `output = "html"`/`kableExtra` for HTML/Quarto-rendered
-  documents. For a table that must be delivered as a Word (`.docx`)
-  document specifically, use `flextable` instead — `kableExtra` and
-  `modelsummary`'s LaTeX/HTML output do not render into Word correctly,
-  while `flextable` is built for exactly that target.
+- For LaTeX/Quarto-rendered documents, use `modelsummary()` for regression
+  tables, `datasummary()`/`datasummary_skim()` for descriptive-statistics
+  tables, and `kableExtra` for any other table, with `output = "latex"`.
+- For a table that must be delivered as a Word (`.docx`) document
+  specifically, use `flextable` instead — `kableExtra` and
+  `modelsummary`'s LaTeX output do not render into Word correctly, while
+  `flextable` is built for exactly that target.
 - Cluster standard errors at the unit of treatment assignment and document
   that choice directly above the model call.
 - Keep coefficient/variable display labels in one named vector per model
