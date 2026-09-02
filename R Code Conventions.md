@@ -249,7 +249,83 @@ for what the analysis needs, and say so in a comment above the call.
   section (section 1's step 3). A missing wave or an unexpected count is a
   validation failure, not a silent proceed.
 
-## 7. Loops and conditions
+## 7. Large data management
+
+Base tidyverse code (`dplyr` on an in-memory `data.frame`/`tibble`) is the
+default for everything under section 5. Reach for one of the tools below
+only when that default is measurably too slow or the data genuinely does
+not fit in memory — do not adopt them pre-emptively "for speed."
+
+**Data fits in RAM, but base dplyr is too slow.** Use `tidytable`. It
+reimplements dplyr verbs directly on top of `data.table` (`mutate.()`,
+`filter.()`, `summarize.()`, with the trailing dot marking the `tidytable`
+verb), rather than translating/lazily deferring like `dtplyr` — so behavior
+is more predictable and closer to a drop-in swap for the equivalent `dplyr`
+call:
+
+```r
+library(tidytable)
+
+summary_table <-
+  large_df |>
+  filter.(year >= 2015) |>
+  mutate.(ln_value = log(value)) |>
+  summarize.(mean_value = mean(ln_value, na.rm = TRUE), .by = region)
+```
+
+- Use `tidytable` only on the specific script or transformation that is
+  actually slow, not as a blanket replacement for `dplyr` across a project.
+  Say in a comment why the swap was needed (row count, join complexity, a
+  measured runtime).
+- Keep the same verb-to-operation mapping as section 5 (`filter.()` for
+  scope, `mutate.()` for derived columns, and so on) — `tidytable` exists to
+  preserve that readability, not to introduce `data.table`'s own
+  `dt[i, j, by]` syntax into the codebase.
+
+**Data does not fit in RAM.** Use `arrow` for I/O and `duckplyr` for
+transformation, rather than trying to force a larger-than-memory problem
+through `tidytable`/`data.table`, which are in-memory only.
+
+- Read the data lazily with `arrow::open_dataset()` rather than
+  `read_csv()`/`readRDS()`, so column and predicate pushdown avoid loading
+  more than the query needs:
+
+```r
+library(arrow)
+library(duckplyr)
+
+dataset <- open_dataset("data/raw/large_panel/", format = "parquet")
+```
+
+- Prefer partitioned Parquet over a single large CSV/RDS for anything
+  meant to be read this way — partition by the column most queries filter
+  on (e.g. year), so `open_dataset()` can skip whole files.
+- Transform with `duckplyr`, not manual SQL, so the code stays in dplyr
+  syntax matching the rest of section 5:
+
+```r
+result <-
+  dataset |>
+  duckplyr::as_duckplyr_df() |>
+  filter(year >= 2015) |>
+  summarize(mean_value = mean(value, na.rm = TRUE), .by = region) |>
+  collect()
+```
+
+- `duckplyr` falls back to ordinary `dplyr` automatically for a verb it
+  doesn't yet support against a DuckDB relation — that fallback pulls data
+  into memory, so if a script relies on it happening, note that in a
+  comment; it means the larger-than-memory guarantee has been given up for
+  that step.
+- Always end a `duckplyr`/`arrow` pipeline with an explicit `collect()`
+  (or an explicit write, e.g. `write_dataset()`) at the point the result is
+  small enough to hold in memory or needs to leave the lazy engine — never
+  let a script's final output silently stay a lazy, unmaterialized query.
+- Check row counts before and after a `duckplyr` join or filter the same
+  way section 5 asks for join validation — a lazy engine makes a silent
+  cardinality blowup easy to miss until `collect()` runs out of memory.
+
+## 8. Loops and conditions
 
 Do not use `for`, `while`, `repeat`, or the `apply` family for data processing
 in active production code. Use vectorized operations, `map()`, `walk()`, or a
@@ -267,7 +343,7 @@ required file or column, stopping after a failed validation, handling an
 optional top-level section, or handling one unavoidable file-format branch.
 Stop early rather than building deeply nested control flow.
 
-## 8. Functions and abstraction
+## 9. Functions and abstraction
 
 Linear code is the default. Most repeated research code should stay inline as
 plain duplication, not become a function.
@@ -353,7 +429,7 @@ argument to `walk()` is not a "custom function" under this rule — it is the
 mechanism this convention requires for side effects, not an exception to
 avoid.
 
-## 9. Modelling and figures
+## 10. Modelling and figures
 
 - Use `feols()` from `fixest` for panel and fixed-effects regressions.
 - Use `lm()` or `glm()` for cross-sectional work.
@@ -366,7 +442,7 @@ avoid.
 - Use `ggplot2` for figures, built on a single named theme object defined
   once — in the script's setup section, or in
   `code/functions/theme_project.R` and `source()`d if reused across
-  scripts, per section 8's promotion rule — rather than repeating a
+  scripts, per section 9's promotion rule — rather than repeating a
   `theme()` block per figure:
 
 ```r
@@ -423,7 +499,7 @@ group_palette <- c("Treatment" = "#0D3692", "Control" = "#E60F2D")
 - Deliverable figures should be saved as both `.png` and `.pdf` unless the
   task specifies another format. Use `bg = "transparent"` for Beamer figures.
 
-## 10. Excel output
+## 11. Excel output
 
 Use `openxlsx2` for reading and writing `.xlsx` files. Do not use `openxlsx`,
 `xlsx`, or `writexl` in new code — `openxlsx2` is the only supported package
@@ -477,16 +553,16 @@ wb <-
 wb_save(wb, "outputs/tables/chart_output.xlsx")
 ```
 
-- Use the same non-default palette specified for `ggplot2` in section 9 when
+- Use the same non-default palette specified for `ggplot2` in section 10 when
   setting chart series colors in `mschart`, so Excel deliverables and
   `ggplot2` figures stay visually consistent.
 - State chart titles and axis labels in sentence case with units, matching
-  section 9.
+  section 10.
 - Only fall back to a static image (`ggplot2` + `wb_add_image()`) when the
   deliverable explicitly does not need to be edited or re-sorted in Excel by
   the recipient — state that reasoning in a comment above the call.
 
-## 11. Outputs and reproducibility
+## 12. Outputs and reproducibility
 
 - Use `saveRDS()` for key models, summary tables, and processed data used by
   downstream scripts.
@@ -501,7 +577,7 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 - An estimation change is complete only after actual values reconcile with a
   known total, benchmark, or accepted comparison.
 
-## 12. Missing values and numerical discipline
+## 13. Missing values and numerical discipline
 
 - State `na.rm` explicitly for every empirical `sum()`, `mean()`, `sd()`, and
   `var()` call.
@@ -516,7 +592,7 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 - Check transformation links and domain constraints before extending a
   series.
 
-## 13. Comments, errors, and console output
+## 14. Comments, errors, and console output
 
 - Comments must be used throughout, at the density set in section 1.
 - Comments explain why a non-obvious rule exists.
@@ -527,7 +603,7 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
 - Do not print progress for every file, row, or iteration.
 - Error messages should name the failing file, field, year, or series.
 
-## 14. Reproducible research workflow
+## 15. Reproducible research workflow
 
 All analytical steps must be in code. Every reported number must be traceable
 to a script.
@@ -576,7 +652,7 @@ corresponding later stages, each as its own numbered script.
 - Do not commit raw or sensitive data, credentials, large generated outputs,
   or temporary files.
 
-## 15. Review standard
+## 16. Review standard
 
 This section is the checklist `r-reviewer` runs against. Review active R code
 in this order, checking each category against the specific rules in the
@@ -586,24 +662,24 @@ sections named:
    documented method; survey estimates use a correctly specified
    `srvyr`/`survey` design (weights, strata, ids) and report standard errors,
    not unweighted figures mislabelled as population estimates (sections 5,
-   6, 9, 10, 12).
+   6, 10, 11, 13).
 2. **Reproducibility and path discipline** — no `setwd()`, no hardcoded
    machine paths, `saveRDS()` present for every downstream-referenced object,
-   project structure and script naming match section 14 (sections 4, 11, 14).
+   project structure and script naming match section 15 (sections 4, 12, 15).
 3. **Input and result validation** — `na.rm` stated explicitly, finiteness
    checked, period counts checked before annualizing, floating-point
-   comparisons avoid `==` (section 12). There is no built-in `lintr` rule that
+   comparisons avoid `==` (section 13). There is no built-in `lintr` rule that
    detects a missing `na.rm`; this stays a manual check every time.
 4. **Downstream artifacts and saved objects** — `.rds`, `.xlsx`, `.png`/`.pdf`
    outputs exist, are named descriptively, and match what the script's header
-   documents as its Outputs (sections 2, 9, 10, 11).
+   documents as its Outputs (sections 2, 10, 11, 12).
 5. **Code structure and tidyverse conventions** — verbs match operations,
    joins use `join_by()` with `multiple`/`unmatched`, no `for`/`while`/`apply`
-   on data, function use follows the 6-repeat rule in section 8, not a
-   subjective judgment call (sections 5, 7, 8). `.lintr`'s
+   on data, function use follows the 6-repeat rule in section 9, not a
+   subjective judgment call (sections 5, 8, 9). `.lintr`'s
    `for_loop_index_linter()` only flags the classic `for (i in
    seq_along(x))`-style loop-index pattern; it does not catch every
-   `for`/`while`/`repeat`/`apply` use banned in section 7, so this check
+   `for`/`while`/`repeat`/`apply` use banned in section 8, so this check
    still requires reading the code, not just a clean `lintr` run.
 6. **Style and polish** — run `lintr::lint_dir("scripts")` against `.lintr`
    and treat every result as a formal finding at the severity `lintr`
@@ -612,12 +688,12 @@ sections named:
    naming length (section 1) remain manual checks — `lintr` does not enforce
    these (sections 1, 4).
 
-**Automation gaps.** `.lintr` and `styler` cover most of sections 4 and 7,
+**Automation gaps.** `.lintr` and `styler` cover most of sections 4 and 8,
 but two rules have no automated check and must be verified by reading the
 code, not inferred from a clean `lintr`/`styler` run: `for_loop_index_linter()`
 catches only loop-index patterns, not every `for`/`while`/`repeat` use banned
-in section 7; and there is no built-in linter that flags a missing `na.rm` in
-section 12's `sum()`/`mean()`/`sd()`/`var()` calls. A clean automated pass on
+in section 8; and there is no built-in linter that flags a missing `na.rm` in
+section 13's `sum()`/`mean()`/`sd()`/`var()` calls. A clean automated pass on
 these two points is not evidence of compliance.
 
 A finding that cites a rule outside these sections is out of scope for this
@@ -628,7 +704,7 @@ Formal findings include the file and line number, category, severity
 Reviewers do not edit source files. Save formal reports to
 `quality_reports/[script_name]_r_review.md`.
 
-## 16. Known pitfalls
+## 17. Known pitfalls
 
 - Put robustness specifications in the same analysis script as the main
   model, with separate output names, rather than creating a script that only
@@ -636,7 +712,7 @@ Reviewers do not edit source files. Save formal reports to
 - Validate joins, period coverage, and numerical finiteness before trusting a
   successful process exit status.
 
-## 17. AI routing
+## 18. AI routing
 
 This root file is the only normative coding standard. The other files have
 specialized roles:
