@@ -1,0 +1,31 @@
+linters: linters_with_defaults(
+  # section 4: native pipe only
+  undesirable_operator_linter(op = c(
+    "%>%" = "use native pipe |> instead (R Code Conventions section 4)"
+  )),
+  # section 4: naming and line length
+  object_name_linter(styles = "snake_case"),
+  object_length_linter(length = 30L),
+  line_length_linter(80L),
+  # section 3: never require(); section 4: never setwd(); section 12: no print/cat/sprintf status output
+  undesirable_function_linter(fun = c(
+    "require" = "use library() instead (R Code Conventions section 3)",
+    "setwd" = "never hardcode working directory (R Code Conventions section 4)",
+    "print" = "no status output via print() (R Code Conventions section 12)",
+    "cat" = "no status output via cat() (R Code Conventions section 12)",
+    "sprintf" = "no status output via sprintf() (R Code Conventions section 12)"
+  )),
+  # section 6: no base loops on data
+  for_loop_index_linter(),
+  # section 1/4: TRUE/FALSE not T/F
+  T_and_F_symbol_linter(),
+  # general hygiene
+  unused_import_linter(),
+  object_usage_linter(),
+  commented_code_linter()
+)
+exclusions: list(
+  "data" = Inf,
+  "outputs" = Inf,
+  "figures" = Inf
+)
