@@ -293,7 +293,7 @@ not something a linter will flag automatically:
    as population estimates (sections 4, 5, 8, 10).
 2. **Reproducibility and path discipline** — no `cd`, no hardcoded machine
    paths, `save ..., replace` present for every downstream-referenced
-   dataset, script naming matches `R Code Conventions.md` section 14's
+   dataset, script naming matches `R Code Conventions.md` section 15's
    pattern generalized to `.do` (sections 3, 9).
 3. **Input and result validation** — missing-value handling stated
    explicitly, period counts checked before annualizing, floating-point
@@ -396,42 +396,63 @@ never omitting setup:
 
 ### 4. Data work idioms
 
-Use `pandas` (or `polars` where the project has standardized on it) verbs
-whose names match the operation, vectorized rather than row-by-row:
+Default to `polars`, not `pandas`, for new code. It is faster on typical
+research-data sizes, has a stricter and more predictable type system
+(no silent `int` → `float` upcasting on a missing value the way `pandas`
+does), and its expression API (`pl.col(...)`) reads as one declarative
+statement per operation, closer to the readability goal in the shared
+philosophy at the top of this file than `pandas`' mix of bracket indexing
+and method chaining.
 
-- `.query()`/boolean masking for scope, geography, and period selection.
-- `.assign()` for calculations and derived columns.
-- `.groupby().agg()` for one row per group.
-- `.melt()`/`.pivot()` for reshaping.
-- `.merge()` for joins, with `validate=` and `indicator=True` stated
-  explicitly, the same way R states `multiple`/`unmatched`:
+- `.filter(pl.col(...))` for scope, geography, and period selection.
+- `.with_columns(pl.col(...).alias(...))` for calculations and derived
+  columns.
+- `.group_by(...).agg(...)` for one row per group.
+- `.unpivot()`/`.pivot()` for reshaping.
+- `.join()` for joins, with `validate=` (`"1:1"`, `"1:m"`, `"m:1"`,
+  `"m:m"`) stated explicitly, the same way R states `multiple`/`unmatched`:
 
 ```python
-estimates = values.merge(
+import polars as pl
+
+estimates = values.join(
     concordance,
     on="entity_id",
     how="left",
-    validate="one_to_one",
-    indicator=True,
+    validate="1:1",
 )
-assert (estimates["_merge"] != "right_only").all()
 ```
 
-- Never use `.iterrows()` or `.apply(..., axis=1)` for something a
-  vectorized operation, `.assign()`, or `np.select()`/`np.where()` can
-  express directly.
+- Prefer `pl.scan_csv()`/`pl.scan_parquet()` (lazy) over `pl.read_*()`
+  (eager) for anything beyond a quick, small script — the lazy API lets
+  Polars push filters/column selection down to the scan and only
+  `.collect()` at the point a materialized `DataFrame` is actually needed.
+- Never use a Python-level `for` loop over rows for something a `polars`
+  expression can express directly; there is no `.iterrows()` equivalent to
+  reach for by habit the way there is in `pandas`.
 - Use method-chaining with parentheses for multi-step transformations, one
   operation per line, the same visual style as an R pipe chain.
+
+**When `pandas` is still the right call.** Use `pandas` only when a
+specific downstream library genuinely requires it (some older
+`scikit-learn`/`statsmodels`/plotting-library entry points still expect a
+`pandas.DataFrame`, not a `polars.DataFrame`) — convert at the boundary
+with `.to_pandas()` right before the call that needs it, and say so in a
+comment, rather than writing the whole script in `pandas` because one
+downstream call needs it.
 
 ### 5. Survey data management
 
 There is no single dominant Python survey-analysis package the way R has
-`srvyr`; default to explicit weighted computation via `numpy`/`pandas`
-weighted aggregation, or `statsmodels`' `DescrStatsW` for weighted means and
-standard errors, and only reach for a heavier survey package
-(`samplics`) when the project genuinely needs complex-design variance
-estimation (replicate weights, multi-stage clustering) that hand-rolled
-weighting can't get right.
+`srvyr`; default to explicit weighted computation directly in `polars`
+(`pl.col("value").mul(pl.col("weight")).sum() / pl.col("weight").sum()`
+inside a `.with_columns()`/`.group_by().agg()` expression), or
+`statsmodels`' `DescrStatsW` (via `.to_pandas()`/`.to_numpy()` at the
+boundary, per section 4) when the standard-error formula matters and
+hand-rolling it would be error-prone. Only reach for a heavier survey
+package (`samplics`) when the project genuinely needs complex-design
+variance estimation (replicate weights, multi-stage clustering) that
+neither of those gets right on its own.
 
 - Declare the weight, strata, and cluster columns once, right after reading
   the cleaned data, as named variables/constants — never inline a weight
@@ -450,9 +471,9 @@ weighting can't get right.
   out of `data/intermediate/` and `data/final/`. Strip or hash them in the
   raw-to-intermediate cleaning step and document the transformation.
 - Treat don't-know, refused, and skip/not-applicable codes as distinct
-  categorical values during cleaning, not silently coerced to `NaN`.
-  Recode to `NaN` only at the point analysis requires it, and document the
-  recode.
+  categorical values during cleaning, not silently coerced to `null`.
+  Recode to `null` only at the point analysis requires it, and document
+  the recode.
 - Check unweighted and weighted respondent counts against the expected
   sample size from the codebook as part of input checking. A missing wave
   or an unexpected count is a validation failure, not a silent proceed.
@@ -516,8 +537,9 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
 
 ### 9. Outputs and reproducibility
 
-- Use `parquet` (via `pandas`/`pyarrow`) for intermediate and final
-  processed data used by downstream scripts — not `pickle`, which is
+- Use `parquet` (`pl.write_parquet()`/`pl.read_parquet()`, native to
+  `polars`, no `pandas`/`pyarrow` round-trip needed) for intermediate and
+  final processed data used by downstream scripts — not `pickle`, which is
   fragile across Python/library versions and not human-inspectable.
 - Treat a missing save for a downstream-referenced object as a critical
   reproducibility problem.
@@ -532,11 +554,18 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
 
 ### 10. Missing values and numerical discipline
 
+- `polars` distinguishes `null` (missing) from floating-point `NaN` (a
+  valid-but-undefined number) — these are not interchangeable the way
+  `pandas` treats them. State which one a column can contain and handle
+  each explicitly (`.is_null()` vs `.is_nan()`), rather than assuming a
+  single `.is_null()` check covers both.
 - State how missing values are handled for every `.mean()`, `.sum()`,
-  `.std()` call — `pandas` skips `NaN` by default in these; confirm that is
-  the intended behavior in a comment rather than assuming it's understood.
-- Never silently `fillna(0)` to make a calculation run; use it only when
-  the documented method says missing observations are treated as zero.
+  `.std()` call — `polars` skips `null` by default in these; confirm that
+  is the intended behavior in a comment rather than assuming it's
+  understood.
+- Never silently `.fill_null(0)` to make a calculation run; use it only
+  when the documented method says missing observations are treated as
+  zero.
 - Check required period counts before annualizing monthly or quarterly
   data.
 - Check that required numerical values are finite (`np.isfinite`).
@@ -566,7 +595,7 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
    population estimates (sections 4, 5, 8, 10).
 2. **Reproducibility and path discipline** — no `os.chdir()`, no hardcoded
    machine paths, every downstream-referenced object saved, script naming
-   matches `R Code Conventions.md` section 14's pattern generalized to
+   matches `R Code Conventions.md` section 15's pattern generalized to
    `.py` (sections 3, 9).
 3. **Input and result validation** — missing-value handling stated
    explicitly, finiteness checked, period counts checked before
@@ -576,8 +605,9 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
 4. **Downstream artifacts and saved objects** — `.parquet`, `.csv`, `.png`/
    `.pdf` outputs exist, are named descriptively, and match what the
    script's header documents as its Outputs (sections 8, 9).
-5. **Code structure and idioms** — vectorized operations used instead of
-   `.iterrows()`/row-by-row `.apply()`, merges use explicit `validate=`,
+5. **Code structure and idioms** — `polars` expressions used instead of a
+   Python-level row loop, `pandas` used only at a documented interop
+   boundary (never as the default), joins use explicit `validate=`,
    function use follows the 6-repeat rule, not a subjective judgment call
    (sections 4, 6, 7).
 6. **Style and polish** — run `ruff format --check .` and `ruff check .`
@@ -599,12 +629,17 @@ rationale. Reviewers do not edit source files. Save formal reports to
 
 ### 13. Known pitfalls
 
-- `SettingWithCopyWarning` from chained indexing (`df[df.x > 0]["y"] = 1`)
-  — use `.loc[]` for any assignment into a filtered subset.
+- Confusing `null` and `NaN` in `polars` — a `.is_null()` check silently
+  passes a column full of `NaN`, and vice versa; check the one that
+  actually applies to the column's source data.
 - Mutable default arguments (`def f(x, acc=[]):`) silently sharing state
   across calls.
-- `.merge()` producing a silent row-count change without `validate=` to
+- `.join()` producing a silent row-count change without `validate=` to
   catch an unexpected many-to-many match.
+- `SettingWithCopyWarning` from chained indexing (`df[df.x > 0]["y"] = 1`)
+  is a `pandas`-only pitfall — still relevant at a `pandas` interop
+  boundary (section 4); use `.loc[]` for any assignment into a filtered
+  `pandas` subset there.
 
 ---
 
@@ -649,12 +684,27 @@ setup:
 
 ### 2. Environment and packages
 
-- Use a project-local environment (`Project.toml`/`Manifest.toml`,
-  activated with `Pkg.activate(".")` or `--project=.`) pinned and committed
-  to the repo; never call `Pkg.add()` inside a production script.
-- Load every package with `using` at the top of the script, once.
+- Use a project-local environment (`Project.toml`/`Manifest.toml`) pinned
+  and committed to the repo. Activate it explicitly at the top of every
+  script with `Pkg.activate("<env_name>")` (or `Pkg.activate(".")` for a
+  root-level environment) — do this in the script itself, in Setup, rather
+  than relying on the caller to remember `--project=.` on the command
+  line; that keeps a script runnable on its own from a fresh Julia
+  session.
+- Never call `Pkg.add()` inside a production script. Keep the one-time
+  `Pkg.generate("<env_name>")`/`Pkg.add(...)` calls that build the
+  environment in a separate, clearly-named setup script
+  (`code/setup/0_setup.jl` or similar), run once, not on every pipeline
+  run.
+- Load every package with `using` at the top of the script, once, right
+  after `Pkg.activate()`.
 - Instantiate the environment (`Pkg.instantiate()`) as a one-time setup
   step, not inside the analysis script itself.
+- **Name collision to watch for**: `TidierData.jl` and `Flux.jl` both
+  export `Chain` — loading both means an unqualified `Chain` is
+  ambiguous. If a script needs both, call it as `Flux.Chain` explicitly
+  rather than relying on load order, and note the collision in a comment
+  at the `using` statements so the next reader isn't surprised by it.
 
 ### 3. Naming, paths, and formatting
 
@@ -676,12 +726,24 @@ setup:
 ### 4. Data work idioms
 
 Default to `TidierData.jl` (from the [TidierOrg](https://github.com/TidierOrg)
-ecosystem) for data cleaning and transformation. It reimplements dplyr/tidyr
-verb-for-verb, so a script reads almost identically to its R equivalent
-under `R Code Conventions.md` section 5 — this is deliberate: prefer tidy,
-readable data management the same way in both languages, not a
-`DataFrames.jl`-native style that reads differently script to script.
+ecosystem) for data cleaning and transformation, and `TidierFiles.jl` from
+the same ecosystem for I/O (`read_csv()`/`write_csv()` and similar). Both
+reimplement their dplyr/tidyr/readr equivalents verb-for-verb, so a script
+reads almost identically to its R equivalent under `R Code Conventions.md`
+section 5 — this is deliberate: prefer tidy, readable data management the
+same way in both languages, not a `DataFrames.jl`-native style that reads
+differently script to script.
 
+- `@clean_names()` immediately after reading a raw file, before anything
+  else — standardizes column names to `snake_case` the same way this
+  file's naming rules require, rather than carrying inconsistent raw
+  column names (`"Filing Date"`, `subjId`, `LOCATION`) into the rest of
+  the script.
+- `@glimpse()` right after `@clean_names()` when inspecting a newly read
+  dataset, as the equivalent of R's `str()`/`glimpse()` — this is
+  inspection, like `haven::print_labels()` in
+  `R Code Conventions.md` section 6, not a transformation, so keep it
+  outside a `@chain` pipeline that produces the working dataset.
 - `@filter()` for scope, geography, and period selection.
 - `@mutate()` for calculations and derived columns.
 - `@summarize()` for one row per group.
@@ -801,8 +863,9 @@ trigger as `R Code Conventions.md` section 8.
   Julia objects (models, fitted results) rather than tabular data.
 - Treat a missing save for a downstream-referenced object as a critical
   reproducibility problem.
-- Use `CSV.jl` only for small, final deliverables meant to leave the
-  pipeline, not for intermediate data.
+- Use `TidierFiles.jl`'s `write_csv()` (a thin wrapper on `CSV.jl`, kept
+  for the same syntax consistency as section 4) only for small, final
+  deliverables meant to leave the pipeline, not for intermediate data.
 - Keep a simple run record with selected source filenames, selected year,
   method, and output location.
 - A style-only rewrite (formatting, comments) must reproduce accepted
@@ -845,7 +908,7 @@ trigger as `R Code Conventions.md` section 8.
    population estimates (sections 4, 5, 8, 10).
 2. **Reproducibility and path discipline** — no hardcoded machine paths,
    every downstream-referenced object saved, script naming matches
-   `R Code Conventions.md` section 14's pattern generalized to `.jl`
+   `R Code Conventions.md` section 15's pattern generalized to `.jl`
    (sections 3, 9).
 3. **Input and result validation** — `missing` handling stated explicitly
    via `skipmissing()`, finiteness checked, period counts checked before

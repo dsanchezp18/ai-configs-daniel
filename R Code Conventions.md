@@ -158,6 +158,14 @@ produce — their output wins over manual preference.
 
 ## 5. Tidyverse data work
 
+Run `janitor::clean_names()` immediately after reading any raw file with
+column names that weren't authored by this codebase (a CSV, Excel sheet, or
+API response) — before any other transformation. This is mandatory, not
+situational: it standardizes column names to `snake_case` up front, so the
+rest of the script never has to work around `"Filing Date"`, `subjID`, or
+`LOCATION`-style raw names. A dataset already produced by an upstream
+script in this codebase (already `snake_case`) does not need it run again.
+
 Use tidyverse verbs whose names match the operation:
 
 - `filter()` for scope, geography, and period selection;
