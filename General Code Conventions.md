@@ -67,9 +67,13 @@ Followed by numbered sections, adapted to the task but never omitting setup:
 
 - Use `set seed 42` at the top when the script is stochastic; omit it for
   deterministic scripts.
-- Open a log with `log using "logs/<script_name>.log", replace` at the top
-  of Setup and `log close` at the very end. Never leave a log silently
-  overwritten without `replace` stated explicitly.
+- Open a log at the top of Setup with `capture log close` immediately
+  followed by `log using "logs/<script_name>.log", replace`, and `log
+  close` at the very end. The `capture log close` guard is required even
+  though no log should normally be open — it makes the script safe to
+  re-run after an interrupted previous run without erroring on an
+  already-open log. Never leave a log silently overwritten without
+  `replace` stated explicitly.
 - End every do-file with `exit` only if the file is meant to be run
   standalone from a longer chain; otherwise let it fall through.
 
@@ -218,8 +222,17 @@ helper does.
 - Cluster standard errors at the unit of treatment assignment
   (`vce(cluster unit_id)`) and document that choice directly above the
   model call.
-- Use `esttab` (from `estout`) for regression tables, not `outreg2`, for a
-  single consistent table-export path across the codebase.
+- Use `esttab` (from `estout`) for regression tables by default — it is
+  more actively maintained and more flexible on output format
+  (LaTeX/Word/CSV) than `outreg2`. `outreg2` is acceptable in an existing
+  script that already uses it consistently; don't mix the two within one
+  script or one project.
+- Use `ivregress 2sls` for instrumental-variables regression (`ivreg` from
+  the `ivreg2`/community-contributed family is acceptable where its extra
+  diagnostics — weak-instrument and overidentification tests — are
+  needed); state the excluded instrument(s) and the endogenous regressor
+  directly above the call, the same way section 5 asks merges to state
+  their match type.
 - Use `graph twoway`/`graph bar` with a consistent, explicitly set scheme
   (`set scheme <name>` in Setup) rather than Stata's default scheme.
 - `graph export` must specify both `.png` and `.pdf` outputs unless the
