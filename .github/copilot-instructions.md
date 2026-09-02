@@ -1,8 +1,11 @@
 # Copilot project context
 
 The canonical coding standard is [`R Code Conventions.md`](../R%20Code%20Conventions.md).
-Read it before writing or reviewing R code. This file supplies project context
-and routing; it is not a second coding standard.
+Read it before writing or reviewing R code. For Stata, Python, or Julia code,
+read [`General Code Conventions.md`](../General%20Code%20Conventions.md)
+instead — its R section only points back to `R Code Conventions.md`. This
+file supplies project context and routing; it is not a second coding
+standard.
 
 ## Project context
 
