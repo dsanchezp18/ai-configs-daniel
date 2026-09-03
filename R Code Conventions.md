@@ -710,6 +710,64 @@ house_wrap_width <- function(text_size_pt, reference_width, reference_size_pt) {
   publishing, not a paper, is one such case — `.png` alone is fine there).
   Use `bg = "transparent"` for Beamer figures.
 
+### Hypothesis-testing grammar with `infer`
+
+When a simulation-based hypothesis test benefits from an explicit,
+tidyverse-style workflow, use `infer`. Load the package with the other
+packages at the top of the script and keep the statistical question visible
+in the pipeline.
+
+Use this grammar in order:
+
+1. `specify()` declares the response and, when relevant, the explanatory
+   variable. Use `success` when the response is a binary proportion.
+2. `hypothesize()` declares the null hypothesis, usually
+   `null = "independence"` or `null = "point"`, with `p`, `mu`, `med`, or
+   `sigma` when the null requires a reference value.
+3. `generate()` creates the reference distribution under the null. State the
+   number of repetitions and the method explicitly, such as
+   `reps = 2000, type = "permute"` or `type = "bootstrap"`.
+4. `calculate()` computes the statistic, such as `"mean"`, `"diff in means"`,
+   `"diff in props"`, `"t"`, `"F"`, `"Chisq"`, `"z"`, or `"correlation"`.
+5. `get_p_value()` compares the observed statistic with the null distribution.
+   State `direction = "less"`, `"greater"`, or `"two-sided"` explicitly.
+6. `visualize()` and `shade_p_value()` may be used to inspect and communicate
+   the reference distribution.
+
+Calculate the observed statistic separately from the null distribution and
+pass it explicitly to `get_p_value()`:
+
+```r
+observed_stat <- data |>
+  specify(response ~ explanatory, success = "Yes") |>
+  calculate(stat = "diff in props")
+
+null_distribution <- data |>
+  specify(response ~ explanatory, success = "Yes") |>
+  hypothesize(null = "independence") |>
+  generate(reps = 2000, type = "permute") |>
+  calculate(stat = "diff in props")
+
+null_distribution |>
+  get_p_value(
+    obs_stat = observed_stat,
+    direction = "two-sided"
+  )
+```
+
+For confidence intervals, use `specify()` → `generate(type = "bootstrap")`
+→ `calculate()` → `get_confidence_interval()`. For a theory-based null
+distribution, use `assume()` after declaring the null with `hypothesize()`.
+Set a seed when the result must be reproducible, and remember that a
+simulation-based p-value is an approximation determined partly by `reps`.
+
+In the interpretation, state the null hypothesis, statistic, resampling
+method, number of repetitions, tail direction, significance level, and
+confidence level when applicable. Do not describe a p-value as the probability
+that the null hypothesis is true. Report that the result leads to rejecting or
+failing to reject the null at a stated significance level; do not say that the
+test accepts the null or proves the alternative.
+
 ### Spatial data and maps
 
 Use `sf` for reading, manipulating, and joining spatial data
@@ -1100,3 +1158,38 @@ Role selection:
 
 If instructions conflict, use this file first, then the role-specific file,
 then general project context.
+
+## Reusable code-explanation prompt
+
+Use the following prompt when requesting an explanation of R code under this
+standard:
+
+```text
+Explain the R code below according to R Code Conventions.md. Use formal,
+respectful, professional, and well-mannered prose. Avoid sarcasm,
+condescension, blame, insults, slang, profanity, filler, vague dismissals,
+and unsupported certainty. Do not use phrases such as "obviously," "simply,"
+or "just" to minimize a step or assume knowledge.
+
+Explain the code from beginning to end in its actual execution order. State
+the purpose, inputs, outputs, assumptions, packages, and external dependencies.
+For each stage, identify the relevant operations and explain why they are used.
+Trace data transformations, joins, missing-value handling, vectorized
+conditions, models, figures, saved artifacts, validation checks, and downstream
+dependencies. Assess readability, expressiveness, naming, linearity, and
+whether the abstractions are proportionate to the task.
+
+For hypothesis testing with infer, identify the response and explanatory
+variables, null hypothesis, observed statistic, resampling method, number of
+repetitions, test direction, significance level, and confidence level. Check
+that the pipeline follows specify() -> hypothesize() -> generate() ->
+calculate() -> get_p_value() or get_confidence_interval(). Flag row-level
+scalar if/else logic and recommend if_else(), case_when(), coalesce(), joins,
+or lookup tables when they express the data transformation more clearly.
+
+Distinguish what the code does from what it should do. Identify risks,
+missing checks, hidden state, unclear names, and downstream incompatibilities.
+Cite the relevant section of R Code Conventions.md. If you propose a change,
+give one concrete, minimally scoped recommendation at a time and do not
+invent inputs, outputs, assumptions, results, or methodological claims.
+```

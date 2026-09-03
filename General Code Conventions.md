@@ -28,12 +28,12 @@ normative rules.
 
 See [`R Code Conventions.md`](R%20Code%20Conventions.md) for the full R
 standard: working philosophy, script structure, packages, tidyverse data
-work, survey data management, loops, functions, modelling and figures, Excel
-output, reproducibility, missing values, comments, reproducible research
-workflow, review standard, and known pitfalls. Do not duplicate any of that
-here — if a Stata/Python/Julia rule below needs to reference an R rule,
-point to the specific section in `R Code Conventions.md` instead of copying
-it.
+work, hypothesis-testing grammar with `infer`, survey data management, loops,
+functions, modelling and figures, Excel output, reproducibility, missing
+values, comments, reproducible research workflow, review standard, and known
+pitfalls. Do not duplicate any of that here — if a Stata/Python/Julia rule
+below needs to reference an R rule, point to the specific section in
+`R Code Conventions.md` instead of copying it.
 
 ---
 
@@ -1035,3 +1035,40 @@ rationale. Reviewers do not edit source files. Save formal reports to
 - `missing` silently propagating through an entire calculation chain
   without `skipmissing()`, producing a `missing` final result instead of
   an error.
+
+## Reusable code-explanation prompt
+
+Use the following prompt when requesting an explanation of code under these
+general conventions:
+
+```text
+Explain the code below according to General Code Conventions.md and, for R,
+the applicable section of R Code Conventions.md. Use formal, respectful,
+professional, and well-mannered prose. Avoid sarcasm, condescension, blame,
+insults, slang, profanity, filler, vague dismissals, and unsupported certainty.
+Do not use phrases such as "obviously," "simply," or "just" to minimize a
+step or assume knowledge.
+
+Explain the code from beginning to end in its actual execution order. State
+the purpose, inputs, outputs, assumptions, packages or libraries, external
+dependencies, and execution environment. For each stage, identify the
+relevant operations and explain why they are used. Trace data acquisition,
+validation, transformations, joins, conditions or loops, models, figures,
+saved artifacts, checks, and downstream dependencies. Assess readability,
+expressiveness, naming, linearity, comment placement, and whether the
+abstractions are proportionate to the task.
+
+Distinguish what the code does from what it should do. Identify risks, missing
+checks, hidden state, unclear names, reproducibility gaps, and downstream
+incompatibilities. For R, flag row-level scalar if/else logic and recommend
+if_else(), case_when(), coalesce(), joins, or lookup tables when they express
+the data transformation more clearly. For other languages, apply the
+language-specific conventions in this file and explain any justified
+language-specific exception.
+
+Cite the relevant section of the applicable convention file. If you propose a
+change, give one concrete, minimally scoped recommendation at a time and do
+not invent inputs, outputs, assumptions, results, or methodological claims.
+Use concise headings or a short numbered structure so the explanation is easy
+to audit.
+```
