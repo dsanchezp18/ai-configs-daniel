@@ -14,8 +14,8 @@ The reference corpus for the academic register is three papers: a published diff
 The voice belongs to a **skeptical builder**. The implicit contract with the reader is: "I will show you exactly how I built this, and I will show you where it could break before you find it yourself." In analytical writing, every rewrite should preserve or introduce three behaviors:
 
 1. **Identification before results.** The interesting claim is never the correlation; it is whether the design supports a causal reading. Threats to identification get named explicitly and early, not buried in a limitations paragraph.
-2. **Honest deflation.** Findings are stated, then immediately bounded. The voice never oversells. A null result is treated as real knowledge, and a precise null is explicitly distinguished from an imprecise one.
-3. **Confident mechanism, hedged magnitude.** Point estimates and causal claims are hedged hard; the theoretical mechanism is stated with conviction. "I argue that X causes Y through Z" is fine. "The effect is definitely -25%" is not.
+2. **Honest, not hedgy.** Findings are stated plainly, with one clear caveat where one genuinely matters. The voice never oversells, but it also doesn't bury a result under stacked qualifiers. A null result is treated as real knowledge, and a precise null is distinguished from an imprecise one, in a single sentence, not a paragraph of throat-clearing.
+3. **Confident mechanism, careful magnitude.** The theoretical mechanism is stated with conviction. Point estimates and causal claims get one plain caveat when the design calls for it, stated once and moved past. "I argue that X causes Y through Z" is fine. "The effect is definitely -25%" is not, but neither is "the effect may perhaps suggest a possible decline of around -25%, though this must not be considered without reservation."
 
 In lighter correspondence, the same instincts show up smaller: lead with the purpose, be precise about facts, don't oversell or pad, and don't hide a limitation or caveat that matters to the reader.
 
@@ -37,11 +37,11 @@ In lighter correspondence, the same instincts show up smaller: lead with the pur
 
 **Technical writing.** Retain necessary terminology and methodological caveats, but translate them into clear language for the intended audience.
 
-## Analytical register: hedging and structure
+## Analytical register: honesty and structure
 
-**The hedging vocabulary.** Preferred hedges, in roughly descending order of frequency: "suggests", "may", "it is sensible to believe", "this result must not be considered without reservation", "I cannot reject that", "evidence in favour of", "points toward". Hedges attach to interpretation, never to what was literally done ("I estimate" is never hedged).
+**Caveat once, plainly.** When a claim needs a qualifier, use one: "suggests", "is consistent with", "I cannot reject that". State it once, in plain language, and move on. Do not stack hedges on the same sentence ("may perhaps tentatively suggest") and do not repeat the same caveat in different words across a paragraph. Caveats attach to interpretation, never to what was literally done ("I estimate" is never hedged).
 
-**Self-undermining as a feature.** The voice volunteers weaknesses: "However, there might still be reason to believe the coefficient is biased upward." "I am underpowered to detect small effects." Keep these when rewriting; add one if a passage makes a claim with no stated limitation.
+**Limitations get one clear mention.** Name the main limitation once, near the claim it affects, in a direct sentence: "This estimate does not account for X." Do not manufacture additional weaknesses for effect, and do not chain several hedged asides after a single finding. One honest caveat carries more weight than five soft ones.
 
 **Roadmaps and enumeration.** Introductions end with "The rest of the paper proceeds as follows. Section 2... Section 3..." Contributions come in numbered sets, ideally three. Robustness checks are announced as a count: "I perform two robustness checks."
 
@@ -52,8 +52,8 @@ In lighter correspondence, the same instincts show up smaller: lead with the pur
 **Structural moves for full documents:**
 
 - **Introductions** follow: (1) broad motivating fact or theoretical hook, one or two sentences; (2) the gap, stated bluntly; (3) what I do, in active first person with the design named; (4) headline result, immediately qualified; (5) contributions, enumerated; (6) roadmap.
-- **Results discussion** follows: state the estimate with magnitude and significance level, interpret it in one sentence, then immediately interrogate it (pre-trends, confounders, robustness). "X is found... However..." appears constantly.
-- **Conclusions** restate the finding with its strongest caveat attached, propose the mechanism with conviction, then end with a concrete methods agenda for future work (named techniques: synthetic control, matching, ordered logit), never vague gestures like "more research is needed."
+- **Results discussion** follows: state the estimate with magnitude and significance level, interpret it in one sentence, then note the one or two threats that actually matter (pre-trends, confounders, robustness), once each, without restating them.
+- **Conclusions** restate the finding with its main caveat attached, once, propose the mechanism with conviction, then end with a concrete methods agenda for future work (named techniques: synthetic control, matching, ordered logit), never vague gestures like "more research is needed."
 - **Abstracts** are dense single paragraphs: motivation, method, headline number, caveat, implication. The caveat goes IN the abstract.
 
 ## Correspondence register: patterns and adaptation
@@ -91,6 +91,7 @@ In lighter correspondence, the same instincts show up smaller: lead with the pur
 - Filler transitions: "Moreover, it is important to note", "In today's world", "Interestingly"
 - Generic, content-free closing paragraphs in emails and letters
 - Academic conclusions that only summarize; replace the last paragraph with limitations plus a named-methods future agenda
+- Stacked or repeated hedges: "may perhaps tentatively suggest", or the same caveat restated three ways in one paragraph; keep the single clearest qualifier and cut the rest
 
 ## What to preserve or add
 
@@ -119,10 +120,10 @@ When revising, prioritize accuracy first, then clarity, brevity, tone, and rhyth
 3. Does it lead with the purpose or the point, without padding?
 
 **For analytical/academic output, also check:**
-4. Does every interpretive claim carry a calibrated hedge, while every methodological statement stands unhedged?
-5. Is at least one limitation stated plainly, near the claim it limits?
+4. Does each claim needing a qualifier carry exactly one, stated plainly, while methodological statements stand unhedged?
+5. Is the main limitation stated once, plainly, near the claim it limits, without being repeated or piled onto other caveats?
 6. Do numbers appear with their precision and significance level?
-7. Would the 2024 MA paper's author recognize the rhythm: short declarative claim, then "However, ..."?
+7. Would the 2024 MA paper's author recognize the rhythm: a short declarative claim, then one plain caveat where it matters, not a chain of soft ones?
 
 **For correspondence output, also check:**
 8. Is the greeting and sign-off matched to the recipient (formal vs. familiar), not applied mechanically?

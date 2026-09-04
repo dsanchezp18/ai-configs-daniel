@@ -71,12 +71,12 @@ Evitar `usted`, `ustedes` como tratamiento editorial, formalismos y llamadas pro
 
 ### Actitud
 
-Mostrar seguridad cuando el dato es directo. Usar cautela cuando intervienen supuestos:
+Declarar resultados, comparaciones y hallazgos de forma directa en el cuerpo del artículo:
 
-- directo: `La mediana fue de $620.`
-- inferencia: `Esto sugiere una canasta más concentrada en bienes esenciales.`
-- hipótesis: `Es posible que el costo de los alimentos contribuya a esta diferencia.`
-- límite: `Los datos disponibles no permiten separar ambos mecanismos.`
+- `La mediana fue de $620.`
+- `Los hogares del quintil más pobre gastan una mayor proporción de su ingreso en alimentos.`
+
+No suavizar una cifra o un hallazgo con `sugiere`, `es posible que`, `podría` o `quizás` en el desarrollo. Esos calificadores se reservan para el cierre (sección 9), donde se reconoce el límite decisivo del análisis. Usar uno en el cuerpo solo cuando omitirlo haría que una cifra concreta se leyera como algo que no es, por ejemplo una asociación que podría confundirse con causalidad; en ese caso, un calificador, no varios, y en la misma frase que la cifra.
 
 ## 4. Arquitectura del artículo
 
@@ -114,8 +114,9 @@ Usar esta secuencia flexible dentro de cada sección:
 2. dar el resultado principal;
 3. mostrar la evidencia;
 4. traducir el resultado a lenguaje cotidiano;
-5. explicar su importancia;
-6. señalar matices o límites si cambian la lectura.
+5. explicar su importancia.
+
+No sembrar límites o matices sección por sección. Guardarlos para el cierre (sección 9), salvo que un límite invalide directamente la lectura de la cifra que se acaba de mostrar; en ese caso, una frase breve basta.
 
 ### Ritmo
 
@@ -151,7 +152,7 @@ Usar `se relaciona`, `está asociado` o `coincide` para resultados descriptivos 
 
 ### Incertidumbre
 
-Expresar incertidumbre con precisión. Evitar acumular `quizás`, `probablemente` y `posiblemente` en una misma explicación. Indicar qué dato adicional permitiría resolver la duda cuando sea útil.
+No repartir la incertidumbre por todo el texto. El cuerpo afirma lo que los datos muestran; el cierre reconoce el límite decisivo (sección 9). Evitar `quizás`, `probablemente` y `posiblemente` en el desarrollo. Si un vacío concreto en los datos es indispensable para no inducir a error justo donde aparece la cifra, nombrarlo una sola vez, con una sola palabra de calificación, y sin repetirlo más adelante.
 
 ## 6. Gráficos y tablas
 
@@ -218,11 +219,11 @@ Usar sentence case y una jerarquía coherente. No escribir todos los encabezados
 
 Cerrar respondiendo `¿y ahora qué?`, aunque no sea necesario usar ese encabezado.
 
-Un buen cierre:
+El cierre es el único lugar del artículo donde corresponde reconocer límites y usar calificadores de incertidumbre. Un buen cierre:
 
 1. sintetiza dos o tres resultados, sin recitar el artículo;
 2. explica qué cambia en la comprensión del problema;
-3. reconoce el límite decisivo;
+3. reconoce el límite decisivo, en una o dos frases directas, sin acumular calificadores;
 4. señala una implicación de política pública, medición o investigación;
 5. termina con la nota de datos y código cuando exista.
 
@@ -240,6 +241,8 @@ No introducir evidencia central nueva en el último párrafo. No convertir la co
 - preguntas retóricas encadenadas;
 - adjetivos como `alarmante`, `devastador`, `increíble` sin una justificación analítica;
 - falsa precisión o certeza;
+- calificadores encadenados (`sugiere`, `podría`, `es posible que`, `quizás` juntos sobre la misma afirmación);
+- calificadores de incertidumbre o menciones de límites fuera del cierre, salvo que sean absolutamente necesarios para no inducir a error sobre una cifra concreta;
 - jerga sin explicación;
 - conclusiones genéricas sobre la necesidad de `generar conciencia`;
 - imitar errores gramaticales o técnicos de piezas históricas.
