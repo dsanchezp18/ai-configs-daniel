@@ -7,13 +7,14 @@ description: "Turn a coding workshop/tutorial video (R, Python, Stata, Julia, or
 
 Use when the user gives a coding workshop, tutorial, or lecture — a YouTube link or a local
 video/audio file — and wants something to actually study from — not a transcript, a lesson:
-objectives, explanations, code, a cheat sheet, exercises.
+objectives, explanations, code, and a cheat sheet. Add practice exercises only when the user
+asks for them or when they are clearly appropriate.
 
 This is a two-stage skill and the stages are not interchangeable:
 
 1. The script fetches and lightly cleans the transcript. This step does no teaching.
 2. Claude reads that transcript and writes the lesson. This is the actual work of the skill.
-3. The script renders the finished lesson Markdown to PDF.
+3. The script or the selected document tool renders the finished lesson source to PDF.
 
 Never treat step 1's output as the deliverable. A cleaned transcript is not a lesson.
 
@@ -73,12 +74,30 @@ Useful flags:
 
 ## Step 2 — Write the lesson
 
-Read `transcript.by-chapter.md` and `meta.json`, then write `lesson.md` yourself in the same
-`workshop-lessons/<video_id>/` directory. Ground every claim in what the video actually
+Read `transcript.by-chapter.md` and `meta.json`, then write `lesson.qmd` yourself in the same
+`workshop-lessons/<video_id>/` directory when the user requests LaTeX, mathematical notation,
+or a Quarto source. Use `lesson.md` only when a plain Markdown source is more appropriate.
+Ground every claim in what the video actually
 covers — do not invent tools, packages, or steps it doesn't show. When the transcript is
 ambiguous about exact syntax (very common with spoken code — a narrator says "then we pipe
 into filter" without saying whether it's `|>` or `%>%`), reconstruct the most likely code
 from context and say so briefly rather than presenting a guess as verbatim transcription.
+
+### Compact and LaTeX mode
+
+When the user requests a short guide, target a maximum of 10 PDF pages unless the content
+would become misleading without more space. Prefer concise explanations, one compact cheat
+sheet, and a small number of representative code blocks. Omit the exercises and solutions
+sections when the user asks for no exercises.
+
+When the user requests mathematical expressions and code in a PDF, prefer a `.qmd` source and
+XeLaTeX or LuaLaTeX rather than the HTML-to-PDF path. Use UTF-8 directly; do not transliterate
+Spanish accents or mathematical symbols. Set an explicit, widely available text font and a
+monospace font for code (for example Latin Modern Roman and Latin Modern Mono in TeX Live).
+If a user-provided project contains a font or LaTeX template, inspect it and reuse it when
+available; never invent a missing project path or font name. Keep the cleaned transcript as a
+separate output file such as `transcript.cleaned.md` or `transcript.by-chapter.md`; do not
+append the full transcript to a compact guide unless the user explicitly wants it embedded.
 
 Start with YAML front matter:
 
@@ -106,9 +125,8 @@ Then, in this order:
      mistake — see "Callouts" below.
 5. **Cheat sheet** — a compact table or list of every function/command introduced, one line
    each: name, what it does, minimal example.
-6. **Practice exercises** — 2-5 exercises that make the reader apply what was taught, ordered
-   easy to hard. Put solutions in their own `### Solutions` section at the very end, never
-   inline, so they don't spoil the exercise.
+6. **Practice exercises** — include 2-5 exercises only when requested. Put solutions in their
+   own `### Solutions` section at the very end, never inline, so they don't spoil the exercise.
 7. **Further resources** — only tools/packages/links the video itself mentions. Do not invent
    external references.
 
@@ -141,7 +159,31 @@ Recreate the scatter plot from this section using the `mpg` dataset instead of `
 python3 scripts/workshop_transcript_lesson.py render workshop-lessons/<video_id>/lesson.md
 ```
 
-Writes `lesson.pdf` (and an intermediate `lesson.html`) beside the input by default.
+The HTML path writes `lesson.pdf` (and an intermediate `lesson.html`) beside the input by
+default. For a Quarto/LaTeX deliverable, render the QMD source with the available Quarto
+installation or call Pandoc directly:
+
+```bash
+quarto render workshop-lessons/<video_id>/lesson.qmd --to pdf --pdf-engine=xelatex
+```
+
+If Quarto is unavailable but Pandoc and XeLaTeX are installed:
+
+```bash
+pandoc workshop-lessons/<video_id>/lesson.qmd \
+  --from markdown \
+  --pdf-engine=xelatex \
+  -V geometry:margin=0.7in \
+  -V mainfont="Latin Modern Roman" \
+  -V sansfont="Latin Modern Sans" \
+  -V monofont="Latin Modern Mono" \
+  -o workshop-lessons/<video_id>/lesson.pdf
+```
+
+Use `pdflatex` only when the document's encoding and font setup require it; XeLaTeX or
+LuaLaTeX is the default for UTF-8 Spanish text, Unicode mathematics, and mixed code. The
+LaTeX path must produce a nonzero `lesson.pdf`; use `pdfinfo` to record the page count and
+keep the result within the requested limit when a page limit was specified.
 
 Flags:
 
@@ -157,9 +199,15 @@ Flags:
 
 Do not report this skill as done until:
 
-- `lesson.md` reflects real authored content — objectives, explained sections, a cheat sheet,
-  and exercises — not a copy-pasted or lightly-reformatted transcript.
+- `lesson.md` or `lesson.qmd` reflects real authored content — objectives, explained sections,
+  and a cheat sheet, with exercises only when requested — not a copy-pasted or lightly-
+  reformatted transcript.
 - `lesson.pdf` exists, has nonzero size, and `pdfinfo` reports a page count.
+- The cleaned transcript is retained as a separate output file when requested or useful for
+  audit, typically `transcript.by-chapter.md` and/or `transcript.cleaned.md`.
+- If LaTeX output was requested, the final PDF is rendered from the QMD/LaTeX path and its
+  pages are visually inspected for clipped text, broken math, unreadable code, or font
+  substitution.
 - Report the PDF path first, then `lesson.md`.
 - If the request came from chat and the user expects the deliverable there, attach the PDF.
 
