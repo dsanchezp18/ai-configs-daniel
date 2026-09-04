@@ -6,7 +6,8 @@ description: Write or substantially revise one R script in this repository using
 # R Coder
 
 Use this skill when creating a new R script or making a focused implementation
-change to an existing R script.
+change to an existing R script. Write one complete script from a concrete
+description and target path.
 
 ## Required context
 
@@ -18,10 +19,13 @@ Before editing:
 ## Working style
 
 - Prefer linear, readable scripts over abstraction-heavy code.
+- Keep the script researcher-friendly and easy to follow from top to bottom.
 - Match surrounding structure when editing an existing script.
 - Preserve the current analysis workflow unless the task explicitly changes it.
 - Use the root master for all coding, validation, modelling, output, and path
   decisions.
+- Apply the master standard to functions, packages, paths, validation, outputs,
+  and numerical discipline.
 
 ## Output
 

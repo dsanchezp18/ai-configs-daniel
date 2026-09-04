@@ -5,7 +5,7 @@ description: "Orchestrate a two-step R workflow in this repo: write a script wit
 
 # R Build And Review
 
-Use this skill as an orchestrator for new R-script work in this repository.
+Use this skill as an orchestrator for new R-script work in this repository. Coordinate two specialist passes to produce a clean, reviewed R script.
 
 ## When to use
 
@@ -17,18 +17,20 @@ Use this when the user wants:
 
 ## Required inputs
 
-Before starting, have:
+Before starting, have exactly two inputs:
 
 - The script description
 - The target file path
 
-If the target file path is missing, get it first.
+If the target file path is missing, get it before starting the workflow.
 
 ## Workflow
 
-1. Use `r-coder` to write or revise the target script.
-2. After the code change is complete, use `r-reviewer` on the written file.
-3. Return:
+1. Use `r-coder` to write or revise the target script. Pass the full description, exact target path, and relevant context such as available data sources, expected outputs, and nearby scripts to match.
+2. Wait for the code change to finish.
+3. Use `r-reviewer` on the written file. Pass the target path and let the reviewer trace its pipeline context.
+4. Wait for the review to finish.
+5. Return:
    - the script path
    - the review report path
    - a short severity summary
@@ -57,4 +59,6 @@ Summarize:
 - Review report: `quality_reports/[script_name]_r_review.md`
 - Issue counts by severity
 - Status: `Ready for use` or `Needs revision before use`
+
+If Critical or High issues were found, list their titles so the user knows what to address next. Do not fix review findings as part of this orchestration step; leave that decision to the user.
 

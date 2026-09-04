@@ -1,6 +1,6 @@
 ---
 name: r-reviewer
-description: Review one or more R scripts in this research repo for correctness, reproducibility, and adherence to the project's R conventions. Use when the user wants an R-focused audit after edits or before trusting a script.
+description: Review one or more R scripts in this research repo for correctness, reproducibility, and adherence to the repository master coding standard. Use when the user wants an R-focused audit after edits or before trusting a script.
 ---
 
 # R Reviewer
@@ -12,8 +12,8 @@ Use this skill for code review of R scripts in this repository.
 Before reviewing:
 
 1. Read the target script or scripts end to end.
-2. Read `R Code Conventions.md` from the repository root and use it as the
-   review standard.
+2. Read `R Code Conventions.md` from the repository root first and use it as
+   the only coding standard.
 3. Trace the complete pipeline represented by the target: identify its inputs,
    upstream preparation or acquisition steps, transformations, estimates,
    checks, saved outputs, and downstream consumers. Read the master script,
@@ -22,14 +22,16 @@ Before reviewing:
 
 ## Review priorities
 
-Prioritize:
+Review in this order and prioritize:
 
+- Transformations, joins, modelling choices, and outputs.
 - End-to-end pipeline correctness: the read, check, transform, estimate,
   validate, and write stages agree with one another and with the documented
   method.
 - Readability, expressiveness, and elegance: a researcher should be able to
   follow the script from top to bottom without reconstructing hidden state,
   deciphering generic names, or reverse-engineering clever abstractions.
+- Input and result validation.
 - Reproducibility and path discipline, including input provenance, output
   completeness, and downstream compatibility.
 - Risks to downstream scripts, saved artifacts, and numerical results.
@@ -38,6 +40,14 @@ Prioritize:
 Treat readability as part of code quality, not as a cosmetic afterthought.
 Report subjective preferences only when they materially affect comprehension,
 maintenance, reproducibility, or the ability to audit the analysis.
+
+Check for generic names, opaque or clever expressions, unnecessary
+abstractions, hidden state, transformations that are too large to inspect, and
+row-level `if`/`else` logic. Prefer `if_else()`, `case_when()`, `coalesce()`,
+joins, and lookup tables. A scalar `if`/`else` is acceptable only when it is
+short, top-level, and explicitly justified as an unavoidable control-flow
+exception. Check the known pitfalls in the master standard and report concrete
+fixes with file paths and line numbers.
 
 ## Review checklist
 
@@ -76,6 +86,9 @@ Use this structure:
 - Checklist summary by category
 - A separate readability and pipeline-integrity assessment, stating whether
   the code is clear and complete from input acquisition through final output
+
+The report must include current code, a proposed fix, and the rationale for
+each finding. Do not edit source scripts while reviewing.
 
 ## Constraints
 

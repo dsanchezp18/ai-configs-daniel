@@ -40,7 +40,7 @@ No deducir la voz a partir de un promedio indiferenciado del archivo. Conservar 
 1. Preservar el argumento, los resultados y la voz individual del autor cuando sean compatibles con El Quantificador.
 2. Separar correcciones necesarias de mejoras opcionales.
 3. Comprobar primero rigor y trazabilidad; después estructura, voz y estilo.
-4. Ejecutar `scripts/check_article.ps1 -Path <ruta>` para detectar problemas mecánicos. Tratar sus resultados como señales, no como sustituto de la revisión editorial.
+4. Ejecutar `scripts/check_article.ps1 -Path <ruta>` para detectar problemas mecánicos, si hay un intérprete de PowerShell disponible (`pwsh`). Tratar sus resultados como señales, no como sustituto de la revisión editorial.
 5. Verificar cada afirmación fuerte contra el texto, tabla, gráfico o fuente que supuestamente la respalda.
 6. Corregir directamente cuando el usuario haya pedido editar. Si solo pidió revisar, informar hallazgos con citas de línea y cambios propuestos.
 7. No reescribir todo por preferencia personal. Mantener giros humanos útiles si son claros, precisos y compatibles con la guía.
@@ -83,4 +83,4 @@ Para un artículo nuevo, entregar un borrador coherente y publicable, acompañad
 - `references/voice-guide.md`: rasgos de voz, estructura y recursos retóricos.
 - `references/corpus-map.md`: fuentes, pesos y rutas del corpus.
 - `references/review-rubric.md`: auditoría editorial, cuantitativa y técnica.
-- `scripts/check_article.ps1`: comprobaciones mecánicas de frontmatter y estilo.
+- `scripts/check_article.ps1`: comprobaciones mecánicas de frontmatter y estilo (requiere PowerShell).
