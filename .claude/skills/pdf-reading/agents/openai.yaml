@@ -1,4 +1,0 @@
-interface:
-  display_name: "PDF Reading"
-  short_description: "Docling-first PDF reading with artifacts."
-  default_prompt: "Use $pdf-reading to convert this PDF before reading it, and extract figures or tables if they matter."
