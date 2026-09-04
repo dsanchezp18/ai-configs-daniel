@@ -1,13 +1,13 @@
 ---
 name: workshop-transcript-lesson
-description: "Turn a YouTube coding workshop/tutorial video (R, Python, Stata, Julia, or similar) into a pedagogical PDF study guide by fetching its transcript and having Claude author a structured lesson from it."
+description: "Turn a coding workshop/tutorial video (R, Python, Stata, Julia, or similar) — a YouTube URL or a local video/audio file — into a pedagogical PDF study guide by fetching its transcript and having Claude author a structured lesson from it."
 ---
 
 # Workshop Transcript Lesson
 
-Use when the user gives a YouTube link to a coding workshop, tutorial, or lecture and wants
-something to actually study from — not a transcript, a lesson: objectives, explanations,
-code, a cheat sheet, exercises.
+Use when the user gives a coding workshop, tutorial, or lecture — a YouTube link or a local
+video/audio file — and wants something to actually study from — not a transcript, a lesson:
+objectives, explanations, code, a cheat sheet, exercises.
 
 This is a two-stage skill and the stages are not interchangeable:
 
@@ -21,20 +21,33 @@ Never treat step 1's output as the deliverable. A cleaned transcript is not a le
 
 ```bash
 python3 scripts/workshop_transcript_lesson.py fetch "https://youtu.be/..."
+python3 scripts/workshop_transcript_lesson.py fetch "C:\path\to\workshop.mp4"
 ```
 
-Downloads the best available English captions (preferring human captions over auto-captions),
-falling back to local `faster-whisper` transcription if the video has no captions at all.
-Writes to `workshop-lessons/<video_id>/`:
+The `fetch` command accepts either a YouTube URL or a path to a local video/audio file — it
+checks whether the argument is an existing local path first, and routes accordingly.
 
-- `meta.json` — title, uploader, source URL, duration, upload date, and the video's chapter
-  list if it has one.
+**YouTube URL:** downloads the best available English captions (preferring human captions
+over auto-captions), falling back to local `faster-whisper` transcription if the video has no
+captions at all. Chapters, if the video defines any, come from YouTube's own chapter list.
+
+**Local file:** always transcribes with local `faster-whisper` (a local file has no YouTube
+captions to fetch), passing the file straight to Whisper — no separate audio-extraction step
+needed. Chapters, if any, are read from the file's own embedded chapter metadata via
+`ffprobe`; most workshop recordings won't have any, in which case the fallback is periodic
+timestamp markers just like the YouTube path. `--no-whisper` is rejected here since it isn't
+meaningful for a local file.
+
+Either way, it writes to `workshop-lessons/<video_id>/`:
+
+- `meta.json` — title, uploader (`"Local file"` for local input), source URL/path, duration,
+  upload date (empty for local input), and the chapter list if there is one.
 - `raw.txt` — verbatim caption/Whisper text, kept for audit only.
-- `transcript.by-chapter.md` — the input for step 2. Segmented by the video's own chapters
-  when present, otherwise by a timestamp marker roughly every 3 minutes. Cleaned only enough
-  to be readable: filler words and duplicate stutters removed, a handful of common ASR
-  misspellings fixed (RStudio, tidyverse, CRAN, GitHub, ggplot2, dplyr, and similar). It is
-  NOT paraphrased, restructured, or fact-checked — auto-captions on tutorial videos are
+- `transcript.by-chapter.md` — the input for step 2. Segmented by chapters when present,
+  otherwise by a timestamp marker roughly every 3 minutes. Cleaned only enough to be readable:
+  filler words and duplicate stutters removed, a handful of common ASR misspellings fixed
+  (RStudio, tidyverse, CRAN, GitHub, ggplot2, dplyr, and similar). It is NOT paraphrased,
+  restructured, or fact-checked — auto-captions and Whisper output on tutorial videos are
   usually unpunctuated and frequently mangle package/function names, so expect to fix more of
   that yourself while writing the lesson.
 - `transcript.plain.txt` — the same content flattened, no chapter headings.
@@ -42,16 +55,19 @@ Writes to `workshop-lessons/<video_id>/`:
 Useful flags:
 
 - `--output-root PATH` — default `workshop-lessons`.
-- `--lang LANG` — force a caption language instead of auto-selecting.
-- `--no-whisper` — fail instead of transcribing locally when no captions exist.
+- `--lang LANG` — force a caption/transcription language instead of auto-selecting (YouTube
+  path) or the `en` default (local-file path).
+- `--no-whisper` — fail instead of transcribing locally when no YouTube captions exist.
+  Rejected outright for a local file, since local input has no other transcript source.
 - `--whisper-model/--whisper-device/--whisper-compute-type/--whisper-python` — same meaning as
   in the `youtube-transcript-pdf` skill. The default Whisper interpreter path is shared with
   that skill (`~/.local/share/youtube-transcript-pdf/whisper-venv/bin/python`) — no separate
   environment to set up.
-- `--download-video` — also download the full video file with `yt-dlp` into
-  `workshop-lessons/<video_id>/video.<ext>`. Off by default; the transcript/lesson workflow
-  doesn't need it. Use it when the user wants a local copy of the source video, or when you
-  want to eyeball on-screen code that the transcript reconstructs ambiguously.
+- `--download-video` — YouTube input only. Also downloads the full video file with `yt-dlp`
+  into `workshop-lessons/<video_id>/video.<ext>`. Off by default; the transcript/lesson
+  workflow doesn't need it. Use it when the user wants a local copy of the source video, or
+  when you want to eyeball on-screen code that the transcript reconstructs ambiguously. A
+  no-op for local-file input, which already has the video on disk.
 - `--video-format` — yt-dlp format selector used with `--download-video`. Default:
   `bestvideo[height<=1080]+bestaudio/best[height<=1080]/best`.
 

@@ -355,7 +355,109 @@ print(json.dumps([
     return events
 
 
+def probe_format(path: Path) -> dict:
+    result = run(["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", str(path)], capture=True)
+    return json.loads(result.stdout).get("format", {}) or {}
+
+
+def probe_chapters(path: Path) -> list[dict]:
+    result = run(["ffprobe", "-v", "quiet", "-print_format", "json", "-show_chapters", str(path)], capture=True)
+    data = json.loads(result.stdout)
+    chapters: list[dict] = []
+    for chapter in data.get("chapters", []):
+        title = (chapter.get("tags") or {}).get("title") or "Untitled section"
+        start = float(chapter.get("start_time") or 0.0)
+        end_raw = chapter.get("end_time")
+        chapters.append({
+            "title": str(title).strip(),
+            "start_time": start,
+            "end_time": float(end_raw) if end_raw is not None else None,
+        })
+    return chapters
+
+
 def cmd_fetch(args: argparse.Namespace) -> int:
+    if Path(args.url).expanduser().exists():
+        return fetch_local(args)
+    return fetch_youtube(args)
+
+
+def fetch_local(args: argparse.Namespace) -> int:
+    require_tool("ffmpeg")
+    require_tool("ffprobe")
+    if args.no_whisper:
+        raise SystemExit("a local video/audio file has no YouTube captions; --no-whisper is incompatible here")
+
+    video_path = Path(args.url).expanduser().resolve()
+    video_id = slugify(video_path.stem, "local-video")
+    out_dir = Path(args.output_root).expanduser() / video_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    lang = args.lang or "en"
+    events = transcribe_with_whisper(
+        video_path,
+        out_dir,
+        whisper_python=Path(args.whisper_python).expanduser(),
+        model=args.whisper_model,
+        device=args.whisper_device,
+        compute_type=args.whisper_compute_type,
+        lang=lang,
+    )
+    source = "whisper"
+
+    if not events:
+        raise SystemExit("no transcript content extracted")
+
+    raw_text = "\n".join(html.unescape(e["text"]).strip() for e in events if e["text"].strip())
+    (out_dir / "raw.txt").write_text(raw_text + "\n", encoding="utf-8")
+
+    cleaned_events: list[dict] = []
+    previous_text: str | None = None
+    for event in events:
+        text = clean_text(event["text"])
+        if not text or text == previous_text:
+            continue
+        cleaned_events.append({"start": event["start"], "end": event["end"], "text": text})
+        previous_text = text
+
+    paragraphs = group_events_into_paragraphs(cleaned_events)
+    chapters = probe_chapters(video_path)
+    markdown = build_chapter_markdown(paragraphs, chapters)
+    (out_dir / "transcript.by-chapter.md").write_text(markdown, encoding="utf-8")
+    (out_dir / "transcript.plain.txt").write_text(
+        "\n\n".join(p["text"] for p in paragraphs).strip() + "\n", encoding="utf-8"
+    )
+
+    format_info = probe_format(video_path)
+    duration_seconds = float(format_info.get("duration") or 0.0)
+    title = (format_info.get("tags") or {}).get("title") or video_path.stem
+
+    meta = {
+        "video_id": video_id,
+        "title": title,
+        "uploader": "Local file",
+        "url": str(video_path),
+        "duration_seconds": duration_seconds,
+        "duration_string": format_timestamp(duration_seconds),
+        "upload_date": "",
+        "lang": lang,
+        "transcript_source": source,
+        "chapters": chapters,
+        "video_file": video_path.name,
+    }
+    (out_dir / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(json.dumps({
+        "out_dir": str(out_dir.resolve()),
+        "meta": str((out_dir / "meta.json").resolve()),
+        "raw_txt": str((out_dir / "raw.txt").resolve()),
+        "transcript_by_chapter_md": str((out_dir / "transcript.by-chapter.md").resolve()),
+        "transcript_plain_txt": str((out_dir / "transcript.plain.txt").resolve()),
+    }, indent=2))
+    return 0
+
+
+def fetch_youtube(args: argparse.Namespace) -> int:
     require_tool("yt-dlp")
     require_tool("ffmpeg")
 
