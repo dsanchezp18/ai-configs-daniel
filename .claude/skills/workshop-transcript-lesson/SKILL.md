@@ -1,22 +1,66 @@
 ---
 name: workshop-transcript-lesson
-description: "Turn a coding workshop/tutorial video (R, Python, Stata, Julia, or similar) — a YouTube URL or a local video/audio file — into a pedagogical PDF study guide by fetching its transcript and having Claude author a structured lesson from it."
+description: "Turn a coding workshop or tutorial video, from YouTube or a local video/audio file, into a standalone pedagogical study guide with an audited transcript, explained concepts, verified code, and a rendered PDF."
 ---
 
 # Workshop Transcript Lesson
 
 Use when the user gives a coding workshop, tutorial, or lecture — a YouTube link or a local
-video/audio file — and wants something to actually study from — not a transcript, a lesson:
-objectives, explanations, code, and a cheat sheet. Add practice exercises only when the user
-asks for them or when they are clearly appropriate.
+video/audio file — and wants something to study from. The primary deliverable is a standalone
+lesson, not a transcript with headings: a reader who never watches the recording should be able
+to understand the central idea, follow the demonstrated workflow, and know where its limits are.
+Include practice exercises only when the user explicitly asks for them.
 
 This is a two-stage skill and the stages are not interchangeable:
 
 1. The script fetches and lightly cleans the transcript. This step does no teaching.
-2. Claude reads that transcript and writes the lesson. This is the actual work of the skill.
+2. The model builds a concept-first teaching map, verifies ambiguous details against available
+   project materials, and writes the lesson. This is the actual work of the skill.
 3. The script or the selected document tool renders the finished lesson source to PDF.
+4. The final PDF, source, transcript, and source metadata are checked as a set.
 
 Never treat step 1's output as the deliverable. A cleaned transcript is not a lesson.
+
+## Pedagogical contract
+
+The lesson must add value beyond the recording's chronology. Before writing prose, identify the
+dependency order of the ideas and build a short teaching map with these fields: concept, why it
+matters, prerequisite, exact example or code, expected result, pitfall, and evidence source
+(transcript timestamp or project file). Use that map to reorganise the material when the speaker's
+presentation order is driven by greetings, polls, breaks, screen-sharing logistics, debugging
+chatter, or audience questions.
+
+For every important topic, use this teaching sequence where the material supports it:
+
+1. **Motivation:** state the problem and why the reader should care.
+2. **Mental model:** explain the mechanism in plain language before showing syntax.
+3. **Worked example:** show a minimal, coherent code path with correct names and imports.
+4. **Interpretation:** explain what the code does, what result to expect, and where computation
+   occurs.
+5. **Boundary:** state when the approach fails, becomes unsafe, or should be replaced.
+6. **Takeaway:** close with one practical rule the reader can reuse.
+
+Do not turn every timestamp or speaker transition into a section. Compress repetition and event
+logistics. Keep questions only when they expose a genuine misconception or an important boundary.
+Prefer fewer, well-explained examples over a catalogue of commands.
+
+### Filling gaps without inventing content
+
+The transcript is evidence about what the instructor covered, not a complete textbook. Add short
+bridge explanations when the reader needs them to understand a demonstrated step: define a term,
+explain why an operation is lazy, connect two code blocks, or state a prerequisite that the speaker
+assumed. These bridges may use stable technical knowledge or the supplied project documentation,
+but they must not introduce unrelated tools, unsupported claims, or a new workflow.
+
+When the speaker's code is ambiguous, use this evidence order:
+
+1. Exact code in the supplied workshop repository or project files.
+2. The transcript's surrounding explanation and later references to the same object.
+3. Authoritative documentation for the named package or tool, only to repair essential syntax.
+4. A clearly labelled reconstruction when uncertainty remains.
+
+Never silently convert an uncertain ASR fragment into authoritative-looking code. Say briefly when
+code was reconstructed, and preserve the raw and cleaned transcript for audit.
 
 ## Step 1 — Fetch
 
@@ -74,6 +118,21 @@ Useful flags:
 
 ## Step 2 — Write the lesson
 
+### Source hierarchy and authoring pass
+
+When a repository, project folder, slides, or notebook is supplied or mentioned in the recording,
+inspect it before authoring. Use project files for exact package names, function names, paths,
+object names, and runnable code; use the transcript for what the instructor actually explains,
+demonstrates, recommends, or warns about; and use authoritative documentation only to repair an
+essential missing definition or syntax detail. Record any such documentation link in the source
+notes.
+
+Use two passes. First build the teaching map: group transcript evidence into concepts and
+dependencies, marking repeated narration, logistics, Q&A, uncertain ASR, and exact code found in
+project files. Then write the lesson from that map rather than paraphrasing timestamp blocks.
+After drafting, check that each important section explains purpose, mechanism, code,
+interpretation, and limits.
+
 Read `transcript.by-chapter.md` and `meta.json`, then write `lesson.qmd` yourself in the same
 `workshop-lessons/<video_id>/` directory when the user requests LaTeX, mathematical notation,
 or a Quarto source. Use `lesson.md` only when a plain Markdown source is more appropriate.
@@ -85,10 +144,11 @@ from context and say so briefly rather than presenting a guess as verbatim trans
 
 ### Compact and LaTeX mode
 
-When the user requests a short guide, target a maximum of 10 PDF pages unless the content
-would become misleading without more space. Prefer concise explanations, one compact cheat
-sheet, and a small number of representative code blocks. Omit the exercises and solutions
-sections when the user asks for no exercises.
+When the user requests a short guide or a page limit, treat the limit as a real design constraint.
+For a maximum of 10 pages, cut greetings, polls, repeated demonstrations, breaks, and routine
+troubleshooting before shrinking type or margins. Keep the minimum conceptual explanation needed
+to make each retained example meaningful. Prefer one coherent worked example per major idea,
+annotated code, one compact cheat sheet, and no exercises unless explicitly requested.
 
 When the user requests mathematical expressions and code in a PDF, prefer a `.qmd` source and
 XeLaTeX or LuaLaTeX rather than the HTML-to-PDF path. Use UTF-8 directly; do not transliterate
@@ -116,7 +176,8 @@ Then, in this order:
 2. **Learning objectives** — a short bulleted list of what the reader should be able to do
    afterward.
 3. **Prerequisites** — packages/versions/tools and prior knowledge the video assumes.
-4. **One section per topic** — mirror the video's own chapter structure when it has one. Each
+4. **Guided workflow** — organise sections by concept and dependency, using the video's chapter
+   structure only when it forms a useful conceptual sequence. Each
    section gets:
    - A plain-language explanation in your own words, not a paraphrase of the narration.
    - Fenced code blocks with the correct language tag (` ```r `, ` ```python `, etc.) for
@@ -129,6 +190,17 @@ Then, in this order:
    own `### Solutions` section at the very end, never inline, so they don't spoil the exercise.
 7. **Further resources** — only tools/packages/links the video itself mentions. Do not invent
    external references.
+
+### Lesson quality checks
+
+Before rendering, ask:
+
+- Could a reader understand why the workflow exists before seeing the first command?
+- Does every retained code block have a purpose, an explanation, and an expected result?
+- Are the transitions between concepts explicit, especially where the speaker moved quickly?
+- Are limits, failure modes, and safe materialisation points stated?
+- Were names and syntax checked against project files rather than copied from uncertain ASR?
+- Did the lesson remove event logistics and repeated narration instead of merely shortening them?
 
 ### Callouts
 
@@ -185,6 +257,11 @@ LuaLaTeX is the default for UTF-8 Spanish text, Unicode mathematics, and mixed c
 LaTeX path must produce a nonzero `lesson.pdf`; use `pdfinfo` to record the page count and
 keep the result within the requested limit when a page limit was specified.
 
+For formal guides, honour requested layout settings such as normal one-inch margins and 1.5 line
+spacing. Keep code blocks, tables, and callouts together where possible. If the page budget is
+exceeded, revise the lesson for clarity and density first; do not silently reduce the requested
+font size, margins, or line spacing.
+
 Flags:
 
 - `--output PATH` — override the PDF path.
@@ -198,6 +275,13 @@ Flags:
 ## Completion gate
 
 Do not report this skill as done until:
+
+- The guide is recognisably more useful than the transcript: it has a concept-first arc, bridge
+  explanations, interpreted examples, and explicit boundaries.
+- Any supplied repository or project materials were inspected before finalising code and terminology;
+  reconstructed details are identified rather than silently asserted.
+- The source metadata identifies whether the transcript came from captions, local Whisper, or a
+  user-supplied transcript, and the cleaned transcript remains separate for audit.
 
 - `lesson.md` or `lesson.qmd` reflects real authored content — objectives, explained sections,
   and a cheat sheet, with exercises only when requested — not a copy-pasted or lightly-
