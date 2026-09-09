@@ -23,9 +23,10 @@ measurable density — never more.
   - Object and column names: 1-4 words, snake_case. A name needing a 5th
     word is a sign the object is doing two things — split it instead of
     lengthening the name.
-- Keep each transformation small enough to inspect and validate by itself.
+- Keep each transformation small enough to inspect on its own.
 - Optimize only after measuring a real performance bottleneck.
-- Comments explain why a rule exists; they do not restate obvious code.
+- Comments teach a colleague the calculation. They do not restate obvious
+  code. Do not write comments for an AI parser.
   - Target one comment per 5-10 lines of code. Never one comment per line. A
     block under 5 lines needs at most one comment, only if a non-obvious
     reason exists.
@@ -50,15 +51,25 @@ so explicitly rather than silently mixing styles.
   governs (pipe operator, indentation, section naming, comment density) —
   those always follow this file, per the rule above.
 
+The script has one shape: setup, read, transform, estimate, write. Nothing
+else. Do not add input checks, result checks, assertions, or validation
+scripts unless they have been reviewed and explicitly requested. If a check
+appears necessary, say so in the conversation. Do not put it in the code.
+
+Do not extract ordinary steps into tiny functions. Leave the calculation on
+the page. Do not turn a comment into a function. Do not refactor for its own
+sake.
+
+No assertions unless explicitly requested. No manifests. No automatic
+rejection.
+
 The normal script reads from top to bottom:
 
 1. setup;
 2. read inputs;
-3. check inputs;
-4. transform data;
-5. calculate estimates;
-6. check results; and
-7. write outputs.
+3. transform data;
+4. calculate estimates; and
+5. write outputs.
 
 ## 2. Script structure
 
@@ -80,11 +91,9 @@ task, but never omit `# 0. Setup ----`.
 ```r
 # 0. Setup ----
 # 1. Read inputs ----
-# 2. Check inputs ----
-# 3. Prepare data ----
-# 4. Calculate estimates ----
-# 5. Check results ----
-# 6. Write outputs ----
+# 2. Prepare data ----
+# 3. Calculate estimates ----
+# 4. Write outputs ----
 ```
 
 Additional structure rules:
@@ -350,10 +359,8 @@ for what the analysis needs, and say so in a comment above the call.
   categorical values during cleaning, not as ordinary `NA`. Recode them to
   explicit labelled `NA` levels (or a `haven::labelled` factor) only at the
   point analysis requires it, and document the recode.
-- Check unweighted and weighted respondent counts against the expected
-  sample size from the codebook as part of the script's input-checking
-  section (section 1's step 3). A missing wave or an unexpected count is a
-  validation failure, not a silent proceed.
+- If unweighted or weighted respondent counts look wrong against the
+  codebook, say so in the conversation. Do not add a check unless asked.
 
 ### Labels
 
@@ -472,9 +479,8 @@ result <-
   (or an explicit write, e.g. `write_dataset()`) at the point the result is
   small enough to hold in memory or needs to leave the lazy engine — never
   let a script's final output silently stay a lazy, unmaterialized query.
-- Check row counts before and after a `duckplyr` join or filter the same
-  way section 5 asks for join validation — a lazy engine makes a silent
-  cardinality blowup easy to miss until `collect()` runs out of memory.
+- If a `duckplyr` join or filter looks like it blew up the row count, say
+  so in the conversation. Do not add a row-count stop unless asked.
 
 ## 8. Loops and conditions
 
@@ -498,23 +504,26 @@ vectorized calculation; otherwise use a named configuration value or a lookup
 table.
 
 Bare `if`/`else` blocks are allowed only as explicit, top-level control-flow
-exceptions: checking a required file or column, stopping after a failed
-validation, handling an optional top-level output, or handling one unavoidable
-file-format branch. Put a short comment immediately above the exception that
-states why a vectorized or declarative alternative does not apply. Reviewers
-must flag an undocumented scalar `if`/`else`, any row-level `if`/`else`, and
-deeply nested control flow. Stop early rather than building nested branches.
+exceptions: an optional top-level output, or one unavoidable file-format
+branch. Do not use them to add unsolicited validation or `stopifnot`. If a
+check appears necessary, say so in the conversation. Put a short comment
+immediately above the exception that states why a vectorized alternative
+does not apply. Reviewers must flag row-level `if`/`else` and deeply nested
+control flow.
 
 ## 9. Functions and abstraction
 
 Linear code is the default. Most repeated research code should stay inline as
-plain duplication, not become a function.
+plain duplication, not become a function. Leave the calculation on the page.
+If the reader has to jump through many functions to see a simple algorithm,
+the code has already failed. Do not extract ordinary steps into tiny
+functions. Do not turn a comment into a function.
 
 **When to write a helper.** Write a function only when a block of code,
 varying only in 1-3 parameters (e.g. a dependent variable name, a control
-string), is repeated **6 or more times**. The repeat count is the trigger by
-itself — line count and complexity do not matter; a single repeated one-line
-`feols()` call qualifies exactly as much as a repeated five-line block.
+string), is repeated **6 or more times**, and writing the function makes the
+calculation easier to follow, not harder. Repeat count is not a reason to
+hide a trivial step.
 
 Once a helper is triggered, it should also:
 
@@ -877,19 +886,19 @@ wb_save(wb, "outputs/tables/chart_output.xlsx")
   `var()` call.
 - Never hide a new missing value with `na.rm = TRUE`; use it only when the
   documented method says missing observations are excluded.
-- Check required period counts before annualizing monthly or quarterly data.
-- Check that required numerical values are finite.
 - Never compare floating-point values with `==`; use `all.equal()` or an
   explicit tolerance.
 - Clamp probabilities passed to `qnorm()`, `pbinom()`, and similar functions:
   `eps <- 1e-12; pmin(1 - eps, pmax(eps, p))`.
-- Check transformation links and domain constraints before extending a
-  series.
+- If a period count, a non-finite value, or a domain constraint looks wrong,
+  say so in the conversation. Do not add a stop in the script unless asked.
 
 ## 14. Comments, errors, and console output
 
 - Comments must be used throughout, at the density set in section 1.
-- Comments explain why a non-obvious rule exists.
+- Comments teach the calculation. A little technical detail is fine when
+  a step is obscure. The first question is whether that obscure step
+  should exist at all.
 - Leave exactly one blank line after every full-line comment or contiguous
   comment block before the next code or comment block. Inline trailing
   comments remain on the line with their statement.
@@ -1013,10 +1022,12 @@ sections named:
 2. **Reproducibility and path discipline** — no `setwd()`, no hardcoded
    machine paths, `saveRDS()` present for every downstream-referenced object,
    project structure and script naming match section 15 (sections 4, 12, 15).
-3. **Input and result validation** — `na.rm` stated explicitly, finiteness
-   checked, period counts checked before annualizing, floating-point
-   comparisons avoid `==` (section 13). There is no built-in `lintr` rule that
-   detects a missing `na.rm`; this stays a manual check every time.
+3. **Numerical writing** — `na.rm` stated explicitly; floating-point
+   comparisons avoid `==` (section 13). Missing unsolicited checks,
+   assertions, or Check inputs / Check results sections are not defects.
+   Unsolicited checks in the script are a defect. There is no built-in
+   `lintr` rule that detects a missing `na.rm`; this stays a manual reading
+   every time.
 4. **Downstream artifacts and saved objects** — `.rds`, `.xlsx`, `.png`/`.pdf`
    outputs exist, are named descriptively, and match what the script's header
    documents as its Outputs (sections 2, 10, 11, 12).
@@ -1153,11 +1164,14 @@ specialized roles:
 Role selection:
 
 - `r-coder`: implement or substantially revise one R script;
-- `r-reviewer`: audit R scripts and produce a quality report; and
-- `r-build-and-review`: write, then review, an R script.
+- `r-reviewer`: audit R scripts and produce a quality report;
+- `r-build-and-review`: write, then review, an R script; and
+- `simplifier`: review overengineering.
 
-If instructions conflict, use this file first, then the role-specific file,
-then general project context.
+If instructions conflict, use the working philosophy in this file (section 1)
+and in `AGENTS.md` first, then the role-specific skill, then the rest of this
+file. Do not revive Check inputs, Check results, or unsolicited assertions
+from an older copy.
 
 ## Reusable code-explanation prompt
 
@@ -1175,9 +1189,9 @@ Explain the code from beginning to end in its actual execution order. State
 the purpose, inputs, outputs, assumptions, packages, and external dependencies.
 For each stage, identify the relevant operations and explain why they are used.
 Trace data transformations, joins, missing-value handling, vectorized
-conditions, models, figures, saved artifacts, validation checks, and downstream
-dependencies. Assess readability, expressiveness, naming, linearity, and
-whether the abstractions are proportionate to the task.
+conditions, models, figures, saved artifacts, and downstream dependencies.
+Assess whether a human can follow setup, read, transform, estimate, write
+without jumping through tiny functions.
 
 For hypothesis testing with infer, identify the response and explanatory
 variables, null hypothesis, observed statistic, resampling method, number of
@@ -1188,7 +1202,8 @@ scalar if/else logic and recommend if_else(), case_when(), coalesce(), joins,
 or lookup tables when they express the data transformation more clearly.
 
 Distinguish what the code does from what it should do. Identify risks,
-missing checks, hidden state, unclear names, and downstream incompatibilities.
+hidden state, unclear names, and downstream incompatibilities. Do not treat
+missing unsolicited checks as a defect.
 Cite the relevant section of R Code Conventions.md. If you propose a change,
 give one concrete, minimally scoped recommendation at a time and do not
 invent inputs, outputs, assumptions, results, or methodological claims.

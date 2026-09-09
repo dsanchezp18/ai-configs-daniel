@@ -8,11 +8,13 @@ which stays canonical for R. The Stata, Python, and Julia sections contain
 their conventions directly, in this file.
 
 All four sections share the same working philosophy: write code for the
-researcher who reviews it next year — readable, linear, commented at a fixed
+researcher who reviews it next year. Readable, linear, commented at a fixed
 density, using 1-4 word snake_case names, with each transformation small
-enough to inspect on its own. See `R Code Conventions.md` section 1 for the
-full statement of that philosophy; it applies to every language below
-without being restated per section.
+enough to inspect on its own. The script shape is setup, read, transform,
+estimate, write. Nothing else. Do not add unsolicited checks or assertions.
+Leave the calculation on the page. See `R Code Conventions.md` section 1
+for the full statement; it applies to every language below without being
+restated per section.
 
 For every language, leave exactly one blank line after each full-line comment
 or contiguous comment block before the next code or comment block. Inline
@@ -62,11 +64,9 @@ Followed by numbered sections, adapted to the task but never omitting setup:
 ```stata
 * 0. Setup
 * 1. Read inputs
-* 2. Check inputs
-* 3. Prepare data
-* 4. Calculate estimates
-* 5. Check results
-* 6. Write outputs
+* 2. Prepare data
+* 3. Calculate estimates
+* 4. Write outputs
 ```
 
 - Use `set seed 42` at the top when the script is stochastic; omit it for
@@ -141,15 +141,13 @@ transformation:
 
 ```stata
 merge 1:1 entity_id using "data/intermediate/concordance.dta", ///
-    assert(match) keep(match) nogenerate
+    keep(match) nogenerate
 ```
 
-- Always specify the match type (`1:1`, `1:m`, `m:1`, `m:m`) — never rely on
+- Always specify the match type (`1:1`, `1:m`, `m:1`, `m:m`). Never rely on
   Stata inferring it.
-- Always check `_merge` (or use `assert()`/`nogenerate` as above) rather
-  than leaving unmatched rows unexamined.
-- Check keys with `duplicates report <keyvars>` before merging or
-  collapsing.
+- Do not add `assert()` unless asked. If unmatched rows look wrong, say so
+  in the conversation.
 
 ### 5. Survey data management
 
@@ -184,10 +182,8 @@ R's `srvyr`).
   values during cleaning (e.g. `-98`, `-99`), not silently recoded to `.`
   Recode to Stata missing only at the point analysis requires it, and
   document the recode with a comment.
-- Check unweighted and weighted respondent counts (`svy: tabulate` or
-  `count`) against the expected sample size from the codebook as part of
-  input checking. A missing wave or an unexpected count is a validation
-  failure, not a silent proceed.
+- If unweighted or weighted respondent counts look wrong against the
+  codebook, say so in the conversation. Do not add a check unless asked.
 
 **Labels.** Inspect a labelled variable's value labels with `labelbook
 varname` before recoding it — the same "know what the codes mean before
@@ -211,18 +207,19 @@ distinct:
   equivalent of R's `map()`/`walk()` and is expected, not discouraged —
   Stata has no first-class function values to pass into a map-style call.
 
-Use `if`/`else if`/`else` for scalar guards (checking a required file or
-variable exists, stopping after a failed `assert`) the same way R allows
-scalar `if` for guards; do not build deeply nested branching for what
-`recode` or a lookup merge would express more clearly.
+Use `if`/`else if`/`else` only for an optional top-level output or one
+unavoidable file-format branch. Do not add unsolicited `assert` stops. If a
+check appears necessary, say so in the conversation. Do not build deeply
+nested branching for what `recode` or a lookup merge would express more
+clearly.
 
 ### 7. Functions and abstraction (`program define`)
 
-Linear, repeated do-file code is the default. Write a `program define` only
-when a block of code, varying only in 1-3 parameters, is repeated **6 or
-more times** — the same repeat-count trigger as `R Code Conventions.md`
-section 9, so a Stata program earns its abstraction on the same terms an R
-helper does.
+Linear, repeated do-file code is the default. Leave the calculation on the
+page. Write a `program define` only when a block of code, varying only in
+1-3 parameters, is repeated **6 or more times** and the program makes the
+calculation easier to follow, not harder. Repeat count is not a reason to
+hide a trivial step.
 
 - Below the 6-repeat threshold, prefer a `foreach`/`forvalues` loop over the
   varying parameter (see section 6) rather than writing a `program define`
@@ -287,24 +284,22 @@ helper does.
 - State how missing values are handled for every `egen` summary
   (`rowmean`/`rowtotal` skip missing by default — confirm that is the
   intended behavior in a comment, don't assume the reader knows).
-- Check required period counts before annualizing monthly or quarterly
-  data.
 - Never compare floating-point values with `==`; use `reldif()` or an
   explicit tolerance.
-- Check transformation links and domain constraints before extending a
-  series.
+- If a period count or domain constraint looks wrong, say so in the
+  conversation. Do not add a stop unless asked.
 
 ### 11. Comments, errors, and console output
 
-- Comments explain why a non-obvious rule exists; use `*` for full-line
-  comments and `//` for end-of-line comments.
+- Comments teach the calculation; use `*` for full-line comments and `//`
+  for end-of-line comments.
 - Do not keep commented-out dead code, except a deterministic `set seed`
   marker.
 - Use `display`/`di` sparingly — at most once per major stage to confirm
   progress, never inside a loop over observations.
-- Error out early with `assert` and a clear message naming the failing
-  file, variable, year, or series, rather than letting a script continue
-  silently after a failed check.
+- Do not add `assert` unless explicitly requested. If a stop has been
+  requested, use a short message naming the file, variable, year, or
+  series.
 
 ### 12. Review standard
 
@@ -320,14 +315,14 @@ not something a linter will flag automatically:
    paths, `save ..., replace` present for every downstream-referenced
    dataset, script naming matches `R Code Conventions.md` section 15's
    pattern generalized to `.do` (sections 3, 9).
-3. **Input and result validation** — missing-value handling stated
-   explicitly, period counts checked before annualizing, floating-point
-   comparisons avoid `==` (section 10).
+3. **Numerical writing** — missing-value handling stated explicitly;
+   floating-point comparisons avoid `==` (section 10). Missing unsolicited
+   checks are not defects. Unsolicited checks in the script are a defect.
 4. **Downstream artifacts and saved objects** — `.dta`, `.xlsx`, `.png`/
    `.pdf` outputs exist, are named descriptively, and match what the
    script's header documents as its Outputs (sections 1, 8, 9).
 5. **Code structure and idioms** — merges use explicit match types and
-   `assert`/`keep`, no row-by-row `foreach` over observations for data
+   `keep`, no row-by-row `foreach` over observations for data
    transformation, `program define` use follows the 6-repeat rule, not a
    subjective judgment call (sections 4, 6, 7).
 6. **Style and polish** — indentation, line length, and naming (section 3)
@@ -342,7 +337,8 @@ rationale. Reviewers do not edit source files. Save formal reports to
 ### 13. Known pitfalls
 
 - `merge` silently producing unexpected many-to-many matches when the
-  declared match type doesn't hold — always check `_merge` or `assert()`.
+  declared match type doesn't hold. If the match looks wrong, say so in
+  the conversation. Do not add `assert()` unless asked.
 - `destring`/`encode` type mismatches between datasets built at different
   times with different string formats for the same key.
 - Stata's missing-value sort-to-infinity trap in `if`/`sort` logic that
@@ -408,11 +404,9 @@ never omitting setup:
 ```python
 # %% 0. Setup
 # %% 1. Read inputs
-# %% 2. Check inputs
-# %% 3. Prepare data
-# %% 4. Calculate estimates
-# %% 5. Check results
-# %% 6. Write outputs
+# %% 2. Prepare data
+# %% 3. Calculate estimates
+# %% 4. Write outputs
 ```
 
 - Set a fixed random seed (`random.seed(42)`, `np.random.seed(42)`) at the
@@ -545,9 +539,8 @@ neither of those gets right on its own.
   categorical values during cleaning, not silently coerced to `null`.
   Recode to `null` only at the point analysis requires it, and document
   the recode.
-- Check unweighted and weighted respondent counts against the expected
-  sample size from the codebook as part of input checking. A missing wave
-  or an unexpected count is a validation failure, not a silent proceed.
+- If unweighted or weighted respondent counts look wrong against the
+  codebook, say so in the conversation. Do not add a check unless asked.
 
 ### 6. Loops and conditionals
 
@@ -562,9 +555,9 @@ list comprehension or explicit loop over a list of files/specifications) —
 the same allowance R gives `map()`/`walk()`. It is not acceptable as a
 substitute for vectorized data-column logic.
 
-Scalar `if` guards (checking a required file or column exists, stopping
-after a failed validation with `assert` or `raise`) are fine; stop early
-rather than nesting deeply.
+Scalar `if` is allowed only for an optional top-level output or one
+unavoidable file-format branch. Do not add unsolicited validation. If a
+check appears necessary, say so in the conversation.
 
 ### 7. Functions and abstraction
 
@@ -637,26 +630,22 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
 - Never silently `.fill_null(0)` to make a calculation run; use it only
   when the documented method says missing observations are treated as
   zero.
-- Check required period counts before annualizing monthly or quarterly
-  data.
-- Check that required numerical values are finite (`np.isfinite`).
 - Never compare floats with `==`; use `np.isclose()` or `math.isclose()`
   with an explicit tolerance.
-- Check transformation links and domain constraints before extending a
-  series.
+- If a period count, a non-finite value, or a domain constraint looks
+  wrong, say so in the conversation. Do not add a stop unless asked.
 
 ### 11. Comments, errors, and console output
 
-- Comments explain why a non-obvious rule exists; do not restate obvious
+- Comments teach the calculation; do not restate obvious
   code.
 - Do not keep commented-out dead code, except a deterministic
   `# random.seed(42)` marker.
 - Use the `logging` module, not `print()`, for status output — at most one
   `logging.info()` per major stage.
 - Do not print progress for every file, row, or iteration.
-- Raise errors (`raise ValueError(...)`, `assert ..., "message"`) that name
-  the failing file, field, year, or series, rather than letting a script
-  continue silently after a failed check.
+- Do not add `assert` unless explicitly requested. If a stop has been
+  requested, use a short message naming the file, field, year, or series.
 
 ### 12. Review standard
 
@@ -668,9 +657,9 @@ times** — the same repeat-count trigger as `R Code Conventions.md` section
    machine paths, every downstream-referenced object saved, script naming
    matches `R Code Conventions.md` section 15's pattern generalized to
    `.py` (sections 3, 9).
-3. **Input and result validation** — missing-value handling stated
-   explicitly, finiteness checked, period counts checked before
-   annualizing, floating-point comparisons avoid `==` (section 10). No
+3. **Numerical writing** — missing-value handling stated explicitly;
+   floating-point comparisons avoid `==` (section 10). Missing unsolicited
+   checks are not defects. Unsolicited checks in the script are a defect. No
    `ruff` rule detects an unstated missing-value assumption; this stays a
    manual check.
 4. **Downstream artifacts and saved objects** — `.parquet`, `.csv`, `.png`/
@@ -737,11 +726,9 @@ setup:
 ```julia
 # 0. Setup
 # 1. Read inputs
-# 2. Check inputs
-# 3. Prepare data
-# 4. Calculate estimates
-# 5. Check results
-# 6. Write outputs
+# 2. Prepare data
+# 3. Calculate estimates
+# 4. Write outputs
 ```
 
 - Set a fixed random seed (`Random.seed!(42)`) at the top when the script
@@ -834,8 +821,8 @@ end
 
 - Drop to base `DataFrames.jl` (`leftjoin()` with `validate=`,
   `combine()`/`groupby()`) only when `TidierData.jl` has no equivalent for
-  what the transformation needs — e.g. a validated join that must assert
-  cardinality, since `TidierData.jl`'s join macros do not yet expose a
+  what the transformation needs, for example a join that must name its
+  match type, since `TidierData.jl`'s join macros do not yet expose a
   `validate=` argument the way `DataFrames.jl`'s `leftjoin()` does. Say so
   in a comment above the call.
 - Check keys (`nonunique()`/`allunique()`, or row counts before/after a
@@ -871,9 +858,8 @@ can't provide correctly — document that reasoning in a comment if so.
   categorical values during cleaning, not silently coerced to `missing`.
   Recode to `missing` only at the point analysis requires it, and document
   the recode.
-- Check unweighted and weighted respondent counts against the expected
-  sample size from the codebook as part of input checking. A missing wave
-  or an unexpected count is a validation failure, not a silent proceed.
+- If unweighted or weighted respondent counts look wrong against the
+  codebook, say so in the conversation. Do not add a check unless asked.
 
 ### 6. Loops and conditionals
 
@@ -894,12 +880,12 @@ about readability, not performance avoidance:
 
 ### 7. Functions and abstraction
 
-Functions are cheap and idiomatic in Julia (multiple dispatch rewards
-having many small, typed methods), but the same discipline applies as in R:
-most repeated research code should stay inline as plain duplication until
-it clears the bar. Write a function only when a block of code, varying only
-in 1-3 parameters, is repeated **6 or more times** — the same repeat-count
-trigger as `R Code Conventions.md` section 9.
+Leave the calculation on the page. Julia makes small methods easy. That is
+not a reason to extract them. Write a function only when a block of code,
+varying only in 1-3 parameters, is repeated **6 or more times** and the
+function makes the calculation easier to follow, not harder. Repeat count
+is not a reason to hide a trivial step. Same bar as
+`R Code Conventions.md` section 9.
 
 - A justified function should represent one named domain or file-reading
   operation, have type-annotated arguments where it clarifies intent
@@ -968,26 +954,22 @@ ggplot(summary_df) +
   `std()` call — use `skipmissing()` explicitly rather than letting
   `missing` silently propagate through a calculation and produce a
   `missing` result downstream.
-- Check required period counts before annualizing monthly or quarterly
-  data.
-- Check that required numerical values are finite (`isfinite`).
 - Never compare floats with `==`; use `isapprox()` with an explicit
   tolerance.
-- Check transformation links and domain constraints before extending a
-  series.
+- If a period count, a non-finite value, or a domain constraint looks
+  wrong, say so in the conversation. Do not add a stop unless asked.
 
 ### 11. Comments, errors, and console output
 
-- Comments explain why a non-obvious rule exists; do not restate obvious
+- Comments teach the calculation; do not restate obvious
   code.
 - Do not keep commented-out dead code, except a deterministic
   `# Random.seed!(42)` marker.
 - Use `@info` for status output, not `println()` — at most once per major
   stage.
 - Do not print progress for every file, row, or iteration.
-- Raise errors (`error(...)`, `@assert ... "message"`) that name the
-  failing file, field, year, or series, rather than letting a script
-  continue silently after a failed check.
+- Do not add `@assert` unless explicitly requested. If a stop has been
+  requested, use a short message naming the file, field, year, or series.
 
 ### 12. Review standard
 
@@ -999,9 +981,10 @@ ggplot(summary_df) +
    every downstream-referenced object saved, script naming matches
    `R Code Conventions.md` section 15's pattern generalized to `.jl`
    (sections 3, 9).
-3. **Input and result validation** — `missing` handling stated explicitly
-   via `skipmissing()`, finiteness checked, period counts checked before
-   annualizing, floating-point comparisons avoid `==` (section 10).
+3. **Numerical writing** — `missing` handling stated explicitly via
+   `skipmissing()`; floating-point comparisons avoid `==` (section 10).
+   Missing unsolicited checks are not defects. Unsolicited checks in the
+   script are a defect.
 4. **Downstream artifacts and saved objects** — saved data/model objects
    and `.png`/`.pdf` outputs exist, are named descriptively, and match
    what the script's header documents as its Outputs (sections 8, 9).

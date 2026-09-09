@@ -16,12 +16,9 @@ Read `R Code Conventions.md` for formatting, packages, tidyverse verbs,
 paths, and modelling. Use the repository-root copy when it exists; otherwise
 use `references/R Code Conventions.md` in this skill folder.
 
-Do not follow these parts of the conventions as review requirements:
-
-- Check inputs / Check results as required script sections
-- unsolicited assertions, `stopifnot`, input checks, or result checks
-- a 6-repeat helper rule that would hide a simple calculation
-- scoring "input and result validation" as a required category
+The convention files match this philosophy. Do not treat missing checks as
+defects. Do not require tiny helpers. Do not score input and result
+validation as a review category.
 
 The expected script shape is setup, read, transform, estimate, write.
 

@@ -17,13 +17,9 @@ paths, and modelling. Use the repository-root copy when it exists; otherwise
 use `references/R Code Conventions.md` in this skill folder. For Stata,
 Python, or Julia, read `General Code Conventions.md` the same way.
 
-Do not follow these parts of the conventions, even if they are still in the
-file:
-
-- Check inputs / Check results as required script sections
-- unsolicited assertions, `stopifnot`, input checks, or result checks
-- extracting ordinary steps into functions so the reader has to jump
-- treating a missing check as something the coder must add
+The convention files match this philosophy. Do not add Check inputs, Check
+results, unsolicited assertions, or tiny-function extraction. A missing
+check is not something to add.
 
 The script shape is setup, read, transform, estimate, write. Nothing else.
 If a check appears necessary, say so in the conversation. Do not put it in

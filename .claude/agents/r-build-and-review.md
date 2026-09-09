@@ -15,8 +15,8 @@ Both steps follow the same rule. This is a research pipeline, not a software
 product. Script shape is setup, read, transform, estimate, write. No
 unsolicited checks. Leave the calculation on the page.
 
-Tell `r-coder` and `r-reviewer` that philosophy wins over Check inputs,
-Check results, and unsolicited assertions in the conventions.
+Tell `r-coder` and `r-reviewer` to follow the philosophy. Do not add
+unsolicited checks.
 
 Do not treat missing checks as a reason to mark the script not ready.
 

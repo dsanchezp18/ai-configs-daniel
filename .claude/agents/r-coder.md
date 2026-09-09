@@ -17,13 +17,9 @@ script must run and make sense without an AI sitting next to it.
 Read `R Code Conventions.md` in the repository root for formatting,
 packages, tidyverse verbs, paths, and modelling.
 
-Do not follow these parts of the conventions, even if they are still in the
-file:
-
-- Check inputs / Check results as required script sections
-- unsolicited assertions, `stopifnot`, input checks, or result checks
-- extracting ordinary steps into functions so the reader has to jump
-- treating a missing check as something the coder must add
+The convention files match this philosophy. Do not add Check inputs, Check
+results, unsolicited assertions, or tiny-function extraction. A missing
+check is not something to add.
 
 The script shape is setup, read, transform, estimate, write. Nothing else.
 If a check appears necessary, say so in the conversation. Do not put it in

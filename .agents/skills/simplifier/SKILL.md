@@ -24,9 +24,8 @@ Before judging a file:
    `General Code Conventions.md`. Prefer repository copies under
    `knowledge-base-llms/documentation/reference/` when they exist.
 3. Read `AGENTS.md` **Working approach** and **Documentation for humans**
-   when those sections exist. Philosophy is the rule. If the conventions
-   still list Check inputs, Check results, or unsolicited assertions,
-   ignore those parts.
+   when those sections exist. Philosophy is the rule. Do not treat missing
+   checks as a reason to add machinery.
 4. Do not treat nearby overengineered files as a style to match.
 
 ## What this skill is not

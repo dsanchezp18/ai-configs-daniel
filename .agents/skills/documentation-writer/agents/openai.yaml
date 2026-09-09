@@ -1,0 +1,4 @@
+interface:
+  display_name: "Documentation writer"
+  short_description: "Write methodology and technical docs for humans"
+  default_prompt: "Write the named document in the current-state COE style. Pedagogical. Equation, then words, then a worked example. No AI patterns. No history of the work."

@@ -5,13 +5,9 @@ reviewing R code. Read `General Code Conventions.md` before writing or
 reviewing Stata, Python, or Julia code. Use those files for formatting,
 packages, verbs, paths, and modelling.
 
-Do not follow these parts of the conventions, even if they are still in the
-file:
-
-- Check inputs / Check results as required script sections
-- unsolicited assertions, input checks, or result checks
-- extracting ordinary steps into functions so the reader has to jump
-- treating a missing check as a defect
+The convention files match this philosophy. Do not add Check inputs, Check
+results, unsolicited assertions, or tiny-function extraction. A missing
+check is not a defect.
 
 Skills under `.agents/skills/` define workflow. They do not replace this
 philosophy.
