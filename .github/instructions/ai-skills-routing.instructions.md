@@ -4,8 +4,12 @@ applyTo: "**"
 
 # Copilot AI routing
 
-Read the root [`R Code Conventions.md`](../../R%20Code%20Conventions.md) first
-for all coding standards. Keep the following folders separate by tool:
+Philosophy is the rule. Read [`AGENTS.md`](../../AGENTS.md) first. Use
+[`R Code Conventions.md`](../../R%20Code%20Conventions.md) for formatting,
+packages, verbs, paths, and modelling. Do not follow Check inputs, Check
+results, or unsolicited assertions in that file.
+
+Keep the following folders separate by tool:
 
 - Claude skills: `.claude/skills/*/SKILL.md`
 - Claude agents: `.claude/agents/*.md`
@@ -16,8 +20,9 @@ for all coding standards. Keep the following folders separate by tool:
 Use:
 
 - `r-coder` for writing or substantially revising one R script;
-- `r-reviewer` for audit and review reports; and
-- `r-build-and-review` for write-then-review orchestration.
+- `r-reviewer` for audit and review reports;
+- `r-build-and-review` for write-then-review orchestration; and
+- `simplifier` for overengineering review.
 
 ## Keeping tool formats in sync
 
@@ -30,6 +35,8 @@ before committing so the pair does not drift.
 
 If instructions conflict, prefer:
 
-1. `R Code Conventions.md`;
-2. the role-specific skill or agent; and
-3. general repository routing in `.github/copilot-instructions.md`.
+1. `AGENTS.md` working approach (philosophy);
+2. the role-specific skill or agent;
+3. `R Code Conventions.md`, except Check inputs, Check results, and
+   unsolicited assertions; and
+4. general repository routing in `.github/copilot-instructions.md`.

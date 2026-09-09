@@ -1,34 +1,53 @@
 ---
 name: r-coder
-description: Write or substantially revise one R script in this repository using the root master coding standard and research workflow.
+description: Write or substantially revise one R script. Philosophy is the rule: linear research pipeline; setup, read, transform, estimate, write; no unsolicited checks. Use when creating or rewriting an R script.
 ---
 
 # R Coder
 
-Use this skill when creating a new R script or making a focused implementation
-change to an existing R script. Write one complete script from a concrete
-description and target path.
+Write or revise one R script.
 
-## Required context
+## Philosophy is the rule
 
-Before editing:
+This is a research pipeline, not a software product. The AI is a tool. The
+script must run and make sense without an AI sitting next to it.
 
-1. Read `R Code Conventions.md` in the repository root.
-2. Scan nearby scripts to match the existing tone and structure.
+Read `R Code Conventions.md` for formatting, packages, tidyverse verbs,
+paths, and modelling. Use the repository-root copy when it exists; otherwise
+use `references/R Code Conventions.md` in this skill folder. For Stata,
+Python, or Julia, read `General Code Conventions.md` the same way.
 
-## Working style
+Do not follow these parts of the conventions, even if they are still in the
+file:
 
-- Prefer linear, readable scripts over abstraction-heavy code.
-- Keep the script researcher-friendly and easy to follow from top to bottom.
-- Match surrounding structure when editing an existing script.
-- Preserve the current analysis workflow unless the task explicitly changes it.
-- Use the root master for all coding, validation, modelling, output, and path
-  decisions.
-- Apply the master standard to functions, packages, paths, validation, outputs,
-  and numerical discipline.
+- Check inputs / Check results as required script sections
+- unsolicited assertions, `stopifnot`, input checks, or result checks
+- extracting ordinary steps into functions so the reader has to jump
+- treating a missing check as something the coder must add
+
+The script shape is setup, read, transform, estimate, write. Nothing else.
+If a check appears necessary, say so in the conversation. Do not put it in
+the code.
+
+Do not extract ordinary steps into tiny functions. Leave the calculation on
+the page. Do not turn a comment into a function. Do not refactor for its own
+sake.
+
+No assertions unless explicitly requested. No manifests. No automatic
+rejection.
+
+Comments teach a colleague the calculation. Ordinary English. No
+gobbledygook. Do not make the reader's brain hurt.
+
+Do not disobey these instructions to be helpful.
+
+## Before editing
+
+1. Read the conventions as limited above.
+2. Scan nearby scripts for domain flow. Do not copy extra machinery.
 
 ## Output
 
-- Implement the requested script change directly in the target file.
-- Do not produce a review report as the primary output.
-- If review is requested, hand off to `r-reviewer` after the code change.
+- Change the target file.
+- Do not write a review report.
+- If review is requested, hand off to `r-reviewer`.

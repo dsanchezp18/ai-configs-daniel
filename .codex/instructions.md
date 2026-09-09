@@ -1,13 +1,13 @@
 # Codex repository instructions
 
-Read [`R Code Conventions.md`](../R%20Code%20Conventions.md) before writing or
-reviewing R code. It is the single canonical coding standard for this
-repository.
+Philosophy is the rule. Read [`AGENTS.md`](../AGENTS.md) first.
 
-Read [`General Code Conventions.md`](../General%20Code%20Conventions.md)
-before writing or reviewing Stata, Python, or Julia code. Its R section only
-routes back to the canonical R standard.
+Read [`R Code Conventions.md`](../R%20Code%20Conventions.md) for formatting,
+packages, verbs, paths, and modelling. Read
+[`General Code Conventions.md`](../General%20Code%20Conventions.md) before
+writing or reviewing Stata, Python, or Julia code. Do not follow Check
+inputs, Check results, or unsolicited assertions in those files.
 
-Use the role-specific skill under `.agents/skills/` when the task matches one.
-Those skills define workflow and output behavior; they do not replace the
-master coding standard.
+Use the role-specific skill under `.agents/skills/` when the task matches
+one. Skills define workflow. They do not replace the philosophy in
+`AGENTS.md`.

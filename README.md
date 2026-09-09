@@ -25,11 +25,16 @@ should not contain assumptions from a single analysis project.
 - `.codex/instructions.md` is retained as a compatibility copy; new Codex
   repository instructions belong in `AGENTS.md`.
 
+[`AGENTS.md`](AGENTS.md) states the working philosophy. It wins over Check
+inputs, Check results, and unsolicited assertions in the coding convention
+files.
+
 The R roles are:
 
 - `r-coder` for writing or substantially revising one R script;
-- `r-reviewer` for auditing R scripts and producing a quality report; and
-- `r-build-and-review` for write-then-review orchestration.
+- `r-reviewer` for auditing R scripts and producing a quality report;
+- `r-build-and-review` for write-then-review orchestration; and
+- `simplifier` for overengineering review.
 
 ## Working conventions
 

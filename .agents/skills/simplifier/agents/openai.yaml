@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simplifier"
+  short_description: "Find overengineering, unsolicited checks, and extra folders"
+  default_prompt: "Review the target files for overengineering. Philosophy is the rule. Report in the conversation. Do not edit unless asked."

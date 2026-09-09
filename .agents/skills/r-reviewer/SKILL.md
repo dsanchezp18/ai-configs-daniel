@@ -1,99 +1,62 @@
 ---
 name: r-reviewer
-description: Review one or more R scripts in this research repo for correctness, reproducibility, and adherence to the repository master coding standard. Use when the user wants an R-focused audit after edits or before trusting a script.
+description: Review R scripts for calculation correctness, readability, and reproducibility. Philosophy is the rule: missing unsolicited checks are not defects. Use after edits or before trusting a script.
 ---
 
 # R Reviewer
 
-Use this skill for code review of R scripts in this repository.
+Review R scripts. Do not edit source files while reviewing.
 
-## Required context
+## Philosophy is the rule
 
-Before reviewing:
+This is a research pipeline, not a software product. A human must be able to
+follow the calculation without an AI.
 
-1. Read the target script or scripts end to end.
-2. Read `R Code Conventions.md` from the repository root first and use it as
-   the only coding standard.
-3. Trace the complete pipeline represented by the target: identify its inputs,
-   upstream preparation or acquisition steps, transformations, estimates,
-   checks, saved outputs, and downstream consumers. Read the master script,
-   README, or referenced scripts when they define those boundaries. Do not
-   judge an isolated script as complete when its pipeline context is available.
+Read `R Code Conventions.md` for formatting, packages, tidyverse verbs,
+paths, and modelling. Use the repository-root copy when it exists; otherwise
+use `references/R Code Conventions.md` in this skill folder.
 
-## Review priorities
+Do not follow these parts of the conventions as review requirements:
 
-Review in this order and prioritize:
+- Check inputs / Check results as required script sections
+- unsolicited assertions, `stopifnot`, input checks, or result checks
+- a 6-repeat helper rule that would hide a simple calculation
+- scoring "input and result validation" as a required category
 
-- Transformations, joins, modelling choices, and outputs.
-- End-to-end pipeline correctness: the read, check, transform, estimate,
-  validate, and write stages agree with one another and with the documented
-  method.
-- Readability, expressiveness, and elegance: a researcher should be able to
-  follow the script from top to bottom without reconstructing hidden state,
-  deciphering generic names, or reverse-engineering clever abstractions.
-- Input and result validation.
-- Reproducibility and path discipline, including input provenance, output
-  completeness, and downstream compatibility.
-- Risks to downstream scripts, saved artifacts, and numerical results.
-- Consistency with the canonical R conventions.
+The expected script shape is setup, read, transform, estimate, write.
 
-Treat readability as part of code quality, not as a cosmetic afterthought.
-Report subjective preferences only when they materially affect comprehension,
-maintenance, reproducibility, or the ability to audit the analysis.
+## Not a defect
 
-Check for generic names, opaque or clever expressions, unnecessary
-abstractions, hidden state, transformations that are too large to inspect, and
-row-level `if`/`else` logic. Prefer `if_else()`, `case_when()`, `coalesce()`,
-joins, and lookup tables. A scalar `if`/`else` is acceptable only when it is
-short, top-level, and explicitly justified as an unavoidable control-flow
-exception. Check the known pitfalls in the master standard and report concrete
-fixes with file paths and line numbers.
+Do not report these as violations unless the author asked for them:
 
-## Review checklist
+- missing Check inputs / Check results sections
+- missing assertions, guardrails, manifests, or validation scripts
+- missing helper functions or `code/functions/` files
 
-Check these systematically:
+## Is a defect
 
-- Header and section structure
-- Assignment and pipe style
-- Package loading discipline
-- Relative paths and directory creation
-- Tidyverse and naming consistency
-- Top-to-bottom flow: inputs are declared, transformations are visible, and
-  each output is produced by an inspectable stage
-- Expressive names, direct domain calculations, small transformations, and
-  proportionate abstractions
-- No row-level `if`/`else`, `for`, `while`, `repeat`, or `apply` data logic;
-  scalar `if`/`else` exceptions are short, top-level, and explicitly justified
-- Modelling choices and clustering comments
-- Figure-saving patterns and output completeness
-- RDS usage for downstream objects
-- Console output hygiene
-- Numerical robustness and NA handling
-- End-to-end reconciliation of declared inputs, checks, estimates, outputs,
-  and downstream references
+- wrong calculation, join, model, or output
+- unsolicited checks, assertions, or rejection machinery
+- tiny functions that hide a simple calculation
+- extra folders, wrappers, or orchestrators
+- comments or documentation written for an AI
+- code a human cannot follow without help
 
-## Report format
+## Priorities
 
-Write the report to:
+1. Correctness of transformations, joins, modelling, and outputs.
+2. Whether a researcher can follow setup, read, transform, estimate, write.
+3. Reproducibility and path discipline.
+4. Risk to downstream scripts and artifacts.
 
-- `quality_reports/[script_name]_r_review.md`
+Style-only issues are secondary. A readability problem that hides the
+calculation is not style-only.
 
-Use this structure:
+## Report
 
-- Summary counts by severity
-- Ordered findings with file path and line number
-- Proposed fix for each issue
-- Checklist summary by category
-- A separate readability and pipeline-integrity assessment, stating whether
-  the code is clear and complete from input acquisition through final output
+Write the report to `quality_reports/[script_name]_r_review.md`.
 
-The report must include current code, a proposed fix, and the rationale for
-each finding. Do not edit source scripts while reviewing.
+Include severity counts, findings with file and line, a proposed fix, and
+whether a human can follow the script from read through write.
 
-## Constraints
-
-- Do not edit source files while acting as reviewer.
-- Be specific and actionable.
-- Prioritize correctness and pipeline-breaking issues, then readability,
-  expressiveness, and maintainability. Do not dismiss a material readability
-  problem as "style only."
+Be specific. Do not invent work.
