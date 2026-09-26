@@ -32,7 +32,7 @@ Run the mandatory proofreading protocol on lecture files. This produces a report
    - For `.tex` files: `quality_reports/FILENAME_report.md`
    - For `.qmd` files: `quality_reports/FILENAME_qmd_report.md`
 
-5. **IMPORTANT: Do NOT edit any source files.**
+5. Do not edit source files. This skill only reports.
    Only produce the report. Fixes are applied separately after user review.
 
 6. **Present summary** to the user:
