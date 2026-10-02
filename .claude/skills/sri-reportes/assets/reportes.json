@@ -1,0 +1,24 @@
+{
+  "facturas": {
+    "filename": "Reporte facturas.xlsx",
+    "headers": ["No. Id. Emisor", "Tipo Id. Emi.", "Razón Social Emisor", "Rimpe", "No. Id. Receptor", "Tipo Id. Rec.", "Razón Social Receptor.", "Tipo Comprobante", "Establec.", "Pto. Emi.", "Secuencial", "Autorización", "Fecha Emisión", "Base No Objeto", "Base Exenta", "Base Tarifa 0", "Base Gravada", "Tarifa IVA", "Monto IVA", "IRBPNR", "Propina", "Importe Total", "Tarifa ICE", "Monto ICE", "Total Descuento", "Forma de Pago 1", "Observacion"],
+    "last_column": "AA",
+    "widths": [14.7773, 13.4414, 53.6641, 46.5547, 16.5547, 13.3320, 24.2188, 18.6641, 11, 10.6641, 12.4414, 50.7773, 15.2188, 15.8867, 13.1094, 13.5547, 14.5547, 11, 11.4414, 9.5547, 9.6641, 14.3320, 11, 11.4414, 16.4414, 38.3320, 13.6641],
+    "text_columns": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 25, 26],
+    "date_columns": [12],
+    "money_columns": [13, 14, 15, 16, 18, 19, 20, 21, 23, 24],
+    "rate_columns": [17, 22],
+    "previews": [["identificacion", "A", "G"], ["importes", "M", "AA"]]
+  },
+  "retenciones": {
+    "filename": "Reporte retenciones.xlsx",
+    "headers": ["No. Id Age. Ret.", "Tipo Id Age. Ret.", "Raz. Social Ag. Retención", "No. Id. Suj. Ret", "Tipo Id Suj. Ret.", "Raz. Social Sujeto Retenido", "Tipo Comprobante", "Estab", "Pto Emi", "Secuencial", "Autorización", "Fecha Emisión", "Periodo Fiscal", "Tipo Comp. Sustento", "Estab. Sustento", "Pto Emi. Sustento", "Secuen. Sustento", "Fecha Sustento", "Tipo Ret.", "Cód. Ret.", "Base Imponible", "% Ret.", "Valor Retenido"],
+    "last_column": "W",
+    "widths": [15.6641, 16.3320, 25.4414, 15.3320, 16, 26, 25.6641, 7.8867, 9.5547, 12.4414, 50.7773, 15.2188, 15, 20.4414, 16.1094, 17.7773, 17.5547, 15.8867, 10.4414, 10.7773, 16.1094, 8.4414, 15.3320],
+    "text_columns": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19],
+    "date_columns": [11, 17],
+    "money_columns": [20, 22],
+    "rate_columns": [],
+    "previews": [["identificacion", "A", "G"], ["sustento-importes", "L", "W"]]
+  }
+}
