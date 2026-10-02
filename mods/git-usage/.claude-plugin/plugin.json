@@ -1,0 +1,6 @@
+{
+  "name": "git-usage",
+  "version": "0.1.0",
+  "description": "Git branch in the status line, a usage band above the prompt, and a /git-tree commit graph pane.",
+  "types": "./types/index.d.ts"
+}
