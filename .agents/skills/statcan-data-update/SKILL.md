@@ -1,8 +1,6 @@
 ---
 name: statcan-data-update
 description: Refresh an article or table with the latest Statistics Canada data using the MapleStats tools. Finds the source table, pulls the new values, compares them with the published text, and updates the numbers. Use when the user says "update this with the new data", "refresh the StatCan table", or gives an Alberta statistics article and a new reference period.
-argument-hint: "[article or file] [new reference period]"
-allowed-tools: ["Read", "Edit", "Grep", "Glob", "Skill", "ToolSearch"]
 ---
 
 # StatCan data update

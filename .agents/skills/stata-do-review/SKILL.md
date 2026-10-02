@@ -1,8 +1,6 @@
 ---
 name: stata-do-review
 description: Review a Stata do-file against General Code Conventions.md and report findings in the chat. Read-only. Use when the user says "review this do-file", "check my Stata code", or asks for a Stata code audit.
-argument-hint: "[do-file path]"
-allowed-tools: ["Read", "Grep", "Glob"]
 ---
 
 # Stata do-file review

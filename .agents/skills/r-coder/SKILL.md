@@ -1,6 +1,6 @@
 ---
 name: r-coder
-description: Write or substantially revise one R script. Philosophy is the rule: linear research pipeline; setup, read, transform, estimate, write; no unsolicited checks. Use when creating or rewriting an R script.
+description: 'Write or substantially revise one R script. Philosophy is the rule: linear research pipeline; setup, read, transform, estimate, write; no unsolicited checks. Use when creating or rewriting an R script.'
 ---
 
 # R Coder
@@ -14,8 +14,9 @@ script must run and make sense without an AI sitting next to it.
 
 Read `R Code Conventions.md` for formatting, packages, tidyverse verbs,
 paths, and modelling. Use the repository-root copy when it exists; otherwise
-use `references/R Code Conventions.md` in this skill folder. For Stata,
-Python, or Julia, read `General Code Conventions.md` the same way.
+use `C:/Users/Daniel/Documents/GitHub/ai-configs-daniel/R Code Conventions.md`.
+For Stata, Python, or Julia, read the repository's `General Code Conventions.md`
+or the copy in the same ai-configs-daniel folder.
 
 The convention files match this philosophy. Do not add Check inputs, Check
 results, unsolicited assertions, or tiny-function extraction. A missing

@@ -1,8 +1,6 @@
 ---
 name: skills-sync
 description: Compare and sync the ai-configs-daniel repo with the live Claude and Codex folders (skills, agents, rules). Shows which side is newer before copying. Use when the user says "sync skills", "sync the configs", or after any change to a skill, agent or rule.
-argument-hint: "[--check to compare only]"
-allowed-tools: ["Bash", "Read"]
 ---
 
 # Skills sync

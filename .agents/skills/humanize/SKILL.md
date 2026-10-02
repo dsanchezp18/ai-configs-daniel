@@ -1,8 +1,6 @@
 ---
 name: humanize
 description: Find and fix AI-voice tells in prose (.tex, .qmd, .md, .txt, or pasted text). Edits the text directly and lists the changes in the chat. Tells include boilerplate transitions ("Moreover", "It is important to note that"), cliché words ("delve", "navigate the complexities", "robust framework"), em-dash overuse, same-shaped paragraphs, tricolon abuse, stacked hedges, "not only X but also Y", formulaic openers, hyphenation excess and self-important framing. Use when the user says "humanize", "de-AI this", "does this sound like AI?", "remove AI voice", or before submitting or posting a draft.
-argument-hint: "[filename, or paste text] [--check to report without editing]"
-allowed-tools: ["Read", "Grep", "Glob", "Edit"]
 ---
 
 # Humanize

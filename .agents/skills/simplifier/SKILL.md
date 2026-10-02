@@ -1,6 +1,6 @@
 ---
 name: simplifier
-description: Generalized review (and optional cleanup) of overengineered research code. Finds software-product machinery, jargon systems, unsolicited checks, unnecessary scripts, extra folders, over-organization, AI-oriented comments, and documentation written for models instead of humans. Also checks Simple style / STE: if the reader must ask for clarification, the writing has already failed. Not a formatter and not r-reviewer. Use when the user says simplifier, deshitify, strip overengineering, this is too much architecture, or asks whether code can be read and run without an AI.
+description: 'Generalized review (and optional cleanup) of overengineered research code. Finds software-product machinery, jargon systems, unsolicited checks, unnecessary scripts, extra folders, over-organization, AI-oriented comments, and documentation written for models instead of humans. Also checks Simple style / STE: if the reader must ask for clarification, the writing has already failed. Not a formatter and not r-reviewer. Use when the user says simplifier, deshitify, strip overengineering, this is too much architecture, or asks whether code can be read and run without an AI.'
 ---
 
 # Simplifier

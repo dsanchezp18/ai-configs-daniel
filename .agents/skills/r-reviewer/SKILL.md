@@ -1,6 +1,6 @@
 ---
 name: r-reviewer
-description: Review R scripts for calculation correctness, readability, and reproducibility. Philosophy is the rule: missing unsolicited checks are not defects. Use after edits or before trusting a script.
+description: 'Review R scripts for calculation correctness, readability, and reproducibility. Philosophy is the rule: missing unsolicited checks are not defects. Use after edits or before trusting a script.'
 ---
 
 # R Reviewer
@@ -14,7 +14,7 @@ follow the calculation without an AI.
 
 Read `R Code Conventions.md` for formatting, packages, tidyverse verbs,
 paths, and modelling. Use the repository-root copy when it exists; otherwise
-use `references/R Code Conventions.md` in this skill folder.
+use `C:/Users/Daniel/Documents/GitHub/ai-configs-daniel/R Code Conventions.md`.
 
 The convention files match this philosophy. Do not treat missing checks as
 defects. Do not require tiny helpers. Do not score input and result

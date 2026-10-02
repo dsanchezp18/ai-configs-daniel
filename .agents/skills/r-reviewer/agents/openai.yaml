@@ -1,4 +1,4 @@
 interface:
   display_name: "R Reviewer"
   short_description: "Audit R scripts for correctness and reproducibility"
-  default_prompt: "Review one or more R scripts. Philosophy is the rule: missing unsolicited checks are not defects. Save the report to `quality_reports/[script_name]_r_review.md`. Prioritize calculation correctness, readability, and downstream breakage."
+  default_prompt: "Use $r-reviewer to review the R scripts for correctness and readability."

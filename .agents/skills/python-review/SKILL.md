@@ -1,8 +1,6 @@
 ---
 name: python-review
 description: Review a Python script against General Code Conventions.md and report findings in the chat. Read-only. Use when the user says "review this Python script", "check my Python code", or asks for a Python code audit.
-argument-hint: "[script path]"
-allowed-tools: ["Read", "Grep", "Glob", "Bash"]
 ---
 
 # Python script review

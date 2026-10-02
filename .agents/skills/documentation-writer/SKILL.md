@@ -1,6 +1,6 @@
 ---
 name: documentation-writer
-description: Write project documentation the way Daniel likes it. The model is the Compensation of Employees methodology and technical guide: pedagogical, current-state, equation then words then a worked example. Use when writing or rewriting methodology notes, technical guides, READMEs, or estimation documentation.
+description: 'Write project documentation the way Daniel likes it. The model is the Compensation of Employees methodology and technical guide: pedagogical, current-state, equation then words then a worked example. Use when writing or rewriting methodology notes, technical guides, READMEs, or estimation documentation.'
 ---
 
 # Documentation writer

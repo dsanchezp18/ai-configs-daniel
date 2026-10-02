@@ -1,8 +1,6 @@
 ---
 name: slides-from-text
 description: Turn an article, report or other text into a slide deck outline, and build the deck on request. Built for Government of Alberta statistics work (neutral public-sector tone, one finding per slide, source notes), and also works for other text. Use when the user says "make slides from this", "turn this article into a deck", or asks for a presentation of a written piece.
-argument-hint: "[source text or file] [audience and length]"
-allowed-tools: ["Read", "Grep", "Glob", "Write", "Skill"]
 ---
 
 # Slides from text
@@ -14,7 +12,7 @@ Turn the source text into slides that carry the same findings, numbers and sourc
 1. **Read the source.** Find the central finding, the supporting findings, and every figure and table.
 2. **Ask only what is missing.** Audience, time or slide count, and format. If the user gave none, assume policy staff, about one slide per minute, and `.pptx`.
 3. **Write the outline first.** One line per slide: title, the one finding, the figure or table, the source. Show it to the user.
-4. **Build the deck** after the user agrees, with the `pptx` skill for a PowerPoint file. If the user wants Quarto or Beamer, write that instead.
+4. **Build the deck** after the user agrees, with the available presentation skill (`presentations:Presentations` in Codex) for a PowerPoint file. If the user wants Quarto or Beamer, write that instead.
 
 ## Slide rules
 

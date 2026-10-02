@@ -1,12 +1,11 @@
 interface:
-  display_name: Economic Statistics Insights
-  short_description: Draft and edit rigorous Alberta economic-statistics articles. Not for Daniel personal writing (daniel-voice) or El Quantificador (el-quanti-voice).
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  display_name: "Economic Statistics Insights"
+  short_description: "Write and edit Alberta statistics articles"
+  default_prompt: "Use $economic-statistics-insights to write or review this Alberta statistics article."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - CHAT
+  - CODEX
   allow_implicit_invocation: true

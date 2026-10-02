@@ -1,4 +1,4 @@
 interface:
   display_name: "R Coder"
   short_description: "Write one R script in the repo's house style"
-  default_prompt: "Write or revise one R script in this repository. Philosophy is the rule: setup, read, transform, estimate, write. No unsolicited checks. Follow `R Code Conventions.md` for formatting and match neighboring domain flow."
+  default_prompt: "Use $r-coder to write or revise one R script following the project conventions."

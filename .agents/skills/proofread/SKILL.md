@@ -1,8 +1,6 @@
 ---
 name: proofread
 description: Proofread and correct text (.tex, .qmd, .md, .txt, or pasted text). Fixes grammar, typos, duplicated words, punctuation, and inconsistent terminology, notation and citation format. Edits the file directly and lists the changes in the chat. Use when the user says "proofread", "check for typos", "copy-edit this", "any writing errors?", "fix the grammar", or before releasing a document or lecture.
-argument-hint: "[filename, or paste text] [--check to report without editing]"
-allowed-tools: ["Read", "Grep", "Glob", "Edit"]
 ---
 
 # Proofread
