@@ -1,6 +1,6 @@
 ---
 name: el-quanti-voice
-description: Escribir, reescribir y revisar artículos de El Quantificador con su voz editorial basada en datos sobre Ecuador. Usar al crear borradores, pulir títulos, entradillas, secciones, explicaciones de gráficos, conclusiones y metadatos, o al auditar rigor, claridad, estructura, tuteo y consistencia de artículos en Markdown, R Markdown o HTML generado. Dar autoridad principal al artículo ENIGHUR de 2026 y más peso a autores del grupo quantificador que a trainees.
+description: Escribir, reescribir y revisar artículos de El Quantificador con su voz editorial basada en datos sobre Ecuador. Usar al crear borradores, pulir títulos, entradillas, secciones, explicaciones de gráficos, conclusiones y metadatos, o al auditar rigor, claridad, estructura, tuteo y consistencia de artículos en Markdown, R Markdown o HTML generado. Dar autoridad principal al artículo ENIGHUR de 2026 y más peso a autores del grupo quantificador que a trainees. Para textos en español de El Quantificador, no para la voz personal de Daniel (usar daniel-voice) ni para artículos de estadísticas oficiales de Alberta (usar economic-statistics-insights).
 ---
 
 # Voz de El Quanti
@@ -25,14 +25,14 @@ No deducir la voz a partir de un promedio indiferenciado del archivo. Conservar 
    - audiencia;
    - hallazgo principal;
    - datos, periodo y población;
-   - método y límites;
+   - método;
    - gráficos disponibles;
    - autoría, categoría y edición.
 2. No inventar cifras, fuentes, resultados, código ni detalles metodológicos. Marcar vacíos con indicaciones concretas entre corchetes.
 3. Proponer un esquema de hallazgos antes de redactar si el encargo todavía no trae una estructura.
 4. Redactar con encabezados que comuniquen hallazgos, no temas genéricos.
 5. Integrar cada gráfico mediante contexto, lectura y consecuencia. No describir colores o formas sin explicar qué significan.
-6. Cerrar con implicaciones proporcionadas a la evidencia, límites y una nota de reproducibilidad.
+6. Cerrar con implicaciones proporcionadas a la evidencia, un límite solo si corresponde y una nota de reproducibilidad.
 7. Aplicar la lista de control de `references/review-rubric.md` antes de entregar.
 
 ### Revisar un borrador
@@ -62,7 +62,7 @@ No deducir la voz a partir de un promedio indiferenciado del archivo. Conservar 
 - Identificar población, periodo, unidad, fuente y denominador de las cifras importantes.
 - Separar lo observado de las hipótesis o interpretaciones.
 - Explicar términos técnicos en lenguaje común cuando aparezcan por primera vez.
-- Reconocer límites relevantes sin convertirlos en una defensa interminable.
+- Limitar la cautela al cierre del artículo y solo si corresponde: sin calificadores ni límites en las secciones, y ninguno en textos para redes sociales o promoción.
 - Mantener la reproducibilidad mediante fuentes, notas, bibliografía y acceso al código cuando exista.
 - No reproducir erratas, mayúsculas excesivas, rutas locales, dependencias antiguas ni defectos técnicos de artículos históricos.
 

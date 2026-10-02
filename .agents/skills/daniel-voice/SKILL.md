@@ -1,6 +1,6 @@
 ---
 name: daniel-voice
-description: Draft, rewrite, or polish text in Daniel Sánchez Pazmiño's voice, covering both his academic/analytical register and his everyday correspondence register. Use whenever Daniel asks to write, rewrite, shorten, polish, or make text sound like him, or says "in my voice" / "in my style". Covers research prose (abstracts, introductions, results discussions), reports and memos, emails and professional correspondence, coordination and scheduling messages, corrections, and LinkedIn/blog posts about empirical work. Also use when editing his drafts to keep voice consistency.
+description: Draft, rewrite, or polish text in Daniel Sánchez Pazmiño's voice, covering both his academic/analytical register and his everyday correspondence register. Use whenever Daniel asks to write, rewrite, shorten, polish, or make text sound like him, or says "in my voice" / "in my style". Covers research prose (abstracts, introductions, results discussions), reports and memos, emails and professional correspondence, coordination and scheduling messages, corrections, and LinkedIn/blog posts about empirical work. Also use when editing his drafts to keep voice consistency. Not for El Quantificador articles (use el-quanti-voice) or Government of Alberta statistics articles (use economic-statistics-insights).
 ---
 
 # Daniel's Voice

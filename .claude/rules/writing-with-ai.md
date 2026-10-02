@@ -87,9 +87,10 @@ wrote it.
 But a clean `/humanize` report says the prose reads **well**. It does not say it reads
 **human**. Those are different claims, and the second one requires a measurement.
 
-**Detect-only, by design.** `/humanize` has no `--rewrite` mode: auto-rewriting degrades
-quality and introduces new tells, and — per the finding above — cannot change what a neural
-detector sees. The author edits. That manual step is the price of a voice.
+**What `/humanize` does.** It finds the surface tells and fixes them in the file, then lists the
+changes in the chat. It keeps meaning, claims and numbers. Because a model does the rewriting, it
+cannot change what a neural detector sees. The author still writes the sentences that carry the
+argument.
 
 ---
 

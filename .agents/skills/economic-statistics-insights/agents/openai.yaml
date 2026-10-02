@@ -1,6 +1,6 @@
 interface:
   display_name: Economic Statistics Insights
-  short_description: Draft and edit rigorous Alberta economic-statistics articles
+  short_description: Draft and edit rigorous Alberta economic-statistics articles. Not for Daniel personal writing (daniel-voice) or El Quantificador (el-quanti-voice).
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

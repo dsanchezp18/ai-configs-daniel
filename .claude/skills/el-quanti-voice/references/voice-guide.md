@@ -76,7 +76,7 @@ Declarar resultados, comparaciones y hallazgos de forma directa en el cuerpo del
 - `La mediana fue de $620.`
 - `Los hogares del quintil más pobre gastan una mayor proporción de su ingreso en alimentos.`
 
-No suavizar una cifra o un hallazgo con `sugiere`, `es posible que`, `podría` o `quizás` en el desarrollo. Esos calificadores se reservan para el cierre (sección 9), donde se reconoce el límite decisivo del análisis. Usar uno en el cuerpo solo cuando omitirlo haría que una cifra concreta se leyera como algo que no es, por ejemplo una asociación que podría confundirse con causalidad; en ese caso, un calificador, no varios, y en la misma frase que la cifra.
+No suavizar una cifra o un hallazgo con `sugiere`, `es posible que`, `podría` o `quizás`. El desarrollo no lleva calificadores ni menciones de límites. La única excepción es el cierre del artículo (sección 9), y solo si corresponde. La cautela sobre causalidad se resuelve eligiendo el verbo correcto (sección 5), no añadiendo calificadores.
 
 ## 4. Arquitectura del artículo
 
@@ -116,7 +116,7 @@ Usar esta secuencia flexible dentro de cada sección:
 4. traducir el resultado a lenguaje cotidiano;
 5. explicar su importancia.
 
-No sembrar límites o matices sección por sección. Guardarlos para el cierre (sección 9), salvo que un límite invalide directamente la lectura de la cifra que se acaba de mostrar; en ese caso, una frase breve basta.
+No incluir límites ni matices en las secciones. Si hay un límite que mencionar, va en el cierre (sección 9).
 
 ### Ritmo
 
@@ -152,7 +152,7 @@ Usar `se relaciona`, `está asociado` o `coincide` para resultados descriptivos 
 
 ### Incertidumbre
 
-No repartir la incertidumbre por todo el texto. El cuerpo afirma lo que los datos muestran; el cierre reconoce el límite decisivo (sección 9). Evitar `quizás`, `probablemente` y `posiblemente` en el desarrollo. Si un vacío concreto en los datos es indispensable para no inducir a error justo donde aparece la cifra, nombrarlo una sola vez, con una sola palabra de calificación, y sin repetirlo más adelante.
+El cuerpo afirma lo que los datos muestran. No usar `quizás`, `probablemente` ni `posiblemente`. El único lugar para un límite es el cierre (sección 9), y solo si corresponde.
 
 ## 6. Gráficos y tablas
 
@@ -193,7 +193,7 @@ Usar con moderación:
 - una observación personal breve cuando aporta intuición analítica;
 - frases de transición que recuerdan por qué importa el dato.
 
-Preferir verbos concretos: `muestra`, `concentra`, `sube`, `cae`, `registra`, `representa`, `permite`, `sugiere`.
+Preferir verbos concretos: `muestra`, `concentra`, `sube`, `cae`, `registra`, `representa`, `permite`.
 
 Mantener oraciones cortas y medianas. Dividir una frase cuando contiene más de una salvedad o más de tres ideas.
 
@@ -219,11 +219,13 @@ Usar sentence case y una jerarquía coherente. No escribir todos los encabezados
 
 Cerrar respondiendo `¿y ahora qué?`, aunque no sea necesario usar ese encabezado.
 
-El cierre es el único lugar del artículo donde corresponde reconocer límites y usar calificadores de incertidumbre. Un buen cierre:
+El cierre del artículo es el único lugar donde se puede reconocer un límite, y solo si corresponde. Si no hay un límite que cambie la lectura de los resultados, no se incluye. Esto aplica al artículo. No aplica a textos para redes sociales ni a promoción: allí no se escriben límites ni calificadores, solo el hallazgo.
+
+Un buen cierre:
 
 1. sintetiza dos o tres resultados, sin recitar el artículo;
 2. explica qué cambia en la comprensión del problema;
-3. reconoce el límite decisivo, en una o dos frases directas, sin acumular calificadores;
+3. si corresponde, reconoce el límite decisivo en una o dos frases directas, sin acumular calificadores;
 4. señala una implicación de política pública, medición o investigación;
 5. termina con la nota de datos y código cuando exista.
 
@@ -242,7 +244,8 @@ No introducir evidencia central nueva en el último párrafo. No convertir la co
 - adjetivos como `alarmante`, `devastador`, `increíble` sin una justificación analítica;
 - falsa precisión o certeza;
 - calificadores encadenados (`sugiere`, `podría`, `es posible que`, `quizás` juntos sobre la misma afirmación);
-- calificadores de incertidumbre o menciones de límites fuera del cierre, salvo que sean absolutamente necesarios para no inducir a error sobre una cifra concreta;
+- calificadores de incertidumbre o menciones de límites fuera del cierre del artículo;
+- calificadores o límites en textos para redes sociales y promoción;
 - jerga sin explicación;
 - conclusiones genéricas sobre la necesidad de `generar conciencia`;
 - imitar errores gramaticales o técnicos de piezas históricas.
