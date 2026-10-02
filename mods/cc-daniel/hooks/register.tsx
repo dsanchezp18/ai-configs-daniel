@@ -2,14 +2,14 @@ import { atom, read } from 'claude-code'
 import type { Register } from 'claude-code'
 
 const PANE = 'git-tree'
-const usageRef = { plugin: 'git-usage', key: 'usage' } as const
-const repoRef = { plugin: 'git-usage', key: 'repo' } as const
-const treeRef = { plugin: 'git-usage', key: 'tree' } as const
-const commitsRef = { plugin: 'git-usage', key: 'commits' } as const
-const usage = atom({ plugin: 'git-usage', key: 'usage' } as const, null)
-const repo = atom({ plugin: 'git-usage', key: 'repo' } as const, null)
-const tree = atom({ plugin: 'git-usage', key: 'tree' } as const, [])
-const commits = atom({ plugin: 'git-usage', key: 'commits' } as const, '')
+const usageRef = { plugin: 'cc-daniel', key: 'usage' } as const
+const repoRef = { plugin: 'cc-daniel', key: 'repo' } as const
+const treeRef = { plugin: 'cc-daniel', key: 'tree' } as const
+const commitsRef = { plugin: 'cc-daniel', key: 'commits' } as const
+const usage = atom({ plugin: 'cc-daniel', key: 'usage' } as const, null)
+const repo = atom({ plugin: 'cc-daniel', key: 'repo' } as const, null)
+const tree = atom({ plugin: 'cc-daniel', key: 'tree' } as const, [])
+const commits = atom({ plugin: 'cc-daniel', key: 'commits' } as const, '')
 
 const WINDOW_NAMES: Record<string, string> = {
   five_hour: '5-hour limit',

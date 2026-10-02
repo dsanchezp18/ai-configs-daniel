@@ -8,7 +8,7 @@ export type Repo = { branch: string; changed: number; isRepo: boolean }
 
 declare module 'claude-code' {
   interface PluginState {
-    'git-usage': {
+    'cc-daniel': {
       usage: Usage | null
       repo: Repo | null
       tree: string[]
