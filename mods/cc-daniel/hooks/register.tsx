@@ -1,7 +1,7 @@
 import { atom, read } from 'claude-code'
 import type { Register } from 'claude-code'
 
-const PANE = 'git-tree'
+const PANE = 'graph'
 const usageRef = { plugin: 'cc-daniel', key: 'usage' } as const
 const repoRef = { plugin: 'cc-daniel', key: 'repo' } as const
 const treeRef = { plugin: 'cc-daniel', key: 'tree' } as const
@@ -284,7 +284,7 @@ async function gather($: any) {
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
-      name: 'git-tree',
+      name: 'graph',
       description: 'Open the git graph and limits pane',
     })
 
@@ -317,7 +317,7 @@ export const register: Register = on => {
     return next(e)
   })
 
-  on('command.run', { command: 'git-tree' }, async $ => {
+  on('command.run', { command: 'graph' }, async $ => {
     await $.ui.open({ id: PANE, title: 'Git and limits' })
 
     return { text: 'Git and limits pane opened.' }
