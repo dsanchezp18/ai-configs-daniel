@@ -131,7 +131,13 @@ def read_month(
         raise ValueError(
             f"{kind}: faltan {len(missing)} XML del TXT; completar con el MCP"
         )
-    LOGGER.info("%s: %s comprobantes con XML y PDF verificados", kind, len(documents))
+    LOGGER.warning(
+        "%s: se comprobaron estructura y alcance de %s XML; no se verifica la "
+        "firma digital, la identidad del emisor ni la autorizacion del SRI",
+        kind,
+        len(documents),
+    )
+    LOGGER.info("%s: %s pares XML/PDF con estructura comprobada", kind, len(documents))
     if excluded:
         LOGGER.warning(
             "%s: %s XML excluidos porque no figuran en el TXT", kind, excluded

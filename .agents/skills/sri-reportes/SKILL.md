@@ -36,10 +36,11 @@ un CAPTCHA visible, avisa y espera que la persona lo resuelva; no lo resuelvas n
 lo evadas. Detente ante credenciales rechazadas, `.env` faltante, bloqueo anunciado
 por el portal, perfil usado por otro proceso o un fallo reproducible que impida
 avanzar. Explica la evidencia. `bloqueado: true` por sí solo no prueba un bloqueo
-del SRI. No uses descargas antiguas, importaciones o la extensión para sustituir al MCP
-sin una instrucción expresa.
+del SRI. La extensión está reemplazada: no la uses. No uses descargas antiguas ni
+importaciones para sustituir una descarga pendiente del MCP. Solo importa archivos
+cuando la persona los suministra y pide expresamente importarlos.
 
-Un tipo está completo cuando las claves únicas de su TXT tienen XML autorizado y
+Un tipo está completo cuando las claves únicas de su TXT tienen el XML descargado y
 PDF válido, no quedan faltantes ni errores sin explicar y la última respuesta no
 trae `bloqueado: true`. Verifica los archivos, no solo los contadores de la respuesta.
 Si el portal confirmó cero comprobantes pero no dejó un TXT, documenta ese resultado;
@@ -50,6 +51,9 @@ el generador necesita un TXT con encabezados para producir una tabla vacía.
 Si el mes ya está completo y verificado, no consultes otra vez el portal para hacer Excel.
 Para referencias suministradas expresamente por la persona, también puedes probar
 el generador sin abrir el MCP. Usa una carpeta nueva de salida fuera de los repositorios.
+El generador comprueba estructura y correspondencia de archivos. No verifica firmas
+digitales, identidad del emisor ni autorización del SRI. Dilo al entregar los reportes;
+no presentes la etiqueta `AUTORIZADO` o una clave coincidente como prueba de autenticidad.
 Para XML suministrados expresamente, añade `--desde-xml`: incluye todos los pares del
 tipo, RUC y mes, y avisa que no comprueba cobertura del TXT ni del portal. Este modo
 no autoriza reutilizar archivos antiguos para sustituir una descarga solicitada.

@@ -2,10 +2,21 @@
 
 ## Fuentes y entregables
 
-La fuente de cada fila es el XML autorizado. El TXT del SRI establece qué claves
-pertenecen al mes y permite comprobar que no falten comprobantes. El PDF sirve como
-entregable y se comprueba su encabezado; no se extraen importes de él. La verificación
-del generador no sustituye la respuesta final del MCP ni una revisión visual del PDF.
+La fuente de cada fila es el contenido del XML leído. El generador comprueba su
+estructura, clave, tipo, RUC, mes y relación con el TXT cuando está disponible. El TXT
+del SRI establece qué claves pertenecen al mes y permite comprobar que no falten
+comprobantes. El PDF sirve como entregable y se comprueba su encabezado; no se extraen
+importes de él.
+
+Estas comprobaciones no verifican la firma electrónica del XML ni la identidad del
+emisor. Un estado `AUTORIZADO`, una clave coincidente o una firma presente no bastan
+para demostrar autenticidad. El generador no establece confianza en certificados ni
+confirma que el SRI autorizó el comprobante. Revisa el origen del archivo por separado;
+el modo `--desde-xml` tampoco comprueba su cobertura en el portal. El generador muestra
+esta limitación en el registro de cada tipo procesado.
+
+La verificación del generador no sustituye la respuesta final del MCP ni una revisión
+visual del PDF.
 
 La estructura y los encabezados provienen de `Reporte facturas.xlsx` y
 `Reporte retenciones.xlsx` del proyecto de descarga de comprobantes suministrado

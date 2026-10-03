@@ -113,7 +113,7 @@ class TestReportes(unittest.TestCase):
         self.assertEqual(len(rows), 2)
         self.assertEqual(rows[0][13:17], ["01-Factura", "001", "002", "000000003"])
 
-    def test_duplicate_xml_missing_pdf_and_wrong_month(self) -> None:
+    def test_bare_xml_is_reported_as_unverified(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             kind = root / "Recibidos/Facturas"
@@ -125,10 +125,12 @@ class TestReportes(unittest.TestCase):
             for name in ("uno", "copia"):
                 (folder / f"{name}.xml").write_text(INVOICE)
                 (folder / f"{name}.pdf").write_bytes(b"%PDF-1.7\n")
-            documents = REPORTES.read_month(
-                root, "recibidos", "0000000000002", "facturas", 2026, 9
-            )
+            with self.assertLogs(REPORTES.LOGGER, level="WARNING") as messages:
+                documents = REPORTES.read_month(
+                    root, "recibidos", "0000000000002", "facturas", 2026, 9
+                )
             self.assertEqual(len(documents), 1)
+            self.assertIn("no se verifica la firma digital", messages.output[0])
             with self.assertRaisesRegex(ValueError, "fuera del mes"):
                 REPORTES.read_month(
                     root, "recibidos", "0000000000002", "facturas", 2026, 8
@@ -138,6 +140,30 @@ class TestReportes(unittest.TestCase):
                 REPORTES.read_month(
                     root, "recibidos", "0000000000002", "facturas", 2026, 9
                 )
+
+    def test_autorizado_label_does_not_claim_xml_is_verified(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            kind = root / "Recibidos/Facturas"
+            folder = kind / "0000000000002-Recibidos"
+            folder.mkdir(parents=True)
+            (kind / "0000000000002_Recibidos.txt").write_text(
+                "CLAVE_ACCESO\n" + KEY + "\n"
+            )
+            wrapped = (
+                "<autorizacion><estado>AUTORIZADO</estado>"
+                f"<numeroAutorizacion>{KEY}</numeroAutorizacion>"
+                f"<comprobante><![CDATA[{INVOICE}]]></comprobante>"
+                "</autorizacion>"
+            )
+            (folder / "wrapped.xml").write_text(wrapped)
+            (folder / "wrapped.pdf").write_bytes(b"%PDF-1.7\n")
+            with self.assertLogs(REPORTES.LOGGER, level="WARNING") as messages:
+                documents = REPORTES.read_month(
+                    root, "recibidos", "0000000000002", "facturas", 2026, 9
+                )
+            self.assertEqual(len(documents), 1)
+            self.assertIn("no se verifica la firma digital", messages.output[0])
 
     def test_txt_key_without_xml_is_incomplete(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
