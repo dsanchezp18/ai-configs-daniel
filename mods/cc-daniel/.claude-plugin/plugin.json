@@ -1,6 +1,6 @@
 {
   "name": "cc-daniel",
-  "version": "0.1.0",
-  "description": "Git branch in the status line, a usage band above the prompt, and a /git-tree commit graph pane.",
+  "version": "0.2.0",
+  "description": "Usage limits in the status line and a usage band above the prompt.",
   "types": "./types/index.d.ts"
 }
