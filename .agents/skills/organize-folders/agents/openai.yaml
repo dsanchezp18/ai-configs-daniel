@@ -1,0 +1,4 @@
+interface:
+  display_name: "Organize folders"
+  short_description: "Review a folder and propose a cleaner layout"
+  default_prompt: "Use $organize-folders to review this folder and suggest a layout. Ask before moving anything."
