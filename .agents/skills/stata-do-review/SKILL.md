@@ -18,6 +18,19 @@ Read `General Code Conventions.md` (Stata section) first. Then read the do-file.
 
 Stata has no linter. Check indentation and line length by reading.
 
+Compare the code with the stated method and available documentation. Review
+join keys and the unit of observation, duplicate retention, missing-value
+codes, units, denominators, and aggregation groups. Compare the sample,
+weights, treatment assignment, model, and standard errors with the research
+design. Review reproducibility of random draws and order-dependent operations,
+and whether outputs reflect the calculations.
+
+Examine `merge m:m` and `duplicates drop, force` in context. Flag them when
+they can produce unintended matches or retain the wrong record, not solely
+because they appear. When the answer depends on unavailable data,
+documentation, or a research decision, state the uncertainty instead of
+presenting it as a confirmed error.
+
 ## Do not flag
 
 - A missing input check, result check or assertion. The repository rule is that a missing check is not a defect.

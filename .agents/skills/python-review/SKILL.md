@@ -16,6 +16,15 @@ Read `General Code Conventions.md` (Python section) first. Then read the script.
 5. **Style:** run `ruff format --check .` and `ruff check .` when `ruff` is installed, and report what they flag. Run `mypy` the same way. Add type hints on function signatures.
 6. **Header and comments:** header block, numbered cell sections, one comment per 5 to 10 lines, no commented-out code, `logging` instead of `print`.
 
+Compare the code with the stated method and available documentation. Review
+join keys and the unit of observation, duplicate retention, missing-value
+codes, units, denominators, and aggregation groups. Compare the sample,
+weights, treatment assignment, model, and standard errors with the research
+design. Review reproducibility of random draws and order-dependent operations,
+and whether outputs reflect the calculations. When the answer depends on
+unavailable data, documentation, or a research decision, state the uncertainty
+instead of presenting it as a confirmed error.
+
 ## Do not flag
 
 - A missing input check, result check or assertion. The repository rule is that a missing check is not a defect.

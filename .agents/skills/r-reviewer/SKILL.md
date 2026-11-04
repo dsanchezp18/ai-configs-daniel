@@ -49,6 +49,23 @@ Do not report these as violations unless the author asked for them:
 Style-only issues are secondary. A readability problem that hides the
 calculation is not style-only.
 
+## Research decisions and calculations
+
+Compare the code with the stated method and available documentation. Review
+join keys and the unit of observation, duplicate retention, missing-value
+codes, units, denominators, and aggregation groups. Compare the sample,
+weights, treatment assignment, model, and standard errors with the research
+design. Review reproducibility of random draws and order-dependent operations,
+and whether outputs reflect the calculations.
+
+For `data.table`, consider whether changes by reference or changes in row
+order affect later steps that expect the original object or order.
+
+Report a concrete error with its location and likely effect. If the answer
+depends on unavailable data, documentation, or a research decision, state
+the uncertainty rather than presenting it as a confirmed error. A missing
+check or assertion is not a defect.
+
 ## Report
 
 Write the report to `quality_reports/[script_name]_r_review.md`.
