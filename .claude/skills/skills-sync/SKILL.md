@@ -13,7 +13,9 @@ The repo `C:\Users\Daniel\Documents\GitHub\ai-configs-daniel` is the source of t
 |---|---|---|
 | `.claude/skills/` | `~/.claude/skills/` | Claude Code |
 | `.claude/agents/` | `~/.claude/agents/` | Claude Code |
-| `.claude/rules/` | `~/.claude/rules/` | Claude Code |
+| `.claude/rules/writing-with-ai.md` | `~/.claude/rules/writing-with-ai.md` | Claude Code |
+| `General Code Conventions.md` (repo root) | `~/.claude/rules/general-code-conventions.md` | Claude Code |
+| `R Code Conventions.md` (repo root) | `~/.claude/rules/r-code-conventions.md` | Claude Code |
 | `.agents/skills/` | `~/.codex/skills/` | Codex |
 
 ## Steps
@@ -27,6 +29,7 @@ The repo `C:\Users\Daniel\Documents\GitHub\ai-configs-daniel` is the source of t
 
 ## Rules
 
+- The two convention files in `.claude/rules/` are short loaders for use inside this repo. The live rules hold the full text, copied from the root convention files. Never copy the loaders to `~/.claude/rules/`.
 - Leave Codex-only folders alone: `.system`, `codex-primary-runtime`, `refresh-final-sheet`. They are not in the repo.
 - A skill may have files on one side only by design (for example `agents/` folders used by Codex). Show these and do not delete them.
 - A skill deleted from the repo is deleted from the live folders only after the user confirms the list.
