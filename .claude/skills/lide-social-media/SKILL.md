@@ -9,6 +9,14 @@ Responde en español, con tuteo y sin rayas largas (em dashes). Daniel suele
 delegar todo ("ya sabes todo tú"). Decide los detalles, haz el trabajo y
 reporta al final.
 
+Esta skill cubre la ejecución: artes, programación, publicación, correcciones
+y amplificación con Claude in Chrome. Para redactar el texto de cada red, usa
+la skill `lide-social-package` del repo `graficos-el-quantificador`
+(`.codex/skills/lide-social-package/`). Sus reglas de texto mandan: un texto
+distinto por red, validación de X y de Instagram con sus scripts, y crédito al
+autor del análisis. Su `references/social-media-runbook.md` describe el mismo
+flujo de amplificación para el navegador de Codex.
+
 ## 1. Cuentas
 
 | Red | Cuenta que publica | Otras cuentas del ecosistema |
@@ -16,7 +24,7 @@ reporta al final.
 | Instagram | elquantificador | laboratoriolide, newdimensions_ec. Están en el mismo inicio de sesión. Cambia con Más > Switch accounts. |
 | Facebook | Página El Quantificador (id 101766768141723) | CM Lide (perfil que administra las páginas), página LIDE ("Laboratorio de Investigación para el Desarrollo del Ecuador"), New Dimensions, Bridges to the Future |
 | LinkedIn | Página El Quantificador (company 65035345) | LIDE Community Management (perfil), Ecuadorian Development Research Lab (LIDE) (página), New Dimensions, Bridges to the Future |
-| X | @ElQuantificador | LIDE es @laboratoriolide |
+| X | @ElQuantificador | @LaboratorioLIDE, @newdimension_ec. Se cambia con "Cambiar cuentas". |
 
 El Quantificador también tiene Threads (@elquantificador) y Bluesky
 (elquantificador.bsky.social). Úsalos solo si Daniel los pide.
@@ -34,6 +42,14 @@ Otros datos fijos:
 - Instagram: publica desde El Quantificador con laboratoriolide como
   colaborador. Después entra como laboratoriolide y acepta la invitación.
   Aparece como aviso "Review" sobre el post o en Notificaciones.
+- Instagram no lleva enlaces en el texto (nada de `https://`, `www.` ni
+  dominios sueltos) y tiene máximo 5 hashtags. Usa "Inscríbete con el link de
+  nuestra bio" o "Lee el análisis completo en el link de nuestra bio". En Meta
+  Business Suite activa "Customize post for Facebook and Instagram" para que
+  Facebook lleve los enlaces e Instagram no.
+- Reels de Instagram: video vertical de 1080 × 1920. Si el diseño es
+  1080 × 1350, ponlo dentro de un lienzo 1080 × 1920 con margen de marca.
+  Desactiva la publicación simultánea en Threads.
 - Facebook: solo El Quantificador, sin colaborador.
 - LinkedIn: sube el carrusel como PDF (documento). Una página no puede hacer
   una colaboración formal con un documento. Por eso menciona a LIDE con @ en
@@ -41,7 +57,7 @@ Otros datos fijos:
   uses el editor colaborativo del feed: al adjuntar un documento cambia el
   autor a la cuenta personal.
 - X: hasta 4 imágenes y un texto de 280 caracteres o menos. Menciona a
-  @laboratoriolide.
+  @LaboratorioLIDE.
 - Si piden publicar "mañana" sin hora, usa las 12:30, hora de Quito.
 
 ## 3. Likes y reposts después de publicar
@@ -54,6 +70,10 @@ mira quién reaccionó y quién compartió.
 | LinkedIn | LIDE Community Management, página LIDE, New Dimensions | Bridges to the Future |
 | Facebook | Página LIDE, New Dimensions, CM Lide ("Share now") | El Quantificador (su propio post), Bridges to the Future |
 | Instagram | newdimensions_ec | laboratoriolide (además acepta la colaboración) |
+| X | @LaboratorioLIDE, @newdimension_ec (Repost, nunca Quote) | |
+
+En Instagram, la cuenta autora a veces no retiene su propio like. Si el botón
+vuelve a "Like", no lo cuentes como hecho.
 
 Al terminar, deja otra vez a El Quantificador como identidad activa en cada
 red.
@@ -94,7 +114,10 @@ Más información: elquantificador.org/talleres
 #AnalíticaDeDatos #CursoGratuito #Ecuador #ElQuantificador #LaboratorioLIDE
 ```
 
-- LinkedIn: el mismo texto, con la mención @LIDE, el enlace completo
+- Este texto es para Facebook. Adapta las otras redes en vez de copiarlo.
+- Instagram: quita los dos enlaces y usa "Inscríbete con el link de nuestra
+  bio". Máximo 5 hashtags al final.
+- LinkedIn: el mismo contenido, con la mención @LIDE, el enlace completo
   https://elquantificador.org/talleres y sin hashtags.
 - Menciona siempre la donación desde $5. Alonso lo pidió para que nadie
   piense que tiene que pagar mucho.
