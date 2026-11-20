@@ -1,21 +1,25 @@
 ---
 name: lide-social-media
-description: Publicar, programar, republicar y amplificar posts de El Quantificador y LIDE en Instagram, Facebook, LinkedIn y X (artes, textos, colaboraciones, likes y reposts entre cuentas). Usar cuando Daniel pida un arte para redes, programar o publicar un post, corregir uno ya publicado, o dar likes y reposts desde las otras cuentas.
+description: Todo el trabajo de redes sociales de El Quantificador y LIDE en LinkedIn, X, Instagram y Facebook. Redactar textos a partir de gráficos, análisis o convocatorias; hacer artes y carruseles; programar, publicar y corregir posts; y dar likes y reposts desde las otras cuentas. Valida X (280 caracteres ponderados) e Instagram (sin enlaces, máximo 5 hashtags).
 ---
 
 # Redes sociales de El Quantificador y LIDE
+
+Una sola skill para todo el flujo: texto, arte, publicación, corrección y
+amplificación.
 
 Responde en español, con tuteo y sin rayas largas (em dashes). Daniel suele
 delegar todo ("ya sabes todo tú"). Decide los detalles, haz el trabajo y
 reporta al final.
 
-Esta skill cubre la ejecución: artes, programación, publicación, correcciones
-y amplificación con Claude in Chrome. Para redactar el texto de cada red, usa
-la skill `lide-social-package` del repo `graficos-el-quantificador`
-(`.codex/skills/lide-social-package/`). Sus reglas de texto mandan: un texto
-distinto por red, validación de X y de Instagram con sus scripts, y crédito al
-autor del análisis. Su `references/social-media-runbook.md` describe el mismo
-flujo de amplificación para el navegador de Codex.
+Archivos de apoyo:
+
+- `references/platform-spec.md`: reglas de texto por red. Léelo antes de
+  redactar.
+- `references/social-media-runbook.md`: paso a paso de publicación y
+  amplificación, y criterios para detenerse.
+- `scripts/validate_x_posts.py` y `scripts/validate_instagram_caption.py`:
+  validan los textos de X e Instagram.
 
 ## 1. Cuentas
 
@@ -34,72 +38,49 @@ Otros datos fijos:
 - Meta business_id: 1285696443612615.
 - Correo de becas: capacitaciones@laboratoriolide.org.
 - Página de cursos: elquantificador.org/talleres.
-- Donaciones: Givebutter. El enlace está en la página del curso en el repo `quantificador`.
+- Donaciones: Givebutter. El enlace está en la página de cada curso en el
+  repo `adminlide/quantificador`.
 
-## 2. Dónde y cómo se publica
+## 2. Texto
 
-- Publica siempre desde El Quantificador, nunca desde LIDE.
-- Instagram: publica desde El Quantificador con laboratoriolide como
-  colaborador. Después entra como laboratoriolide y acepta la invitación.
-  Aparece como aviso "Review" sobre el post o en Notificaciones.
-- Instagram no lleva enlaces en el texto (nada de `https://`, `www.` ni
-  dominios sueltos) y tiene máximo 5 hashtags. Usa "Inscríbete con el link de
-  nuestra bio" o "Lee el análisis completo en el link de nuestra bio". En Meta
-  Business Suite activa "Customize post for Facebook and Instagram" para que
-  Facebook lleve los enlaces e Instagram no.
-- Reels de Instagram: video vertical de 1080 × 1920. Si el diseño es
-  1080 × 1350, ponlo dentro de un lienzo 1080 × 1920 con margen de marca.
-  Desactiva la publicación simultánea en Threads.
-- Facebook: solo El Quantificador, sin colaborador.
-- LinkedIn: sube el carrusel como PDF (documento). Una página no puede hacer
-  una colaboración formal con un documento. Por eso menciona a LIDE con @ en
-  el texto (autocompletar "Ecuadorian Development Research Lab (LIDE)"). No
-  uses el editor colaborativo del feed: al adjuntar un documento cambia el
-  autor a la cuenta personal.
-- X: hasta 4 imágenes y un texto de 280 caracteres o menos. Menciona a
-  @LaboratorioLIDE.
-- Si piden publicar "mañana" sin hora, usa las 12:30, hora de Quito.
+Sigue `references/platform-spec.md`. Lo esencial:
 
-## 3. Likes y reposts después de publicar
+- Di qué significa el gráfico, no todo lo que contiene. Abre con el hallazgo.
+- Para cada patrón empírico, busca la explicación con mejor respaldo y dila
+  directamente. No uses frases como "los datos no permiten" en lugar de una
+  explicación. Si no hay fuente, pídela o limítate al hallazgo verificado.
+- Nunca inventes cifras, fuentes, autores ni fechas. Conserva unidades,
+  periodos y grupos de comparación.
+- Da crédito al autor del análisis: hallazgo, análisis, autor, El
+  Quantificador / LIDE. LIDE no es el protagonista de un post de datos.
+- Un texto distinto por red. No copies el de una red en otra.
+- Si Daniel entrega un texto final, solo corrige ortografía y lectura. No
+  agregues matices ni advertencias.
+- Promociones (New Dimensions, cursos) van separadas del hallazgo.
+- Español natural de Ecuador. Sin "Desde LIDE queremos compartir", sin
+  lenguaje de ONG ni de marketing, pocos o ningún emoji.
 
-Este es el patrón de los posts anteriores. Si hay duda, abre un post viejo y
-mira quién reaccionó y quién compartió.
+Reglas por red:
 
-| Red | Like y repost (o compartir) | Solo like |
-|---|---|---|
-| LinkedIn | LIDE Community Management, página LIDE, New Dimensions | Bridges to the Future |
-| Facebook | Página LIDE, New Dimensions, CM Lide ("Share now") | El Quantificador (su propio post), Bridges to the Future |
-| Instagram | newdimensions_ec | laboratoriolide (además acepta la colaboración) |
-| X | @LaboratorioLIDE, @newdimension_ec (Repost, nunca Quote) | |
+| Red | Largo | Enlaces | Hashtags |
+|---|---|---|---|
+| LinkedIn | 80 a 180 palabras | Sí, enlace completo | 0 a 3 |
+| X | 280 caracteres ponderados por post, un tema por post en hilos | Sí (cuenta como 23) | 0 a 2 |
+| Instagram | 50 a 120 palabras, un solo texto aunque sea carrusel | Nunca. Usa "link en la bio" | 3 a 5, máximo 5, al final |
+| Facebook | 70 a 160 palabras | Sí, el enlace directo va aquí | 0 a 3 |
 
-En Instagram, la cuenta autora a veces no retiene su propio like. Si el botón
-vuelve a "Like", no lo cuentes como hecho.
+Valida antes de publicar:
 
-Al terminar, deja otra vez a El Quantificador como identidad activa en cada
-red.
+```
+python scripts/validate_x_posts.py posts.json
+python scripts/validate_instagram_caption.py caption.txt
+```
 
-## 4. Artes
+El validador de X necesita el paquete de Python `regex` (`pip install regex`).
+`posts.json` es una lista de textos. `caption.txt` es el texto de Instagram en
+UTF-8. Corrige y vuelve a validar hasta que pasen.
 
-- Hazlos en Claude Design (artifact de tipo Design), no en Canva. Daniel
-  encontró que los de Canva se ven "muy AI".
-- Carrusel de 3 artes en 1080 × 1350.
-- Colores de El Quantificador: azul #006b8f (oscuro #00566f), rojo de
-  categoría #a8363d. Colores del logo: cian #00a1cb, rojo #d54d54, naranja
-  #ef9f4e, pizarra #647a8f. Letra Open Sans.
-- Fondo blanco con letras azules. Mayúscula solo al inicio de la frase. Sin
-  emoji.
-- El nombre del curso va grande, en una sola línea si cabe. Horarios, fechas
-  y "clases en vivo" también van grandes. Los logos de El Quantificador y LIDE
-  van grandes. La regla de Alonso: todo lo importante se tiene que leer en un
-  teléfono.
-- En un calendario pon el mes bajo cada número ("Dic"), no "Clase 1".
-- Exporta cada arte a JPG 1080 × 1350 con Playwright desde el HTML del board.
-  Cambia las rutas `/_blob/` por rutas locales. Une los JPG en un PDF con PIL
-  para LinkedIn.
-- Si Daniel quiere las imágenes en el iPhone, mándale los JPG con
-  SendUserFile.
-
-## 5. Texto base para cursos
+### Texto base para cursos (Facebook)
 
 ```
 ¿<Gancho en forma de pregunta>? Abrimos una nueva edición del curso gratuito de El Quantificador y LIDE.
@@ -114,15 +95,76 @@ Más información: elquantificador.org/talleres
 #AnalíticaDeDatos #CursoGratuito #Ecuador #ElQuantificador #LaboratorioLIDE
 ```
 
-- Este texto es para Facebook. Adapta las otras redes en vez de copiarlo.
-- Instagram: quita los dos enlaces y usa "Inscríbete con el link de nuestra
-  bio". Máximo 5 hashtags al final.
-- LinkedIn: el mismo contenido, con la mención @LIDE, el enlace completo
-  https://elquantificador.org/talleres y sin hashtags.
+- Instagram: quita los dos enlaces y pon "Inscríbete con el link en la bio."
+- LinkedIn: menciona a @LIDE, usa el enlace completo
+  https://elquantificador.org/talleres y quita los hashtags.
+- X: versión corta con @LaboratorioLIDE y el enlace de Luma.
 - Menciona siempre la donación desde $5. Alonso lo pidió para que nadie
   piense que tiene que pagar mucho.
-- Después de escribir en Meta, revisa que el último hashtag no se haya
-  cortado.
+
+## 3. Artes
+
+- Hazlos en Claude Design (artifact de tipo Design), no en Canva. Daniel
+  encontró que los de Canva se ven "muy AI".
+- Carrusel de 3 artes en 1080 × 1350.
+- Colores de El Quantificador: azul #006b8f (oscuro #00566f), rojo de
+  categoría #a8363d. Colores del logo: cian #00a1cb, rojo #d54d54, naranja
+  #ef9f4e, pizarra #647a8f. Letra Open Sans.
+- Fondo blanco con letras azules. Mayúscula solo al inicio de la frase. Sin
+  emoji.
+- El nombre del curso va grande, en una sola línea si cabe. Horarios, fechas
+  y "clases en vivo" también van grandes. Los logos de El Quantificador y LIDE
+  van grandes. La regla de Alonso: todo lo importante se tiene que leer en un
+  teléfono.
+- En un calendario pon el mes bajo cada número ("Dic"), no "Clase 1".
+- Para gráficos de datos, sigue `HOUSE_STYLE.md` y `AGENTS.md` del repo
+  `graficos-el-quantificador`.
+- Exporta cada arte a JPG 1080 × 1350 con Playwright desde el HTML del board.
+  Cambia las rutas `/_blob/` por rutas locales. Une los JPG en un PDF con PIL
+  para LinkedIn.
+- Reels: video vertical de 1080 × 1920. Si el diseño es 1080 × 1350, ponlo
+  dentro de un lienzo 1080 × 1920 con margen de marca. Deja texto y logos lejos
+  de los bordes y de los controles de abajo.
+- Si Daniel quiere las imágenes en el iPhone, mándale los JPG con
+  SendUserFile.
+
+## 4. Publicar
+
+- Publica siempre desde El Quantificador, nunca desde LIDE.
+- Instagram: con laboratoriolide como colaborador. Después entra como
+  laboratoriolide y acepta la invitación. Aparece como aviso "Review" sobre el
+  post o en Notificaciones. Desactiva la publicación simultánea en Threads.
+- Facebook: solo El Quantificador, sin colaborador. En Meta Business Suite
+  activa "Customize post for Facebook and Instagram" para que Facebook lleve
+  los enlaces e Instagram no.
+- LinkedIn: carrusel como PDF (documento). Una página no puede hacer una
+  colaboración formal con documento. Menciona a LIDE con @ en el texto
+  (autocompletar "Ecuadorian Development Research Lab (LIDE)"). No uses el
+  editor colaborativo del feed: al adjuntar un documento cambia el autor a la
+  cuenta personal.
+- X: hasta 4 imágenes por post.
+- Si piden publicar "mañana" sin hora, usa las 12:30, hora de Quito.
+- Después de publicar, confirma el aviso de éxito y guarda el enlace de cada
+  post.
+
+## 5. Likes y reposts
+
+Patrón de los posts anteriores. Si hay duda, abre un post viejo y mira quién
+reaccionó y quién compartió.
+
+| Red | Like y repost (o compartir) | Solo like |
+|---|---|---|
+| LinkedIn | LIDE Community Management, página LIDE, New Dimensions | Bridges to the Future |
+| Facebook | Página LIDE, New Dimensions, CM Lide ("Share now") | El Quantificador (su propio post), Bridges to the Future |
+| Instagram | newdimensions_ec | laboratoriolide (además acepta la colaboración) |
+| X | @LaboratorioLIDE, @newdimension_ec | |
+
+- En X usa "Repost", nunca "Quote".
+- Si el like ya está activo ("Unlike", "Remove Like"), no vuelvas a pulsarlo.
+- En Instagram, la cuenta autora a veces no retiene su propio like. Si el
+  botón vuelve a "Like", no lo cuentes como hecho.
+- Al terminar, deja otra vez a El Quantificador como identidad activa en cada
+  red.
 
 ## 6. Navegador (Claude in Chrome)
 
@@ -149,12 +191,11 @@ Más información: elquantificador.org/talleres
 - Facebook: cambia de perfil con el avatar de arriba a la derecha > See all
   profiles. Confirma la identidad con el texto "Comment as ..." del campo de
   comentarios.
-- X: si aparece la verificación de Cloudflare o un código QR para
-  "confirm you are human", detente y pide a Daniel que la resuelva. Nunca
-  resuelvas captchas.
-- Cierra las pestañas que abriste.
+- Si aparece CAPTCHA, Cloudflare, código QR, 2FA o código de seguridad,
+  detente y pide a Daniel que lo resuelva. Nunca los resuelvas.
+- Cierra las pestañas que abriste. Deja las sesiones iniciadas.
 
-## 7. Corregir un post ya programado o publicado
+## 7. Corregir un post
 
 1. Corrige el board en Claude Design. Exporta otra vez los JPG y el PDF.
 2. LinkedIn programado: Edit post > quita el documento > Add a document >
@@ -163,9 +204,11 @@ Más información: elquantificador.org/talleres
 3. Meta programado: borra los posts de Facebook e Instagram (Posts & reels >
    Scheduled > ... > Manage post > Delete). Crea uno nuevo y pulsa Publish con
    "Set date and time" apagado.
-4. X publicado: no se pueden cambiar las imágenes. Borra el tweet y publica
+4. Solo el texto de Instagram: abre el post > ... > Edit, cambia el texto y
+   pulsa Done.
+5. X publicado: no se pueden cambiar las imágenes. Borra el tweet y publica
    otro.
-5. Repite los likes y reposts.
+6. Repite los likes y reposts.
 
 ## 8. Actualizar el sitio web
 
@@ -174,14 +217,23 @@ El repo `adminlide/quantificador` guarda datos que dependen de los posts:
 - Página de cada curso (`content/talleres/<curso>/index.md`): la lista
   `participation_social_posts` tiene los enlaces a las publicaciones oficiales
   que los participantes deben compartir. Cuando publiques una edición nueva,
-  propón actualizar esos enlaces.
+  actualiza esos enlaces con una PR.
 - Visualizaciones: el catálogo de `graficos-el-quantificador` necesita el
   enlace real del post de LinkedIn (`LinkedIn Link`) antes de marcar un
   gráfico como `published`.
 
-Sigue el `AGENTS.md` de ese repo para cualquier cambio.
+Sigue el `AGENTS.md` de cada repo para cualquier cambio.
 
-## 9. Reporte final
+## 9. Cuándo detenerse
 
-Una línea por red: qué quedó publicado, quién tiene que aceptar algo (la
-colaboración de Instagram) y qué no se pudo hacer y por qué.
+Detente y pregunta si falta el arte, el video o el enlace oficial; si no
+encuentras el post exacto; si la cuenta activa no coincide; si una acción no
+cambia de estado; o si la plataforma ofrece una acción distinta de la pedida
+(por ejemplo "Quote" o "Create post" en un flujo de likes). La lista completa
+está en `references/social-media-runbook.md`.
+
+## 10. Reporte final
+
+Una línea por red y cuenta: qué quedó publicado y su enlace, qué likes y
+reposts se hicieron, quién tiene que aceptar algo (la colaboración de
+Instagram) y qué no se pudo hacer y por qué.
