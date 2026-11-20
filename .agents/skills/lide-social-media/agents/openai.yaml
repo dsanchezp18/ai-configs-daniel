@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redes de LIDE y El Quantificador"
+  short_description: "Publica, corrige y amplifica posts en redes"
+  default_prompt: "Usa $lide-social-media para publicar o amplificar un post de El Quantificador."
