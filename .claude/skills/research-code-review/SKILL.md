@@ -15,9 +15,10 @@ copy when available; otherwise use the copies in
 
 This is a research pipeline. A reader must be able to follow the calculations
 without an AI. Prefer clear, linear code: setup, read, transform, estimate,
-write. Do not treat missing input checks, result checks, assertions, helper
-functions, manifests, or validation scripts as defects. Do not recommend
-extra layers or split a clear script merely to fit a prescribed structure.
+write. A missing check, assertion, manifest, or validation script is not a
+defect. A helper function that hides a simple calculation can be one. Do not
+recommend extra layers or split a clear script merely to fit a prescribed
+structure.
 
 ## Review
 
@@ -58,9 +59,10 @@ questions unless the evidence establishes a mismatch.
 
 Report the most consequential findings first. Give the file and line, the
 evidence, the likely effect on results or interpretation, and a concrete
-recommendation. Assign severity according to the likely consequence and
-strength of evidence. A readability problem that hides a calculation can be
-substantive. Combine findings that have the same cause.
+recommendation. Assign a severity of Critical, High, Medium, or Low
+according to the likely consequence and strength of evidence. A readability
+problem that hides a calculation can be substantive. Combine findings that
+have the same cause.
 
 State material uncertainties and limits of the review. Do not claim that code
 is correct or reproducible solely because it runs, or that a defect exists
