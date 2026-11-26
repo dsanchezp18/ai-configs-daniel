@@ -160,6 +160,11 @@ reaccionó y quién compartió.
 | X | @LaboratorioLIDE, @newdimension_ec | |
 
 - En X usa "Repost", nunca "Quote".
+- En un hilo de X, da like y repost al primer post. A los demás posts del
+  hilo (artículo, promoción) solo dales like.
+- En X, cambia de cuenta con el menú de la cuenta abajo a la izquierda. Si
+  una cuenta no aparece en ese menú, no inicies sesión: avisa a Daniel en
+  el reporte final.
 - Si el like ya está activo ("Unlike", "Remove Like"), no vuelvas a pulsarlo.
 - En Instagram, la cuenta autora a veces no retiene su propio like. Si el
   botón vuelve a "Like", no lo cuentes como hecho.
