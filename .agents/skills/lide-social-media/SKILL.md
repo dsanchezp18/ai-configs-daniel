@@ -131,9 +131,11 @@ Más información: elquantificador.org/talleres
 ## 4. Publicar
 
 - Publica siempre desde El Quantificador, nunca desde LIDE.
-- Instagram: con laboratoriolide como colaborador. Después entra como
-  laboratoriolide y acepta la invitación. Aparece como aviso "Review" sobre el
-  post o en Notificaciones. Desactiva la publicación simultánea en Threads.
+- Instagram: laboratoriolide va como colaborador solo en los posts que
+  Daniel indique. Si no lo dice, publica sin colaborador. Cuando va, entra
+  después como laboratoriolide y acepta la invitación. Aparece como aviso
+  "Review" sobre el post o en Notificaciones. Desactiva la publicación
+  simultánea en Threads.
 - Facebook: solo El Quantificador, sin colaborador. En Meta Business Suite
   activa "Customize post for Facebook and Instagram" para que Facebook lleve
   los enlaces e Instagram no.
@@ -156,7 +158,7 @@ reaccionó y quién compartió.
 |---|---|---|
 | LinkedIn | LIDE Community Management, página LIDE, New Dimensions | Bridges to the Future |
 | Facebook | Página LIDE, New Dimensions, CM Lide ("Share now") | El Quantificador (su propio post), Bridges to the Future |
-| Instagram | newdimensions_ec | laboratoriolide (además acepta la colaboración) |
+| Instagram | newdimensions_ec | laboratoriolide (si es colaborador, además acepta la colaboración) |
 | X | @LaboratorioLIDE, @newdimension_ec | |
 
 - En X usa "Repost", nunca "Quote".
@@ -241,4 +243,4 @@ está en `references/social-media-runbook.md`.
 
 Una línea por red y cuenta: qué quedó publicado y su enlace, qué likes y
 reposts se hicieron, quién tiene que aceptar algo (la colaboración de
-Instagram) y qué no se pudo hacer y por qué.
+Instagram, si la hubo) y qué no se pudo hacer y por qué.
