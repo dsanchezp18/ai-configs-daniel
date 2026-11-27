@@ -18,6 +18,7 @@ Keep the following folders separate by tool:
 
 Use:
 
+- `r-investigacion-clara` for readable R research and replication in Spanish: read `.agents/skills/r-investigacion-clara/SKILL.md`;
 - `r-coder` for writing or substantially revising one R script;
 - `r-reviewer` for audit and review reports;
 - `r-build-and-review` for write-then-review orchestration;
