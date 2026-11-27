@@ -175,9 +175,9 @@ reaccionó y quién compartió.
 
 ## 6. Navegador (Claude in Chrome)
 
-- Hay varios Chrome conectados. El que tiene las sesiones de X, Meta,
-  LinkedIn e Instagram ha sido "Browser 2". Si hay duda, pregunta cuál usar.
-  No elijas solo. No hay forma de mandar un aviso de verificación al
+- Puede haber varios Chrome conectados, y cuál tiene las sesiones de X, Meta,
+  LinkedIn e Instagram cambia. Revisa cuál tiene las sesiones iniciadas. Si
+  hay duda, pregunta cuál usar. No elijas solo. No hay forma de mandar un aviso de verificación al
   navegador.
 - No hagas clic en "Add photo" o "Add a document" sin antes cambiar el
   comportamiento del campo de archivo. Si no, se abre el selector de archivos
