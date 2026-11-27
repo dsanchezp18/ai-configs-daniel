@@ -1,0 +1,14 @@
+interface:
+  display_name: Investigación clara en R
+  short_description: Escribe y reproduce análisis en R con tidyverse
+  default_prompt: Escribe o reproduce este análisis en R con código claro, sencillo
+    y basado en tidyverse.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

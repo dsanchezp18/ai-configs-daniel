@@ -18,6 +18,7 @@ add unsolicited checks. This file supplies repository routing.
 
 Role mapping:
 
+- `r-investigacion-clara`: use `.agents/skills/r-investigacion-clara/SKILL.md` for readable R research and replication in Spanish;
 - `r-coder`: implement or substantially revise one R script;
 - `r-reviewer`: review R scripts and produce a quality report;
 - `r-build-and-review`: coordinate writing and reviewing an R script;
