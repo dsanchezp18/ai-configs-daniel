@@ -227,70 +227,50 @@ Use tidyverse verbs whose names match the operation:
 
 ### Joins
 
-Use modern join syntax and state expected match behavior:
+Use `join_by()` to make the join keys and their meaning clear. Establish the
+unit and expected cardinality while developing the analysis; check keys and
+unmatched observations outside the delivered script when needed. Explain
+material discrepancies in the conversation. Do not add automatic rejection,
+assertions, or diagnostic sections unless explicitly requested.
 
 ```r
 estimates <- values |>
   left_join(
     concordance,
-    by = join_by(entity_id),
-    multiple = "error",
-    unmatched = "error"
+    by = join_by(entity_id)
   )
 ```
 
-- Use `join_by()`, never character-vector `by = c(...)` syntax.
-- Use `relationship` when declaring one-to-one or many-to-one cardinality.
-- Use `multiple` and `unmatched` to catch unexpected matches.
-- Use `na_matches = "never"` when missing keys must not match each other.
-- Check keys before joining or aggregating.
+- Use `join_by()`, not character-vector `by = c(...)` syntax.
+- Use `na_matches = "never"` when missing keys must not match.
+- When explicitly requested, use supported join options or separate checks
+  appropriate to the join and the side being checked. Note that `unmatched`
+  for a left join checks unmatched keys in the right input, not all
+  unmatched rows in the left input.
 
 ### Crosswalks for inconsistent categorical keys
 
-When merging administrative data from multiple external sources (different
-government agencies, different survey waves), the same category is often
-spelled differently in each source — accents present or missing, different
-capitalization, inconsistent abbreviations. Do not patch each source's
-spelling individually with a one-off `case_when()` scattered through the
-script. Instead, build one canonical crosswalk table with a separate column
-for each spelling variant actually observed in the wild, and join each
-source against whichever alias column matches it:
+When sources use different labels for the same category, define one
+crosswalk with a column for each observed spelling and join each source to
+the relevant column. Prefer shared administrative codes when available.
 
 ```r
 province_codes <- tibble(
   province_code = c("01", "02", "03"),
   province = c("AZUAY", "BOLÍVAR", "CAÑAR"),
-  province_no_tilde = c("AZUAY", "BOLIVAR", "CAÑAR"),
-  province_title_case = c("Azuay", "Bolívar", "Cañar")
+  province_no_tilde = c("AZUAY", "BOLIVAR", "CANAR")
 )
 
 scvs <- scvs_raw |>
   left_join(
     province_codes,
-    by = join_by(province == province_no_tilde),
-    relationship = "many-to-one",
-    unmatched = "error"
-  )
-
-thefts <- thefts_raw |>
-  left_join(
-    province_codes,
-    by = join_by(province),
-    relationship = "many-to-one",
-    unmatched = "error"
+    by = join_by(province == province_no_tilde)
   )
 ```
 
-- Keep the crosswalk itself in one place (top of the script, or promoted to
-  `code/functions/` / a small reference dataset under
-  `documentation/codebooks/` if reused across scripts), not rebuilt per
-  source.
-- Name each alias column for what it actually contains
-  (`province_no_tilde`, `province_title_case`), not `province2`/`province3`.
-- After joining, check for unmatched rows (`anti_join()` against the
-  crosswalk, or the join's `unmatched = "warn"`/`"error"`) rather than
-  silently carrying forward `NA` codes from a spelling the crosswalk
-  doesn't yet cover.
+Keep the crosswalk in one place and name alias columns descriptively. During
+development, investigate unmatched categories outside the delivered script.
+Explain discrepancies; add automatic checks only when explicitly requested.
 
 ### purrr and strings
 
@@ -1032,7 +1012,7 @@ sections named:
    outputs exist, are named descriptively, and match what the script's header
    documents as its Outputs (sections 2, 10, 11, 12).
 5. **Code structure and tidyverse conventions** — verbs match operations,
-   joins use `join_by()` with `multiple`/`unmatched`, no row-level scalar
+   joins use `join_by()` and express the intended keys, no row-level scalar
    `if`/`else`, no `for`/`while`/`apply` on data, and any scalar control-flow
    exception is short and explicitly justified. Function use follows the
    6-repeat rule in section 9, not a subjective judgment call (sections 5, 8,
