@@ -30,6 +30,7 @@ convention files match it.
 
 The roles are:
 
+- `r-investigacion-clara` for readable R research and replication in Spanish;
 - `r-coder` for writing or substantially revising one R script;
 - `r-reviewer` for auditing R scripts and producing a quality report;
 - `r-build-and-review` for write-then-review orchestration;
